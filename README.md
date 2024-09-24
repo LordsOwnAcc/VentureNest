@@ -3,10 +3,15 @@ Welcome to the VentureNest App! This Android application, built with Jetpack Com
 
 *Table of Contents
 Features
+
 Technologies Used
+
 Installation
+
 Usage
+
 Contributing
+
 License
 
 *Features
@@ -23,7 +28,8 @@ Backend: Firebase (for authentication and real-time database)
 Local Database: ObjectBox
 Dependency Injection: Hilt (or your preferred method)
 Networking: Retrofit (if applicable)
-Installation
+
+*Installation
 To get started with the VentureNest App, follow these steps:
 
 Clone the Repository:
@@ -41,7 +47,7 @@ Sync the Project: Make sure to sync Gradle files after adding the Firebase confi
 
 Run the Application: Use an emulator or physical device to run the app from Android Studio.
 
-Usage
+*Usage
 Launch the app on your device or emulator.
 Create an account or log in to access booking functionalities.
 Navigate through the available cabins and BSR to make reservations.
@@ -53,5 +59,6 @@ Create a new branch (git checkout -b feature/YourFeature).
 Make your changes and commit them (git commit -m 'Add some feature').
 Push to the branch (git push origin feature/YourFeature).
 Open a Pull Request.
-License
+
+*License
 This project is licensed under the MIT License. See the LICENSE file for more details.

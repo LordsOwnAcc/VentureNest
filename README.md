@@ -2,6 +2,7 @@ VentureNest App
 Welcome to the VentureNest App! This Android application, built with Jetpack Compose, Firebase, and ObjectBox, supports the startup ecosystem fostered by CGC Jhanjeri College's VentureNest. The app mirrors the functionalities of the VentureNest website while managing the availability and occupancy of cabins and the Business Strategy Room (BSR).
 
 *Table of Contents
+
 Features
 
 Technologies Used

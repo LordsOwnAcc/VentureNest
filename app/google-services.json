@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "64723296050",
+    "project_id": "venturenest-80eaf",
+    "storage_bucket": "venturenest-80eaf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64723296050:android:2d8c7799632cfc114d412b",
+        "android_client_info": {
+          "package_name": "com.example.venturenest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi-Qfm9xu2mq0s8S3PCexhfXwVJTHJVFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

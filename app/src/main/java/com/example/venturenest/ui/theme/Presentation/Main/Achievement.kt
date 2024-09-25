@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -21,9 +22,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowOutward
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -65,12 +68,27 @@ fun Achievement(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top) {
 
-       Row(modifier.fillMaxWidth(0.9f).fillMaxHeight(0.1f),
-           horizontalArrangement = Arrangement.Start,
-           verticalAlignment = Alignment.CenterVertically) {
-           Text(text = "Achievements", fontSize = MaterialTheme.typography.titleLarge.fontSize
-           , fontWeight = FontWeight.SemiBold)
-       }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .fillMaxHeight(0.1f)
+            ,
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Text(text = "Achievements",
+                fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                fontWeight = FontWeight.Bold)
+            Row(modifier.fillMaxWidth()  ,
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Top) {
+                IconButton(onClick = {} , modifier.offset(x=10.dp)) {
+                    Icon(imageVector = Icons.Default.Tune, contentDescription = "", tint =Color.Black)
+                }
+            }
+        }
+
 
         ElevatedCard(
             modifier

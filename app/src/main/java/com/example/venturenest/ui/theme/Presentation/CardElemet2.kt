@@ -53,10 +53,10 @@ fun CardElement2(
         modifier
             .padding(bottom = 20.dp)
             .clip(RoundedCornerShape(50f))
-            .border(3.dp, Color.Black, RoundedCornerShape(50f))
+            .border(1.dp, Color.Black, RoundedCornerShape(50f))
             .fillMaxWidth(0.9f)
             .height(320.dp)
-            .background(Color.White)
+            .background(Color(0xffF6EACB))
             .clickable { onClick.invoke() }
             , verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {

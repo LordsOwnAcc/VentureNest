@@ -1,10 +1,11 @@
+import org.jetbrains.kotlin.fir.declarations.builder.buildScript
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("dagger.hilt.android.plugin")
-
     kotlin("kapt")
-    alias(libs.plugins.google.gms.google.services)
 
 }
 
@@ -35,6 +36,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -106,8 +108,12 @@ dependencies {
     implementation("io.github.thechance101:chart:Beta-0.0.5")
 //    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
+    implementation("io.objectbox:objectbox-kotlin:3.6.0")
+    implementation("io.objectbox:objectbox-android:3.6.0")
+    kapt("io.objectbox:objectbox-processor:3.6.0")
 }
 
 kapt {
     correctErrorTypes = true
+
 }

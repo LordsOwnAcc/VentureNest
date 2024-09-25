@@ -286,10 +286,15 @@ TextField(value = search, onValueChange ={search = it},
                 .background(
                     backgroundColor
                 ), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
-            
+
+            //Search Logic Here
+
             CardElement2(onClick = {selected1.value=true})
             CardElement2(onClick = {selected1.value=true})
             CardElement2(onClick = {selected1.value=true})
+
+
+
 
         }
 

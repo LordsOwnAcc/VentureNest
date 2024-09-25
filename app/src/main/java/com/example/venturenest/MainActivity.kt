@@ -34,6 +34,7 @@ import com.example.bottombar.model.ItemStyle
 import com.example.venturenest.ui.theme.DaggerHilt.MainViewModel
 import com.example.venturenest.ui.theme.Navigation.NavItems
 import com.example.venturenest.ui.theme.Presentation.Main.ExtraPages.SuccessStoriesPage
+import com.example.venturenest.ui.theme.Presentation.Main.OnBoarding
 import com.example.venturenest.ui.theme.Presentation.Navigation
 import com.example.venturenest.ui.theme.VentureNestTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,7 +68,8 @@ var navController = rememberNavController()
                                 shape = RectangleShape,
 
                                 )
-                            .border(1.dp, Color.Black, RectangleShape),
+                            //.border(1.dp, Color.Black, RectangleShape)
+                                ,
                         containerColor =Color.White,
                         containerShape = RectangleShape,
 
@@ -112,6 +114,7 @@ var navController = rememberNavController()
 
 
                 ) {
+
 
                    Navigation(navController = navController, windowInsets = windowInsets)
 //Column(modifier = Modifier.fillMaxSize()) {

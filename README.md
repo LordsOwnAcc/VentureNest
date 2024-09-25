@@ -37,9 +37,9 @@ Backend: Firebase (for authentication and real-time database)
 
 Local Database: ObjectBox
 
-Dependency Injection: Hilt (or your preferred method)
+Dependency Injection: Hilt
 
-Networking: Retrofit (if applicable)
+Networking: Retrofit
 
 *Installation
 To get started with the VentureNest App, follow these steps:

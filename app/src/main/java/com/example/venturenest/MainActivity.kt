@@ -1,6 +1,7 @@
 package com.example.venturenest
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -31,18 +32,21 @@ import com.example.bottombar.AnimatedBottomBar
 import com.example.bottombar.components.BottomBarItem
 import com.example.bottombar.model.IndicatorStyle
 import com.example.bottombar.model.ItemStyle
+import com.example.venturenest.ui.theme.DaggerHilt.AuthViewModel
 import com.example.venturenest.ui.theme.DaggerHilt.MainViewModel
 import com.example.venturenest.ui.theme.Navigation.NavItems
 import com.example.venturenest.ui.theme.Presentation.Main.ExtraPages.SuccessStoriesPage
 import com.example.venturenest.ui.theme.Presentation.Main.OnBoarding
-import com.example.venturenest.ui.theme.Presentation.Navigation
+import com.example.venturenest.ui.theme.Presentation.NoBottomBar
 import com.example.venturenest.ui.theme.VentureNestTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val RC_SIGN_IN = 1001
     val viewModel by viewModels<MainViewModel>()
+     val authviewModel by viewModels<AuthViewModel>()
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,53 +64,53 @@ class MainActivity : ComponentActivity() {
 var navController = rememberNavController()
             VentureNestTheme {
                 Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = {
-                    AnimatedBottomBar(
-                        modifier = Modifier
-                            .shadow(
-                                elevation = 500.dp,
-                                spotColor = Color.Black,
-                                shape = RectangleShape,
-
-                                )
-                            //.border(1.dp, Color.Black, RectangleShape)
-                                ,
-                        containerColor =Color.White,
-                        containerShape = RectangleShape,
-
-                        itemSize = 5,
-                        indicatorStyle = IndicatorStyle.WORM
-                    ) {
-
-                        NavItems.entries.forEachIndexed { index, navItems ->
-                            BottomBarItem(
-                                selected = if (selected == navItems.ordinal) true else false,
-                                onClick = {
-
-                                    if(selected == navItems.ordinal){
-
-                                    }else{
-                                        selected = navItems.ordinal
-                                        if(selected==0) {
-                                            navController.navigate("Home")
-
-                                        }else if (selected==1){
-                                            navController.navigate("Events")
-                                        }else if (selected==2){
-                                            navController.navigate("Achievement")
-                                        }else if (selected==3){
-                                            navController.navigate("Galary")
-                                        }else if (selected==4){
-                                            navController.navigate("About")
-                                        }
-                                    }
-
-                                          },
-                                imageVector = navItems.Icon,
-                                label = navItems.tittle,
-                                itemStyle = ItemStyle.STYLE4
-                            )
-                        }
-                    }
+//                    AnimatedBottomBar(
+//                        modifier = Modifier
+//                            .shadow(
+//                                elevation = 500.dp,
+//                                spotColor = Color.Black,
+//                                shape = RectangleShape,
+//
+//                                )
+//                            //.border(1.dp, Color.Black, RectangleShape)
+//                                ,
+//                        containerColor =Color.White,
+//                        containerShape = RectangleShape,
+//
+//                        itemSize = 5,
+//                        indicatorStyle = IndicatorStyle.WORM
+//                    ) {
+//
+//                        NavItems.entries.forEachIndexed { index, navItems ->
+//                            BottomBarItem(
+//                                selected = if (selected == navItems.ordinal) true else false,
+//                                onClick = {
+//
+//                                    if(selected == navItems.ordinal){
+//
+//                                    }else{
+//                                        selected = navItems.ordinal
+//                                        if(selected==0) {
+//                                            navController.navigate("Home")
+//
+//                                        }else if (selected==1){
+//                                            navController.navigate("Events")
+//                                        }else if (selected==2){
+//                                            navController.navigate("Achievement")
+//                                        }else if (selected==3){
+//                                            navController.navigate("Galary")
+//                                        }else if (selected==4){
+//                                            navController.navigate("About")
+//                                        }
+//                                    }
+//
+//                                          },
+//                                imageVector = navItems.Icon,
+//                                label = navItems.tittle,
+//                                itemStyle = ItemStyle.STYLE4
+//                            )
+//                        }
+//                    }
                 }
 //                    , floatingActionButton = { FloatingActionButton(onClick = { /*TODO*/ }, containerColor =  Color.White) {
 //                        Icon(imageVector = Icons.Default.EditNote, contentDescription = "", tint =  Color.Red)
@@ -115,8 +119,7 @@ var navController = rememberNavController()
 
                 ) {
 
-
-                   Navigation(navController = navController, windowInsets = windowInsets)
+NoBottomBar(navController = navController, windowInsets = windowInsets,authviewModel)
 //Column(modifier = Modifier.fillMaxSize()) {
 //    Button(onClick = {
 //
@@ -133,6 +136,16 @@ var navController = rememberNavController()
 //}
 
                 }
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_SIGN_IN) {
+            data?.let {
+                authviewModel.signInWithGoogle(data)
             }
         }
     }

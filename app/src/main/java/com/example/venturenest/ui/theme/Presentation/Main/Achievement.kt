@@ -45,6 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.SecureFlagPolicy
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import androidx.navigation.NavHostController
 import com.example.venturenest.ui.theme.Presentation.Main.ExtraPages.SuccessStoriesPage
 import com.example.venturenest.ui.theme.Presentation.PartnerPage
 import com.example.venturenest.ui.theme.Presentation.Success
@@ -53,12 +56,9 @@ import com.example.venturenest.ui.theme.Presentation.Success
 fun Achievement(
     modifier: Modifier = Modifier
     ,windowInsets: WindowInsets
+    ,navController: NavHostController
 ) {
 
-    var successStoriesVisible by remember {
-
-        mutableStateOf(false)
-    }
     Column(
         modifier
             .windowInsetsPadding(windowInsets)
@@ -132,7 +132,9 @@ fun Achievement(
                             Icon(imageVector = Icons.Default.ArrowOutward, contentDescription = "",
                                 modifier
                                     .padding(end = 10.dp, top = 10.dp)
-                                    .clickable { }
+                                    .clickable {
+                                        navController.navigate("Statistics")
+                                    }
                                     .size(20.dp), tint = Color.Gray)
                         }
                     }
@@ -305,11 +307,11 @@ fun Achievement(
                       fontWeight = FontWeight.SemiBold
                   )
                   Row(modifier.fillMaxWidth(0.95f), horizontalArrangement = Arrangement.End) {
-                      Icon(imageVector = Icons.Default.ArrowOutward, contentDescription = "",
-                          modifier
-                              .padding(top = 10.dp)
-                              .clickable { }
-                              .size(20.dp), tint = Color.Gray)
+//                      Icon(imageVector = Icons.Default.ArrowOutward, contentDescription = "",
+//                          modifier
+//                              .padding(top = 10.dp)
+//                              .clickable { }
+//                              .size(20.dp), tint = Color.Gray)
 
                   }
 
@@ -359,7 +361,7 @@ fun Achievement(
                           modifier
                               .padding(top = 10.dp, end = 10.dp)
                               .clickable {
-                                  successStoriesVisible = !successStoriesVisible
+                                  navController.navigate("SuccessStories")
                               }
                               .size(20.dp), tint = Color.Gray)
 
@@ -370,14 +372,7 @@ fun Achievement(
             }
             }
 
-AnimatedVisibility(visible = successStoriesVisible) {
-    Dialog(onDismissRequest = { successStoriesVisible = false },
-        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false, securePolicy = SecureFlagPolicy.SecureOff)) {
-        Column(modifier.fillMaxSize()) {
-            SuccessStoriesPage()
-        }
-    }
-}
+
 
 
 

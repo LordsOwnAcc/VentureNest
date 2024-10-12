@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("dagger.hilt.android.plugin")
     kotlin("kapt")
+    alias(libs.plugins.google.gms.google.services)
 
 }
 
@@ -96,6 +97,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
 
+    implementation ("com.google.android.gms:play-services-auth:20.5.0")  // Ensure this is added
 
 
     //Lottie

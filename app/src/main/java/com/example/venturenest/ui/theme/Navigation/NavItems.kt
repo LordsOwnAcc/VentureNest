@@ -28,9 +28,16 @@ enum class NavItems(
 }
 sealed class BottomNavItem(val route: String, val title: String, val icon: ImageVector) {
     object Home : BottomNavItem("home", "Home", Icons.Default.Home)
-    object Profile : BottomNavItem("event", "Event", Icons.Default.Event)
-    object Settings : BottomNavItem("settings", "Settings", Icons.Default.TrendingUp)
+    object event : BottomNavItem("event", "Event", Icons.Default.Event)
+    object achievement : BottomNavItem("Achievement", "Achievement", Icons.Default.TrendingUp)
     object Galary : BottomNavItem("galary", "Galary", Icons.Default.Image)
     object Contact : BottomNavItem("contact", "Contact", Icons.Default.Call)
 
 }
+val listofNavItem = listOf<BottomNavItem>(
+    BottomNavItem.Home,
+    BottomNavItem.event,
+    BottomNavItem.achievement
+    ,BottomNavItem.Galary,
+    BottomNavItem.Contact
+)

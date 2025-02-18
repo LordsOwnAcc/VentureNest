@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -52,6 +54,7 @@ fun AboutPage(
     Box(
         modifier
             .fillMaxSize()
+            .background(Color.White)
             .windowInsetsPadding(window)
            , contentAlignment = Alignment.BottomCenter
         ) {
@@ -60,18 +63,26 @@ var couritine = rememberCoroutineScope()
         Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
 
             Row(
-                modifier
-                    .fillMaxWidth(1f)
-                    .fillMaxHeight(0.05f),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .fillMaxHeight(0.1f)
+                ,
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
-
-
-
-
+                Text(text = "Contacts",
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    fontWeight = FontWeight.Bold)
+                Row(modifier.fillMaxWidth()  ,
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.Top) {
+                    IconButton(onClick = {} , modifier.offset(x=10.dp)) {
+                        Icon(imageVector = Icons.Default.Tune, contentDescription = "", tint =Color.Black)
+                    }
+                }
             }
+
 //            Spacer(modifier = modifier.fillMaxWidth().fillMaxHeight(0.03f).clip(
 //                RoundedCornerShape(bottomEnd  = 50f, bottomStart = 50f)
 //            ).background(Color(0xffdd1212)))

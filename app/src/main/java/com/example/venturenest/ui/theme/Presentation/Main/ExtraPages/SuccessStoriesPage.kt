@@ -58,6 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.venturenest.ui.theme.Presentation.SuccessStoriesClass
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +68,8 @@ import kotlin.coroutines.CoroutineContext
 @Composable
 fun SuccessStoriesPage(
     modifier: Modifier = Modifier
+    ,navHostController: NavHostController
+    ,windowInsets: WindowInsets
 ) {
 
     var rotated by remember { mutableStateOf(false) }
@@ -119,7 +122,7 @@ fun SuccessStoriesPage(
 
     Column(
         modifier
-
+            .windowInsetsPadding(windowInsets)
             .fillMaxSize()
             .background(Color.White), horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -137,7 +140,7 @@ fun SuccessStoriesPage(
                     .padding(start = 10.dp)
                     .size(40.dp)
                     .background(Color.White)
-
+                    .clickable { navHostController.popBackStack() }
                     .border(2.dp, Color.Black, RectangleShape)
                     .padding(8.dp),
                 tint = Color.Black
@@ -173,7 +176,7 @@ fun SuccessStoriesPage(
                 modifier
                     .padding(if (page == peoplePngLinks.size) 80.dp else 0.dp)
                     .fillMaxWidth()
-                    .fillMaxHeight()
+                    .fillMaxHeight(0.6f)
                 ,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -228,7 +231,7 @@ Row (
                             AsyncImage(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .fillMaxHeight(0.7f)
+                                    .fillMaxHeight(0.8f)
 //                                .clip(RoundedCornerShape(50f))
 //                                .fillMaxHeight(0.8f - (realoffset / 5))
 //                                .fillMaxWidth(0.8f - (realoffset) / 100)
@@ -256,53 +259,15 @@ Row (
                                     text = "Founded by Elon Musk",
                                     maxLines = 1,
                                     fontSize = MaterialTheme.typography.titleSmall.fontSize,
-                                    fontWeight = FontWeight.ExtraLight,
+                                    fontWeight = FontWeight.SemiBold,
                                     lineHeight = MaterialTheme.typography.titleSmall.lineHeight,
                                     letterSpacing = MaterialTheme.typography.titleSmall.letterSpacing
                                 )
-                                Row(
-                                    modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.End
-                                ) {
-                                    Icon(imageVector = if (!isDescriptionClicked) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
-                                        modifier = Modifier
-                                            .padding(end = 16.dp)
-                                            .clickable {
-                                                isDescriptionClicked = !isDescriptionClicked
-                                            }, contentDescription = ""
-                                    )
-                                }
+
 
                             }
 
-                            Row(
-                                modifier
-                                    .padding(bottom = 10.dp)
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .verticalScroll(rememberScrollState()),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
 
-
-                                Text(
-                                    modifier = modifier.fillMaxWidth(if (!isDescriptionClicked) 0.4f else 0.9f),
-                                    text = peoplePngLinks[page].description,
-                                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                                    letterSpacing = MaterialTheme.typography.bodyLarge.letterSpacing,
-                                    lineHeight = MaterialTheme.typography.bodyLarge.lineHeight,
-                                    maxLines = if (!isDescriptionClicked) 1 else 100
-                                )
-
-                                Text(
-                                    text = if (!isDescriptionClicked) ". . . learn More" else "",
-                                    modifier
-                                        .offset(x = -15.dp)
-                                        .clickable { isDescriptionClicked = true },
-                                    color = Color(0xff0000ee)
-                                )
-
-                            }
 
                         }
                         Icon(
@@ -326,16 +291,10 @@ Row (
     }
 
 }
+//
+//@Preview
+//@Composable
+//private fun PreviewSuccessStoriesPage() {
+//  SuccessStoriesPage()
+//}
 
-@Preview
-@Composable
-private fun PreviewSuccessStoriesPage() {
-//    SuccessStoriesPage()
-}
-
-@Composable
-private fun SecondScreen(text : String) {
-Column {
-    Text(text = text)
-}
-}

@@ -109,7 +109,7 @@ Box(modifier =Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter ) {
                         "The event concluded with enthusiastic feedback from participants and praise from faculty for the students' creativity and dedication. The Internal Smart India Hackathon at CGC-Jhanjeri has once again demonstrated the institution's commitment to fostering innovation, entrepreneurship, and technological excellence.\n" +
                         "\n" +
                         "This hackathon reaffirms CGC-Jhanjeri’s vision of creating a nurturing environment where students are encouraged to tackle real-world problems, develop cutting-edge solutions, and prepare for future careers in technology and entrepreneurship.", modifier = Modifier.fillMaxWidth(),
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize, fontWeight = FontWeight.Bold)
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize, fontWeight = FontWeight.Normal)
             }
 
             Column(modifier = Modifier.fillMaxSize()) {

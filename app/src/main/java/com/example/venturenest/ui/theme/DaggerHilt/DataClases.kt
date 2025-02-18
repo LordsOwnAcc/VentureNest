@@ -19,7 +19,7 @@ data class Patents(
     var PatentTitle :String,
     var Inventor: String,
     var ApplicationNo :String,
-    var PatentYear : Date,
+    var PatentYear : String,
 )
 
 data class Partners(
@@ -35,7 +35,7 @@ data class StartUp(
     var StartupName :String,
     var CIN: String,
     var FounderName :String,
-    var Website : Date,
+    var Website : String,
     var ProductName : String
 )
 data class LatestNews(

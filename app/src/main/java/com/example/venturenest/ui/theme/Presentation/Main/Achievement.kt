@@ -2,6 +2,7 @@ package com.example.venturenest.ui.theme.Presentation.Main
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +48,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.SecureFlagPolicy
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import androidx.navigation.NavHostController
+import com.example.venturenest.R
 import com.example.venturenest.ui.theme.Presentation.Main.ExtraPages.SuccessStoriesPage
 import com.example.venturenest.ui.theme.Presentation.PartnerPage
 import com.example.venturenest.ui.theme.Presentation.Success
@@ -53,12 +60,9 @@ import com.example.venturenest.ui.theme.Presentation.Success
 fun Achievement(
     modifier: Modifier = Modifier
     ,windowInsets: WindowInsets
+    ,navController: NavHostController
 ) {
 
-    var successStoriesVisible by remember {
-
-        mutableStateOf(false)
-    }
     Column(
         modifier
             .windowInsetsPadding(windowInsets)
@@ -132,7 +136,9 @@ fun Achievement(
                             Icon(imageVector = Icons.Default.ArrowOutward, contentDescription = "",
                                 modifier
                                     .padding(end = 10.dp, top = 10.dp)
-                                    .clickable { }
+                                    .clickable {
+                                        navController.navigate("Statistics")
+                                    }
                                     .size(20.dp), tint = Color.Gray)
                         }
                     }
@@ -159,7 +165,7 @@ fun Achievement(
                                 textAlign = TextAlign.Center,
                                 fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                                 fontWeight = FontWeight.SemiBold
-                                , color = Color.Red
+                                , color = Color(0xffA30D33)
                             )
                         }
                         Column(
@@ -176,7 +182,7 @@ fun Achievement(
                                 textAlign = TextAlign.Center,
                                 fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                                 fontWeight = FontWeight.SemiBold
-                                , color = Color.Red
+                                , color = Color(0xffA30D33)
                             )
                         }
 
@@ -202,7 +208,7 @@ fun Achievement(
                                 text = "100+",
                                 fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                                 fontWeight = FontWeight.SemiBold
-                                , color = Color.Red
+                                , color = Color(0xffA30D33)
                             )
                         }
                         Column(
@@ -218,7 +224,7 @@ fun Achievement(
                                 text = "400+",
                                 fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                                 fontWeight = FontWeight.SemiBold
-                                , color = Color.Red
+                                , color = Color(0xffA30D33)
                             )
                         }
 
@@ -295,6 +301,8 @@ fun Achievement(
 
 
               Box (modifier.fillMaxWidth()){
+
+                  Image(painter = painterResource(id = R.drawable.whatsapp), contentDescription = "",modifier.fillMaxWidth(), contentScale = ContentScale.FillBounds)
                   Text(
                       modifier = Modifier
                           .padding(bottom = 10.dp, top = 10.dp)
@@ -359,7 +367,7 @@ fun Achievement(
                           modifier
                               .padding(top = 10.dp, end = 10.dp)
                               .clickable {
-                                  successStoriesVisible = !successStoriesVisible
+                                  navController.navigate("SuccessStories")
                               }
                               .size(20.dp), tint = Color.Gray)
 
@@ -370,14 +378,7 @@ fun Achievement(
             }
             }
 
-AnimatedVisibility(visible = successStoriesVisible) {
-    Dialog(onDismissRequest = { successStoriesVisible = false },
-        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false, securePolicy = SecureFlagPolicy.SecureOff)) {
-        Column(modifier.fillMaxSize()) {
-            SuccessStoriesPage()
-        }
-    }
-}
+
 
 
 

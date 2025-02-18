@@ -153,7 +153,7 @@ Column(modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
 
 
         Text(
-            text = "Name Surna",
+            text = "Pragyansh ",
             color = Color.Black,
             lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
             fontSize = MaterialTheme.typography.titleLarge.fontSize,
@@ -213,7 +213,7 @@ Column(modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
             modifier
                 .padding(bottom = 20.dp)
                 .fillMaxWidth(0.91f)
-                .height(200.dp-schroll.value.div(50).dp)) {
+                .height(200.dp)) {
             CoulageElement(modifier.height(200.dp))
 
         }
@@ -263,11 +263,9 @@ Column(modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
                         modifier = Modifier.fillMaxWidth(0.9f),
                         fontSize = MaterialTheme.typography.bodySmall.fontSize,
                         textAlign = TextAlign.Center,
-                        text = "Entrepreneurship culture is of key importance to Chitkara University. With the vision “To promote entrepreneurial spirit amongst youth, researchers, engineers and society at large by promoting cutting edge technology & non -technology start-ups which will lead to economic and social development of the country” Chitkara University has opened its first incubator “Chitkara Innovation Incubator Foundation (CIIF)” in the year 2013 which provided a platform to the budding startups, innovators & entrepreneurs of the region.\n" +
-                                "\n" +
-                                "On October 30, 2015, CIIF got registered as a company under section-8 of the Company Act. A month later CIIF got recognition as a Technology Business Incubator from, DST, Govt. of India. Currently, we have over 3 incubators in the Tricity and around 120 startups raised and mentored by CIIF in the last 5 years.\n" +
-                                "\n" +
-                                "Startups incubated with CIIF are from diverse fields like Agritech, Healthtech, Edtech, SAAS, Fintech etc."
+                        text = "Welcome to CGC VentureNest, the premier incubator at CGC Jhanjeri, dedicated to fostering innovation, entrepreneurship," +
+                                " and sustainable growth. We provide startups and aspiring entrepreneurs with resources, mentorship, networking, and funding to" +
+                                " transform ideas into successful ventures."
                     )
 
 

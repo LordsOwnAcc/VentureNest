@@ -112,7 +112,7 @@ fun CoulageElement(
             .fillMaxHeight()
             .clip(RoundedCornerShape(50f))
             .background(Color.White)
-            .border(3.dp, Color.Black, RoundedCornerShape(50f))
+            .border(3.dp, Color(0xffA30D33), RoundedCornerShape(50f))
 
 
     ) {
@@ -143,7 +143,7 @@ fun CoulageElement(
                         model = items[page],
                         contentDescription = "",
                         modifier = modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.FillBounds
                     )
                 }
             }

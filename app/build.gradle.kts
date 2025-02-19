@@ -7,6 +7,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     kotlin("kapt")
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.kotlin.serialization)
 
 }
 
@@ -98,17 +99,19 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.48")
 
     implementation ("com.google.android.gms:play-services-auth:20.5.0")  // Ensure this is added
-
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.navigation.compose)
 
     //Lottie
     implementation ("com.airbnb.android:lottie-compose:6.5.2")
 
     val nav_version = "2.8.0"
 //navigation
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+
    //chartsLib
     implementation("io.github.thechance101:chart:Beta-0.0.5")
 //    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.google.accompanist:accompanist-navigation-animation:0.32.0")
 
     implementation("io.objectbox:objectbox-kotlin:3.6.0")
     implementation("io.objectbox:objectbox-android:3.6.0")

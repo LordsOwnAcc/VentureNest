@@ -78,12 +78,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun OnBoarding(
     modifier: Modifier = Modifier
-    , authViewModel: AuthViewModel
     ,navController: NavController
 ) {
     val pagerState = rememberPagerState(0, 0f) { 3 }
     var coritine = rememberCoroutineScope()
-    var authstate = authViewModel.authState.collectAsState()
     val context = LocalContext.current
     var showLoader by remember {
 

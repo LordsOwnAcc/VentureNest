@@ -5,6 +5,9 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Groups
@@ -14,30 +17,59 @@ import androidx.compose.material.icons.outlined.Newspaper
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.WineBar
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.serialization.Serializable
 
-enum class NavItems(
-    val tittle : String,
-    val Icon: ImageVector
+
+@Serializable
+object HomePage
+
+@Serializable
+object LoginPage
+
+@Serializable
+object AchievementPage
+
+@Serializable
+object ContactPage
+
+@Serializable
+object EventsPage
+
+@Serializable
+object SettingPage
+
+@Serializable
+object GalleryPage
+
+@Serializable
+object StatsPage
+
+@Serializable
+object SuccessStories
+
+enum class NavigationItems(
+    val title: String,
+    val route :String,
+    val icon: ImageVector,
 ){
-    Home("Home", Icons.Outlined.Home),
-    Event("Event",Icons.Outlined.Event),
-    Achievement("Achievement",Icons.Outlined.TrendingUp),
-    Galary("Galary",Icons.Outlined.Image),
-    About("About",Icons.Outlined.Groups)
-
+    HomePage(
+        title = "Home",
+        route = "com.example.venturenest.ui.theme.Navigation.HomePage"
+        , icon = Icons.Default.Home
+    )
+    ,
+    SearchPage(
+        title = "Events",
+        route = "com.example.venturenest.ui.theme.Navigation.EventsPage"
+        , icon = Icons.Default.Search
+    ),
+    SavedPage(
+        title = "Gallery"
+        , route = "com.example.venturenest.ui.theme.Navigation.GalleryPage"
+        ,Icons.Default.List
+    ),
+    SettinPage(
+        title = "Setting"
+        , route = "com.example.venturenest.ui.theme.Navigation.SettingPage"
+        ,Icons.Default.Settings    )
 }
-sealed class BottomNavItem(val route: String, val title: String, val icon: ImageVector) {
-    object Home : BottomNavItem("home", "Home", Icons.Default.Home)
-    object event : BottomNavItem("event", "Event", Icons.Default.Event)
-    object achievement : BottomNavItem("Achievement", "Achievement", Icons.Default.TrendingUp)
-    object Galary : BottomNavItem("galary", "Galary", Icons.Default.Image)
-    object Contact : BottomNavItem("contact", "Contact", Icons.Default.Call)
-
-}
-val listofNavItem = listOf<BottomNavItem>(
-    BottomNavItem.Home,
-    BottomNavItem.event,
-    BottomNavItem.achievement
-    ,BottomNavItem.Galary,
-    BottomNavItem.Contact
-)

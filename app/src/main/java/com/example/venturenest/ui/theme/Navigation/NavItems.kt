@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Newspaper
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.WineBar
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.venturenest.ui.theme.Presentation.CollageClass
 import kotlinx.serialization.Serializable
 
 
@@ -45,7 +46,21 @@ object GalleryPage
 object StatsPage
 
 @Serializable
-object SuccessStories
+object StartScreen
+
+
+
+@Serializable
+object AboutVentureNest
+
+@Serializable
+object AboutECell
+
+@Serializable
+object Forum
+
+@Serializable
+object SignUpPage
 
 enum class NavigationItems(
     val title: String,
@@ -61,15 +76,15 @@ enum class NavigationItems(
     SearchPage(
         title = "Events",
         route = "com.example.venturenest.ui.theme.Navigation.EventsPage"
-        , icon = Icons.Default.Search
+        , icon = Icons.Default.Event
     ),
     SavedPage(
         title = "Gallery"
         , route = "com.example.venturenest.ui.theme.Navigation.GalleryPage"
-        ,Icons.Default.List
+        ,Icons.Default.Image
     ),
     SettinPage(
         title = "Setting"
-        , route = "com.example.venturenest.ui.theme.Navigation.SettingPage"
+        , route = "com.example.venturenest.ui.theme.Navigation.ContactPage"
         ,Icons.Default.Settings    )
 }

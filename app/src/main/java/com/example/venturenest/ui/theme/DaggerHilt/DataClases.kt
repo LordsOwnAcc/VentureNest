@@ -5,13 +5,24 @@ import java.util.Date
 
 data class Events(
     val _id : String,
-    var Name :String,
-    var image: String,
-    var Venue :String,
-    var date : Date,
-    var time : String,
-    var description :String,
-    var Registration_From_Link : String
+    var eventName :String,
+    var eventDate: String,
+    var eventTitle :String,
+    var imageUrl : String,
+    var isStarred : Boolean
+)
+data class heroSection(
+    val id:String,
+    val mobile:List<laptopSection>,
+    val tablet:List<laptopSection>,
+    val laptop:List<laptopSection>,
+    val desktop:List<laptopSection>
+)
+data class laptopSection(
+    val filename:String,
+    val path:String,
+    val id:String,
+    val uploadedAt: String
 )
 
 data class Patents(
@@ -48,7 +59,13 @@ data class SuccessStories(
     val _id : String,
     var StartupName :String,
     var StartupAbout: String,
-    var FounderName :String,
+    var FounderImg :String,
     var FounderImgName : String,
-    var uploadedAt: String
+    var uploadedAt: String,
+    val isStarred: Boolean
+)
+data class photo(
+    val _id : String,
+    var imageUrl : String,
+    val photoName:String
 )

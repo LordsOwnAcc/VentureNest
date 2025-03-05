@@ -8,8 +8,8 @@ val highlightColor = Color.Red
 val secondaryColor = Color.Gray
 
 
-data class SuccessStoriesClass(
+data class CollageClass(
     var title: String,
 var description: String,
-    var link :String
+
 )

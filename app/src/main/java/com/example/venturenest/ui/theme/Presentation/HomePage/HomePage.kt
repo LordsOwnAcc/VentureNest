@@ -323,174 +323,174 @@ fun HomePage(
 
                         }
                     }
-                    Column(
-                        modifier
-                            .padding(top = 10.dp, bottom = 0.dp)
-                            .wrapContentHeight()
-                            .fillMaxWidth(),
-                        // .border(0.1.dp, Color.Black, shape = RoundedCornerShape(50f))
-
-                    ) {
-                        Column(
-                            modifier
-                                .wrapContentHeight()
-                                .padding(top = 0.dp, bottom = 20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.SpaceEvenly
-                        ) {
-
-                            Box(
-                                modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp),
-
-                                ) {
-                                Text(
-                                    modifier = modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 20.dp, bottom = 20.dp),
-                                    text = "Continously Improving",
-                                    textAlign = TextAlign.Center,
-                                    fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-
-                            }
-
-                            Row(
-                                modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp)
-                                    .wrapContentHeight(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Column(
-                                    modifier
-                                        .fillMaxWidth()
-                                        .weight(1f),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "Startups Incubated",
-                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
-                                    )
-                                    Text(
-                                        text = "150+",
-                                        textAlign = TextAlign.Center,
-                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                                        fontWeight = FontWeight.SemiBold, color = Color(0xffA30D33)
-                                    )
-                                }
-                                Column(
-                                    modifier
-                                        .fillMaxWidth()
-                                        .weight(1f),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "Startups Mentored",
-                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
-                                    )
-                                    Text(
-                                        text = "500+",
-                                        textAlign = TextAlign.Center,
-                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                                        fontWeight = FontWeight.SemiBold, color = Color(0xffA30D33)
-                                    )
-                                }
-
-                            }
-                            Row(
-                                modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp)
-                                    .wrapContentHeight(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Column(
-                                    modifier
-                                        .fillMaxWidth()
-                                        .weight(1f),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "Key Mentors",
-                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
-                                    )
-                                    Text(
-                                        text = "100+",
-                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                                        fontWeight = FontWeight.SemiBold, color = Color(0xffA30D33)
-                                    )
-                                }
-                                Column(
-                                    modifier
-                                        .fillMaxWidth()
-                                        .weight(1f),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "Patents Filed",
-                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
-                                    )
-                                    Text(
-                                        text = "400+",
-                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                                        fontWeight = FontWeight.SemiBold, color = Color(0xffA30D33)
-                                    )
-                                }
-
-                            }
-
-                            Row(
-                                modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp)
-                                    .wrapContentHeight(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-
-                                Column(
-                                    modifier
-                                        .fillMaxWidth()
-                                        .weight(1f),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    Text(
-                                        text = "Funding Raised By Startups",
-                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
-                                    )
-                                    Text(
-                                        text = "1400 Lakh",
-                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                                        fontWeight = FontWeight.SemiBold, color = bg
-                                    )
-                                }
-                                Column(
-                                    modifier
-                                        .fillMaxWidth()
-                                        .weight(1f),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    Text(
-                                        text = "Investment By Incubator",
-                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
-                                    )
-                                    Text(
-                                        text = "140 Lakhs",
-                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                                        fontWeight = FontWeight.SemiBold, color = bg
-                                    )
-                                }
-
-                            }
-                        }
-                    }
+//                    Column(
+//                        modifier
+//                            .padding(top = 10.dp, bottom = 0.dp)
+//                            .wrapContentHeight()
+//                            .fillMaxWidth(),
+//                        // .border(0.1.dp, Color.Black, shape = RoundedCornerShape(50f))
+//
+//                    ) {
+//                        Column(
+//                            modifier
+//                                .wrapContentHeight()
+//                                .padding(top = 0.dp, bottom = 20.dp),
+//                            horizontalAlignment = Alignment.CenterHorizontally,
+//                            verticalArrangement = Arrangement.SpaceEvenly
+//                        ) {
+//
+//                            Box(
+//                                modifier
+//                                    .fillMaxWidth()
+//                                    .padding(bottom = 10.dp),
+//
+//                                ) {
+//                                Text(
+//                                    modifier = modifier
+//                                        .fillMaxWidth()
+//                                        .padding(top = 20.dp, bottom = 20.dp),
+//                                    text = "Continously Improving",
+//                                    textAlign = TextAlign.Center,
+//                                    fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+//                                    fontWeight = FontWeight.SemiBold
+//                                )
+//
+//                            }
+//
+//                            Row(
+//                                modifier
+//                                    .fillMaxWidth()
+//                                    .padding(bottom = 10.dp)
+//                                    .wrapContentHeight(),
+//                                verticalAlignment = Alignment.CenterVertically,
+//                                horizontalArrangement = Arrangement.SpaceEvenly
+//                            ) {
+//                                Column(
+//                                    modifier
+//                                        .fillMaxWidth()
+//                                        .weight(1f),
+//                                    horizontalAlignment = Alignment.CenterHorizontally
+//                                ) {
+//                                    Text(
+//                                        text = "Startups Incubated",
+//                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
+//                                    )
+//                                    Text(
+//                                        text = "150+",
+//                                        textAlign = TextAlign.Center,
+//                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+//                                        fontWeight = FontWeight.SemiBold, color = Color(0xffA30D33)
+//                                    )
+//                                }
+//                                Column(
+//                                    modifier
+//                                        .fillMaxWidth()
+//                                        .weight(1f),
+//                                    horizontalAlignment = Alignment.CenterHorizontally
+//                                ) {
+//                                    Text(
+//                                        text = "Startups Mentored",
+//                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
+//                                    )
+//                                    Text(
+//                                        text = "500+",
+//                                        textAlign = TextAlign.Center,
+//                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+//                                        fontWeight = FontWeight.SemiBold, color = Color(0xffA30D33)
+//                                    )
+//                                }
+//
+//                            }
+//                            Row(
+//                                modifier
+//                                    .fillMaxWidth()
+//                                    .padding(bottom = 10.dp)
+//                                    .wrapContentHeight(),
+//                                verticalAlignment = Alignment.CenterVertically,
+//                                horizontalArrangement = Arrangement.SpaceEvenly
+//                            ) {
+//                                Column(
+//                                    modifier
+//                                        .fillMaxWidth()
+//                                        .weight(1f),
+//                                    horizontalAlignment = Alignment.CenterHorizontally
+//                                ) {
+//                                    Text(
+//                                        text = "Key Mentors",
+//                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
+//                                    )
+//                                    Text(
+//                                        text = "100+",
+//                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+//                                        fontWeight = FontWeight.SemiBold, color = Color(0xffA30D33)
+//                                    )
+//                                }
+//                                Column(
+//                                    modifier
+//                                        .fillMaxWidth()
+//                                        .weight(1f),
+//                                    horizontalAlignment = Alignment.CenterHorizontally
+//                                ) {
+//                                    Text(
+//                                        text = "Patents Filed",
+//                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
+//                                    )
+//                                    Text(
+//                                        text = "400+",
+//                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+//                                        fontWeight = FontWeight.SemiBold, color = Color(0xffA30D33)
+//                                    )
+//                                }
+//
+//                            }
+//
+//                            Row(
+//                                modifier
+//                                    .fillMaxWidth()
+//                                    .padding(bottom = 10.dp)
+//                                    .wrapContentHeight(),
+//                                verticalAlignment = Alignment.CenterVertically,
+//                                horizontalArrangement = Arrangement.SpaceEvenly
+//                            ) {
+//
+//                                Column(
+//                                    modifier
+//                                        .fillMaxWidth()
+//                                        .weight(1f),
+//                                    horizontalAlignment = Alignment.CenterHorizontally,
+//                                    verticalArrangement = Arrangement.Center
+//                                ) {
+//                                    Text(
+//                                        text = "Funding Raised By Startups",
+//                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
+//                                    )
+//                                    Text(
+//                                        text = "1400 Lakh",
+//                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+//                                        fontWeight = FontWeight.SemiBold, color = bg
+//                                    )
+//                                }
+//                                Column(
+//                                    modifier
+//                                        .fillMaxWidth()
+//                                        .weight(1f),
+//                                    horizontalAlignment = Alignment.CenterHorizontally,
+//                                    verticalArrangement = Arrangement.Center
+//                                ) {
+//                                    Text(
+//                                        text = "Investment By Incubator",
+//                                        fontSize = MaterialTheme.typography.labelSmall.fontSize
+//                                    )
+//                                    Text(
+//                                        text = "140 Lakhs",
+//                                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+//                                        fontWeight = FontWeight.SemiBold, color = bg
+//                                    )
+//                                }
+//
+//                            }
+//                        }
+//                    }
 
                    when(state.state){
                        is HomePageCompanion.Loading->{
@@ -498,7 +498,7 @@ fun HomePage(
                                modifier = modifier
                                    .padding(top = 10.dp, bottom = 10.dp)
                                    .fillMaxWidth()
-                                   .height(300.dp)
+                                   .height(400.dp)
                            ) {
                               // Image(painter = painterResource(id = R.drawable.whatsapp), contentDescription = "",modifier.fillMaxSize(), contentScale = ContentScale.FillBounds)
 
@@ -557,6 +557,59 @@ fun HomePage(
 
                        }
                        is HomePageCompanion.Result->{
+
+                           Box(
+                               modifier = modifier
+                                   .padding(top = 10.dp, bottom = 10.dp)
+                                   .fillMaxWidth()
+
+                                   .height(300.dp)
+                           ) {
+
+                               Column(
+                                   modifier
+                                       .padding(bottom = 20.dp)
+                                       .fillMaxWidth()
+                                       .fillMaxHeight(),
+                                   verticalArrangement = Arrangement.SpaceEvenly,
+                                   horizontalAlignment = Alignment.CenterHorizontally
+                               ) {
+                                   val scrollState = rememberScrollState()
+                                   Row(
+                                       modifier
+                                           .padding(top = 0.dp)
+                                           .fillMaxWidth(0.94f),
+                                       verticalAlignment = Alignment.CenterVertically,
+                                       horizontalArrangement = Arrangement.SpaceBetween
+                                   ) {
+
+
+                                       Text(
+                                           modifier = Modifier
+                                               .fillMaxWidth(0.8f)
+                                               .padding(top = 20.dp, bottom = 15.dp, start = 16.dp),
+                                           text = "Partners",
+                                           fontSize = MaterialTheme.typography.bodyLarge.fontSize.times(1.5),
+                                           lineHeight = MaterialTheme.typography.bodyLarge.lineHeight
+                                           ,
+                                           letterSpacing = MaterialTheme.typography.bodyLarge.letterSpacing,
+                                           fontWeight = FontWeight.SemiBold,
+                                           textAlign = TextAlign.Start, color = Color.Black
+                                       )
+                                       if (scrollState.value>80) {
+
+
+                                           Icon(
+                                               imageVector = Icons.Default.ArrowForwardIos,
+                                               contentDescription = "",
+                                               tint = Color.Black,
+                                               modifier = modifier.padding(end = 16.dp)
+                                           )
+                                       }
+                                   }
+                                   PartnerPages(schroll = scrollState, list = state.result.partnersResult)
+                               }
+                           }
 
 
 //
@@ -711,7 +764,7 @@ fun HomePage(
                                            )
                                        }
                                    }
-                                   PartnerPage(schroll = scrollState, list = state.result)
+                                   PartnerPage(schroll = scrollState, list = state.result.Successresult)
                                }
                            }
 
@@ -727,7 +780,7 @@ fun HomePage(
                        Column(
                            modifier
                                .fillMaxWidth()
-                               .height(300.dp), verticalArrangement = Arrangement.Center,
+                               .height(400.dp), verticalArrangement = Arrangement.Center,
                            horizontalAlignment = Alignment.CenterHorizontally) {
                            Image(painter = painterResource(id = R.drawable.nothingfound), contentDescription = "",
                                modifier

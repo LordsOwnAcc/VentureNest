@@ -1,6 +1,7 @@
 package com.example.venturenest.ui.theme.Presentation.EventPage
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,6 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.venturenest.R
 import com.example.venturenest.ui.theme.DaggerHilt.Events
 import com.example.venturenest.ui.theme.DaggerHilt.States.EventsStateCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.EventsPageViewModel
@@ -317,23 +322,60 @@ TextField(value = search, onValueChange ={search = it},
                                delay(5000)
                                eventViewModel.fetchEvents()
                            }}
-                       Column(modifier.fillMaxSize(1f), verticalArrangement = Arrangement.Center,
+
+                       Column(
+                           modifier
+                               .fillMaxWidth()
+                               .height(400.dp), verticalArrangement = Arrangement.Center,
                            horizontalAlignment = Alignment.CenterHorizontally) {
-
+                           Image(
+                               painter = painterResource(id = R.drawable.nothingfound),
+                               contentDescription = "",
+                               modifier
+                                   .padding(bottom = 0.dp)
+                                   .size(250.dp),
+                               contentScale = ContentScale.FillBounds
+                           )
                            Text(
-                               text =if (state.error!!.contains("Unable to resolve host")) "Oops! unable to connect to server , please check your internet connection " else "Unknown Error Occurred : We are trying to resolve it",
-                               modifier.fillMaxWidth(0.8f)
-                                   .padding(bottom = 15.dp, top = 150.dp)
-                           , textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                           Button(onClick = { eventViewModel.fetchEvents() },
-                               shape = RoundedCornerShape(25f)
-                               , border = BorderStroke(1.dp,Color.Black)
-                               , colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-                           ) {
-Text(text = "Try again", color = Color.Black)
-                           }
+                               text = "Oops! an error occured ",
+                               modifier
+                                   .padding(bottom = 10.dp)
+                                   .fillMaxWidth(0.8f),
+                               maxLines = 3,
+                               overflow = TextOverflow.Ellipsis,
+                               textAlign = TextAlign.Center
+                           )
+                           Button(
+                               onClick = {
+                                  eventViewModel.fetchEvents()
 
+                               },
+                               shape = RoundedCornerShape(25f),
+                               colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                   containerColor = Color.Black
+                               )
+                           ) {
+                               Text(text = "Reload", color = Color.White)
+                           }
                        }
+
+//                       Column(modifier.fillMaxSize(1f), verticalArrangement = Arrangement.Center,
+//                           horizontalAlignment = Alignment.CenterHorizontally) {
+//
+//                           Text(
+//                               text =if (state.error!!.contains("Unable to resolve host")) "Oops! unable to connect to server , please check your internet connection " else "Unknown Error Occurred : We are trying to resolve it",
+//                               modifier.fillMaxWidth(0.8f)
+//                                   .padding(bottom = 15.dp, top = 150.dp)
+//                           , textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
+//                           Button(onClick = { eventViewModel.fetchEvents() },
+//                               shape = RoundedCornerShape(25f)
+//                               , border = BorderStroke(1.dp,Color.Black)
+//                               , colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+//                           ) {
+//Text(text = "Try again", color = Color.Black)
+//                           }
+//
+//                       }
 
                    }
                    is EventsStateCompanion.Result->{

@@ -6,6 +6,7 @@ import com.example.venturenest.ui.theme.DaggerHilt.Repoitoory.RecipeRepository
 import com.example.venturenest.ui.theme.DaggerHilt.States.GalleryState
 import com.example.venturenest.ui.theme.DaggerHilt.States.GalleryStateCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.States.HomePageCompanion
+import com.example.venturenest.ui.theme.DaggerHilt.States.HomePageResult
 import com.example.venturenest.ui.theme.DaggerHilt.States.HomeState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,9 +34,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val results = repository.getSuccess()
-                if (results.isSuccessful&&results.body()!!.isNotEmpty()){
+                val result2 = repository.getPartners()
+                if (results.isSuccessful&&results.body()!!.isNotEmpty() && result2.isSuccessful && result2.body()!!.isNotEmpty()){
                     _state.value=_state.value.copy(
-                        result = results.body()!!,
+                        result = HomePageResult(
+                            results.body()!!,
+                            result2.body()!!
+                        ),
                         state = HomePageCompanion.Result
 
                     )

@@ -67,7 +67,8 @@ fun PartnerPage(
             val context = LocalContext.current
             list.forEach { iconUrl ->
                 ElevatedCard(onClick = { /*TODO*/ }, modifier = Modifier
-                    .padding(start = 10.dp, top = 5.dp, bottom = 5.dp)
+                    .padding(start = 10.dp, top = 5.dp, bottom = 5.dp
+                    , end = 14.dp)
                    // .border(0.1.dp, Color.Black, shape = RoundedCornerShape(25f))
                     ,
                     colors = CardDefaults.cardColors(containerColor = Color.White)) {
@@ -79,8 +80,10 @@ fun PartnerPage(
                         contentScale = ContentScale.FillBounds,
                         modifier = Modifier
                             .clip(RoundedCornerShape(20f))
-                            .width(150.dp)
-                            .height(200.dp)
+
+                            .width(180.dp)
+                            .height(220.dp)
+
 
                             .clickable {
 

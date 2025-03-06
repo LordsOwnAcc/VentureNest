@@ -2,6 +2,7 @@ package com.example.venturenest.ui.theme.Presentation.Gallery
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -54,6 +56,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,6 +65,7 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.venturenest.R
 import com.example.venturenest.ui.theme.DaggerHilt.States.GalleryStateCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.GallaryViewModel
 import com.example.venturenest.ui.theme.Presentation.helper.ShimmerEffect
@@ -190,23 +194,59 @@ fun GalaryScreen(
                             delay(5000)
                             galleryViewModel.fetchPhotos()
                         }}
-                    Column(modifier.fillMaxSize(1f), verticalArrangement = Arrangement.Center,
+
+                    Column(
+                        modifier
+                            .fillMaxWidth()
+                            .height(400.dp), verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally) {
-
+                        Image(
+                            painter = painterResource(id = R.drawable.nothingfound),
+                            contentDescription = "",
+                            modifier
+                                .padding(bottom = 0.dp)
+                                .size(250.dp),
+                            contentScale = ContentScale.FillBounds
+                        )
                         Text(
-                            text =if (state.error!!.contains("Unable to resolve host")) "Oops! unable to connect to server , please check your internet connection " else "Unknown Error Occurred : We are trying to resolve it",
-                            modifier.fillMaxWidth(0.8f)
-                                .padding(bottom = 15.dp, top = 0.dp)
-                            , textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                        Button(onClick = { galleryViewModel.fetchPhotos() },
-                            shape = RoundedCornerShape(25f)
-                            , border = BorderStroke(1.dp,Color.Black)
-                            , colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-                        ) {
-                            Text(text = "Try again", color = Color.Black)
-                        }
+                            text = "Oops! an error occured ",
+                            modifier
+                                .padding(bottom = 10.dp)
+                                .fillMaxWidth(0.8f),
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center
+                        )
+                        Button(
+                            onClick = {
+                               galleryViewModel.fetchPhotos()
 
-                    }
+                            },
+                            shape = RoundedCornerShape(25f),
+                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                containerColor = Color.Black
+                            )
+                        ) {
+                            Text(text = "Reload", color = Color.White)
+                        }
+                        }
+//                    Column(modifier.fillMaxSize(1f), verticalArrangement = Arrangement.Center,
+//                        horizontalAlignment = Alignment.CenterHorizontally) {
+//
+//                        Text(
+//                            text =if (state.error!!.contains("Unable to resolve host")) "Oops! unable to connect to server , please check your internet connection " else "Unknown Error Occurred : We are trying to resolve it",
+//                            modifier.fillMaxWidth(0.8f)
+//                                .padding(bottom = 15.dp, top = 0.dp)
+//                            , textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
+//                        Button(onClick = { galleryViewModel.fetchPhotos() },
+//                            shape = RoundedCornerShape(25f)
+//                            , border = BorderStroke(1.dp,Color.Black)
+//                            , colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+//                        ) {
+//                            Text(text = "Try again", color = Color.Black)
+//                        }
+//
+//                    }
                 }
                 is GalleryStateCompanion.Result->{
 

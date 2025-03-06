@@ -36,10 +36,9 @@ data class Patents(
 data class Partners(
     val _id : String,
     var Name :String,
-    var imagePath: String,
-    var imagName :String,
-    var Category : Date,
-    var uploadedAt : String
+    var imgpath: String,
+    var imgName :String,
+    var Category : String
 )
 data class StartUp(
     val _id : String,

@@ -6,7 +6,9 @@ import com.example.venturenest.ui.theme.DaggerHilt.LatestNews
 import com.example.venturenest.ui.theme.DaggerHilt.Partners
 import com.example.venturenest.ui.theme.DaggerHilt.Patents
 import com.example.venturenest.ui.theme.DaggerHilt.StartUp
+import com.example.venturenest.ui.theme.DaggerHilt.States.statiticsselected
 import com.example.venturenest.ui.theme.DaggerHilt.SuccessStories
+import com.example.venturenest.ui.theme.DaggerHilt.councilmembers
 import com.example.venturenest.ui.theme.DaggerHilt.heroSection
 import com.example.venturenest.ui.theme.DaggerHilt.photo
 import retrofit2.Response
@@ -73,4 +75,10 @@ interface getNews {
     suspend fun getNew(
     ): Response<List<LatestNews>>
 
+}
+interface getCouncil{
+
+    @GET("/council-members")
+    suspend fun getMembers(
+    ): Response<List<councilmembers>>
 }

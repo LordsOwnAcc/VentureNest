@@ -1,5 +1,6 @@
 package com.example.venturenest.ui.theme.DaggerHilt.Module
 
+import com.example.venturenest.ui.theme.DaggerHilt.Interface.getCouncil
 import com.example.venturenest.ui.theme.DaggerHilt.Interface.getNews
 import com.example.venturenest.ui.theme.DaggerHilt.Interface.getPartners
 import com.example.venturenest.ui.theme.DaggerHilt.Interface.getPatents
@@ -88,4 +89,11 @@ object NetworkModule {
     fun provideheroSection(retrofit: Retrofit): heroSection {
         return retrofit.create(heroSection::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideCouncilMembers(retrofit: Retrofit): getCouncil {
+        return retrofit.create(getCouncil::class.java)
+    }
+
 }

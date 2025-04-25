@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.venturenest.R
 import com.example.venturenest.ui.theme.Presentation.CollageClass
+import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
+import com.example.venturenest.ui.theme.background
 import com.example.venturenest.ui.theme.bg
 import kotlinx.coroutines.launch
 
@@ -88,10 +90,11 @@ fun AboutVenturenest(
         modifier
             .windowInsetsPadding(windowInsets)
             .fillMaxSize()
-            .background(Color.White), horizontalAlignment = Alignment.CenterHorizontally,
+            .background(background), horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
 
+        ChangeStatusBarColorEdgeToEdge(background)
         Box(
             modifier
                 .fillMaxWidth()

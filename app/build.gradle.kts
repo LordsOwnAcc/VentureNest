@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -117,6 +118,11 @@ dependencies {
 
     implementation("androidx.room:room-runtime:2.6.1") // Use latest version
     kapt("androidx.room:room-compiler:2.6.1")
+
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0") // Gemini AI SDK
+    implementation("com.google.code.gson:gson:2.10.1")
+
+
 }
 
 kapt {

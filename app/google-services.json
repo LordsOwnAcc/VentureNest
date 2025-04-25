@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "64723296050",
     "project_id": "venturenest-80eaf",
-    "storage_bucket": "venturenest-80eaf.appspot.com"
+    "storage_bucket": "venturenest-80eaf.firebasestorage.app"
   },
   "client": [
     {
@@ -12,7 +12,12 @@
           "package_name": "com.example.venturenest"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "64723296050-6rkjlag8q6cgaac11a63f3p5uvpcgu2q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAi-Qfm9xu2mq0s8S3PCexhfXwVJTHJVFI"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "64723296050-6amk939fjkpsdnltfvstag34a1sqfm3r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

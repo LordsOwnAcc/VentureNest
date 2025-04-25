@@ -1,13 +1,17 @@
 package com.example.venturenest.ui.theme.Presentation.Profile
 
 import android.util.Log
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -53,123 +57,83 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.venturenest.R
+import com.example.venturenest.ui.theme.DaggerHilt.States.LoadingPageCompanion
+import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.FireStoreViewmodel
+import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.LoadingStateViewmodel
 import com.example.venturenest.ui.theme.DataBase.DataViewModel
 import com.example.venturenest.ui.theme.DataBase.Users
 import com.example.venturenest.ui.theme.Navigation.HomePage
+import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
+import com.example.venturenest.ui.theme.background
 import kotlin.math.truncate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileStarter(modifier: Modifier = Modifier
-,navController: NavController) {
-    var animatedVisible by remember {
-        mutableStateOf(false)
-    }
-    val dataviewModel:DataViewModel= hiltViewModel()
-    val list = dataviewModel._getallUser.collectAsState(initial = emptyList())
-    val isanyPofileSelected = list.value.any { it.isSelected ==true }
+fun ProfileStarter(
+    navController: NavController, modifier: Modifier = Modifier,
+    windowInsets: WindowInsets
+) {
+    ChangeStatusBarColorEdgeToEdge(background)
+    val loadingViewmodel: LoadingStateViewmodel = hiltViewModel()
+    val state by loadingViewmodel.state.collectAsState()
 
+    Column(
+        modifier.fillMaxSize()
+            .background(background), verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
+        when (state.state) {
+            is LoadingPageCompanion.Error -> {
+                if (state.Data.events.isEmpty()
+                    || state.Data.partner.isEmpty()
+                    || state.Data.patents.isEmpty()
+                    || state.Data.photo.isEmpty() ||
+                    state.Data.councilmembers.isEmpty()
+                    || state.Data.heroSection.isEmpty()
+                    || state.Data.startUp.isEmpty()
+                    || state.Data.sucessStories.isEmpty()
+                ) {
+                    Text("Error empty")
+                } else {
+                    LaunchedEffect(Unit) {
+                        navController.navigate(HomePage)
+                    }
 
-    Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .fillMaxHeight(0.1f)
-            ,
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Text(text = "Profiles", fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.titleLarge.fontSize )
-
-        }
-
-if (list.value.isNullOrEmpty()){
-
-    Column(modifier.fillMaxSize()
-    , verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-     Image(painter = painterResource(id = R.drawable.nothingfound), contentDescription = "",
-         modifier
-             .padding(bottom = 0.dp)
-             .size(250.dp)
-     , contentScale = ContentScale.FillBounds)
-        Text(text = "Oops! no profile found "+"\n"+ "Create your profile to continue to Venturenest",
-            modifier
-                .padding(bottom = 10.dp)
-                .fillMaxWidth(0.8f)
-        , maxLines = 3, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
-        Button(onClick = {
-            animatedVisible=true
-            Log.d("Button","Clicked")
-        }, shape = RoundedCornerShape(25f), colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color.Black)) {
-Text(text = "Create Profile ", color = Color.White)        }
-    }
-
-}else if (isanyPofileSelected==true){
-   LaunchedEffect(key1 = Unit) {
-       navController.navigate(HomePage)
-   }
-
-}else {
-    list.value.forEach {
-
-        Row (modifier = modifier
-            .padding(top = 10.dp, bottom = 10.dp)
-            .fillMaxWidth(0.9f)
-            .border(1.dp, Color.LightGray, RoundedCornerShape(25f))
-            .height(80.dp), verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start){
-            Image(painter = painterResource(id = if (it.isBoySelected) R.drawable.boy else R.drawable.girl), contentDescription =""
-                ,
-                modifier
-                    .padding(start = 10.dp, end = 10.dp)
-                    .size(50.dp)
-                    .clip(CircleShape))
-            Column(
-                modifier
-                    .fillMaxHeight()
-                    .wrapContentWidth(),
-                verticalArrangement = Arrangement.Center) {
-                Text(text = it.name, fontWeight = FontWeight.SemiBold)
-                Text(text = it.memberShip
-                    , fontSize = MaterialTheme.typography.labelSmall.fontSize)
+                }
             }
-            Row(
-                modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(), verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End) {
+
+            is LoadingPageCompanion.Result -> {
+                LaunchedEffect(Unit) {
+                    navController.navigate(HomePage)
+                }
+            }
+
+            is LoadingPageCompanion.Loading -> {
+                Column (modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally){
 
 
-                Icon(
-                    imageVector = Icons.Default.ArrowForwardIos,
-                    contentDescription = "",
-                    modifier.padding(end = 10.dp)
-                    , tint = Color.LightGray
-                )
+                    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+                    val progress by animateLottieCompositionAsState(composition, iterations = 500)
+                    LottieAnimation(
+                        composition = composition,
+                        progress = { progress },
+                        modifier = Modifier.fillMaxWidth(0.7f).padding(bottom = 10.dp)
+                    )
+
+                }
             }
 
         }
-    }
-
-
-
-}
-
-        AnimatedVisibility(visible = animatedVisible) {
-            ModalBottomSheet(onDismissRequest = {
-                animatedVisible=false
-            }, shape = RectangleShape, containerColor = Color.Transparent) {
-
-                ProfileScreen(users = Users(0,"","","","","",false,true), exists = false)
-            }
-        }
-
-
 
 
     }
+
+
 }

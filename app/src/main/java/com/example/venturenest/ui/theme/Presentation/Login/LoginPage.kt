@@ -57,6 +57,7 @@ import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AuthViewModel
 import com.example.venturenest.ui.theme.Navigation.HomePage
 import com.example.venturenest.ui.theme.Navigation.LoginPage
 import com.example.venturenest.ui.theme.Navigation.SignUpPage
+import com.example.venturenest.ui.theme.Navigation.Start
 import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
 import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
 import com.example.venturenest.ui.theme.auth.AuthStateCompanion
@@ -117,8 +118,8 @@ fun LoginPage(windowInsets: WindowInsets,navController: NavController,modifier: 
         LaunchedEffect(key1 = state.value.state == AuthStateCompanion.UserExist) {
             if ( state.value.state == AuthStateCompanion.UserExist) {
                 Toast.makeText(context,"Logged in Successfully", Toast.LENGTH_SHORT).show()
-                navController.navigate(HomePage){
-                    popUpTo(HomePage){
+                navController.navigate(Start){
+                    popUpTo(Start){
                         inclusive=true
                     }
                 }
@@ -314,15 +315,21 @@ fun LoginPage(windowInsets: WindowInsets,navController: NavController,modifier: 
                     Button(
                         onClick = {
                             authViewModel.makeLoading()
-                            try {
 
-
-                                val googleSignInClient = GoogleSignIn.getClient(context, authViewModel.gso())
-                                launcher.launch(googleSignInClient.signInIntent)
-                            }catch (e:Exception){
-                                Toast.makeText(context,e.localizedMessage,Toast.LENGTH_LONG).show()
-
+                            val googleSignInClient = try {
+                                GoogleSignIn.getClient(context, authViewModel.gso())
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Sign-in configuration failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                                authViewModel.onGoogleFailure("Error : Google Verification Not Available")
+                                return@Button
                             }
+
+                            try {
+                                launcher.launch(googleSignInClient.signInIntent)
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Failed to start Google Sign-In: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                            }
+
 
 
 

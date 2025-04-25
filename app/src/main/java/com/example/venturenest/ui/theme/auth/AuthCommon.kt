@@ -30,31 +30,33 @@ fun rememberFirebaseAuthLauncher(
 ): ManagedActivityResultLauncher<Intent, ActivityResult> {
     val scope = rememberCoroutineScope()
 
-
-
     return rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
 
         try {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            val account = task.result
-            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            scope.launch {
-                Firebase.auth.signInWithCredential(credential)
-                    .addOnCompleteListener {
-                            task->
-                        if (task.isSuccessful){
-                            onSuccess.invoke()
-                        }else if(task.isCanceled){
-                            onCancelles.invoke()
-                        }else{
+            if (result.data == null){
+                onCancelles.invoke()
+            } else {
 
-                            onError(task.exception!!)
+
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                val account = task.getResult(ApiException::class.java)
+                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                scope.launch {
+                    Firebase.auth.signInWithCredential(credential)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                onSuccess.invoke()
+                            } else if (task.isCanceled) {
+                                onCancelles.invoke()
+                            } else {
+
+                                onError(task.exception!!)
+                            }
                         }
-                    }
 
+                }
             }
-
         } catch (e: ApiException) {
             onError(e)
         }

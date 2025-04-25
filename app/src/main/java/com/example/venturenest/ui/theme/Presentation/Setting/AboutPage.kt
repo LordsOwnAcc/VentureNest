@@ -1,5 +1,6 @@
 package com.example.venturenest.ui.theme.Presentation.Setting
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,7 +30,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,15 +46,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.venturenest.R
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AuthViewModel
 import com.example.venturenest.ui.theme.DataBase.DataViewModel
+import com.example.venturenest.ui.theme.Navigation.AboutECell
+import com.example.venturenest.ui.theme.Navigation.AboutVentureNest
 import com.example.venturenest.ui.theme.Navigation.StartScreen
+import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
+import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
 import com.example.venturenest.ui.theme.auth.AuthStateCompanion
+import com.example.venturenest.ui.theme.background
 import com.example.venturenest.ui.theme.bg
+import com.example.venturenest.ui.theme.secondary
+import com.example.venturenest.ui.theme.textColor
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun AboutPage(
     modifier: Modifier = Modifier,
@@ -57,29 +71,34 @@ fun AboutPage(
     ,navController: NavController
 ) {
   val authViewModel :AuthViewModel= hiltViewModel()
+    var selected = remember { mutableStateOf(0) }
+    var show = remember { mutableStateOf(false) }
+    HideSystemBars()
+    ChangeStatusBarColorEdgeToEdge(background)
+
     Box(
         modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(background)
             .windowInsetsPadding(window)
            , contentAlignment = Alignment.BottomCenter
         ) {
-
-
-        Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
-
+        Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.1f)
-                ,
+                    .fillMaxHeight(0.1f),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Text(text = "Setting",
-                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                    fontWeight = FontWeight.Bold)
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize.times(1.3),
+                    lineHeight = MaterialTheme.typography.titleLarge.lineHeight,
+                    letterSpacing = MaterialTheme.typography.titleLarge.letterSpacing,
+                    fontWeight = FontWeight.Medium,
+                    color = textColor
+                )
                 Row(modifier.fillMaxWidth()  ,
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.Top) {
@@ -142,72 +161,106 @@ fun AboutPage(
 //
 //                }
 
-                Row (
+//                Row (
+//                    modifier
+//                        .padding(top = 10.dp, bottom = 10.dp)
+//                        .fillMaxWidth(0.9f)
+//                        .height(150.dp)
+//                        .clip(RoundedCornerShape(25f))
+//                        .background(Color.White)
+//                        .border(1.dp, Color.LightGray, RoundedCornerShape(25f)),
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.SpaceEvenly){
+//
+//                    Image(painter = painterResource(id = R.drawable.joinus), contentDescription = "",
+//                        modifier = modifier
+//                            .fillMaxWidth(0.4f)
+//                            .fillMaxHeight(0.9f)
+//                            .clip(RoundedCornerShape(25f))
+//                    , contentScale = ContentScale.FillBounds)
+//
+//                    Column(
+//                        modifier
+//                            .fillMaxHeight(0.9f)
+//                            .fillMaxWidth(0.9f), verticalArrangement = Arrangement.SpaceEvenly,
+//                        horizontalAlignment = Alignment.CenterHorizontally) {
+//                    Text(text = "Incubate Idea",
+//                        fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Start,
+//                        modifier = modifier.fillMaxWidth())
+//                        Text(text = "Lora epsum lasu andthats y u ne" +
+//                                "eded in v nest etc blah blah blah",
+//                            textAlign = TextAlign.Start,
+//                            fontSize = MaterialTheme.typography.labelSmall.fontSize,
+//                            maxLines = 2, overflow = TextOverflow.Ellipsis)
+//
+//Button(
+//    onClick = { /*TODO*/ },
+//    modifier = modifier.fillMaxWidth(),
+//    shape = RoundedCornerShape(25f),
+//    colors = ButtonDefaults.buttonColors(bg.copy(alpha = 0.8f))
+//) {
+//   Text(text = "Incubate", color = Color.White)
+//}
+//                    }
+//
+//                }
+
+                Text(text = "Profile",
                     modifier
-                        .padding(top = 10.dp, bottom = 10.dp)
-                        .fillMaxWidth(0.9f)
-                        .height(150.dp)
-                        .border(1.dp, Color.LightGray, RoundedCornerShape(25f)),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly){
-
-                    Image(painter = painterResource(id = R.drawable.joinus), contentDescription = "",
-                        modifier = modifier
-                            .fillMaxWidth(0.4f)
-                            .fillMaxHeight(0.9f)
-                            .clip(RoundedCornerShape(25f))
-                    , contentScale = ContentScale.FillBounds)
-
-                    Column(
-                        modifier
-                            .fillMaxHeight(0.9f)
-                            .fillMaxWidth(0.9f), verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Unlock Yourself",
-                        fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Start,
-                        modifier = modifier.fillMaxWidth())
-                        Text(text = "Lora epsum lasu andthats y u ne" +
-                                "eded in v nest etc blah blah blah",
-                            textAlign = TextAlign.Start,
-                            fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                            maxLines = 2, overflow = TextOverflow.Ellipsis)
-
-Button(
-    onClick = { /*TODO*/ },
-    modifier = modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(25f),
-    colors = ButtonDefaults.buttonColors(bg.copy(alpha = 0.8f))
-) {
-   Text(text = "Join Us", color = Color.White)
-}
-                    }
-
-                }
-
-                Text(text = "Privacy and Contacts",
-                    modifier
-                        .padding(top = 10.dp, bottom = 10.dp)
+                        .padding(top = 0.dp, bottom = 0.dp)
                         .fillMaxWidth(0.89f)
                     , textAlign = TextAlign.Start,
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize
                     , lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
                     letterSpacing = MaterialTheme.typography.bodyMedium
-                        .letterSpacing)
+                        .letterSpacing, color = secondary
+                )
+SettingElement(modifier = modifier, text ="Profile", onClick = {
 
-                SettingElement(modifier = modifier, text ="Privacy and Policy" ) {
+})
 
-                }
+                Text(text = "About",
+                    modifier
+                        .padding(top = 10.dp, bottom = 0.dp)
+                        .fillMaxWidth(0.89f)
+                    , textAlign = TextAlign.Start,
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                    , lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
+                    letterSpacing = MaterialTheme.typography.bodyMedium
+                        .letterSpacing, color = secondary
+                )
+                SettingElement(modifier = modifier, text ="About E-Cell", onClick = {
+navController.navigate(AboutECell)
+                })
+                SettingElement(modifier = modifier, text ="About Venturenest", onClick = {
+navController.navigate(AboutVentureNest)
+                })
+
+                Text(text = "Privacy and Contact",
+                    modifier
+                        .padding(top = 10.dp, bottom = 0.dp)
+                        .fillMaxWidth(0.89f)
+                    , textAlign = TextAlign.Start,
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                    , lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
+                    letterSpacing = MaterialTheme.typography.bodyMedium
+                        .letterSpacing, color = secondary
+                )
+                SettingElement(modifier = modifier, text ="Privacy and Policy", onClick = {
+                    selected.value =0
+                    show.value=true
+                } )
 SettingElement(modifier = modifier, text = "Terms and Condition" ) {
+         selected.value =1
+    show.value=true
 
 }
                 SettingElement(modifier = modifier, text ="Contact Us" ) {
+selected.value=2
+show.value=true
 
                 }
-                Spacer(modifier = modifier
-                    .padding(top = 10.dp)
-                    .height(1.dp)
-                    .fillMaxWidth(0.88f)
-                    .background(Color.LightGray))
+
 
                 Text(text = "Danger Zone",
                     modifier
@@ -217,7 +270,7 @@ SettingElement(modifier = modifier, text = "Terms and Condition" ) {
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize
                     , lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
                     letterSpacing = MaterialTheme.typography.bodyMedium
-                        .letterSpacing)
+                        .letterSpacing, color = Color.Red)
 
                 SettingElement(modifier = modifier, text ="Logout" ) {
                         authViewModel.SignOut()
@@ -235,6 +288,7 @@ SettingElement(modifier = modifier, text = "Terms and Condition" ) {
 
 
         }}
+        Dialog2(show = show,selected=selected.value,modifier)
     }
 
 }

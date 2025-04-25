@@ -6,6 +6,7 @@ import com.example.venturenest.ui.theme.DaggerHilt.Repoitoory.RecipeRepository
 import com.example.venturenest.ui.theme.DaggerHilt.States.CoulageStateCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.States.EventsState
 import com.example.venturenest.ui.theme.DaggerHilt.States.EventsStateCompanion
+import com.example.venturenest.ui.theme.DaggerHilt.States.EventsStateSearching
 import com.example.venturenest.ui.theme.Navigation.EventsPage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,6 +54,27 @@ fun fetchEvents(){
 
 
 }
+    fun changeToStarred(){
+        _state.value=_state.value.copy(
+            searchState = EventsStateSearching.Starred
+        )
+    }
+    fun changeToNonStarred(){
+        _state.value=_state.value.copy(
+            searchState = EventsStateSearching.Nonstarred
+        )
+    }
+    fun changeToLatest(){
+        _state.value=_state.value.copy(
+            searchState = EventsStateSearching.Latest
+        )
+    }
+    fun changeToAll(){
+        _state.value=_state.value.copy(
+            searchState = EventsStateSearching.AllEvents
+        )
+    }
+
 
 init {
     fetchEvents()

@@ -22,3 +22,16 @@ interface UserDao {
     @Update
     suspend fun updateUser(user: Users)
 }
+
+@Dao
+interface AppdataDao{
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateAppdata(appData: AppData)
+
+    @Query("SELECT * FROM Appdata WHERE id = 1 LIMIT 1")
+     fun getAppdata(): Flow<AppData>
+
+    @Delete
+    suspend fun deleteAppdata(appData: AppData)
+
+}

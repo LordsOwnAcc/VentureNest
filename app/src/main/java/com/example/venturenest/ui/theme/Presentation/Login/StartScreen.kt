@@ -38,17 +38,18 @@ import com.example.venturenest.ui.theme.Navigation.LoginPage
 import com.example.venturenest.ui.theme.Navigation.SignUpPage
 import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
 import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
+import com.example.venturenest.ui.theme.background
 import kotlinx.coroutines.launch
 
 @Composable
 fun StartScreen(windowInsets: WindowInsets,navController: NavController,modifier: Modifier = Modifier) {
-HideSystemBars()
-    ChangeStatusBarColorEdgeToEdge(color = Color.White)
+
+    ChangeStatusBarColorEdgeToEdge(color = background)
     Column(
         modifier
             .windowInsetsPadding(windowInsets)
             .fillMaxSize()
-            .background(Color.Companion.White),
+            .background(background),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

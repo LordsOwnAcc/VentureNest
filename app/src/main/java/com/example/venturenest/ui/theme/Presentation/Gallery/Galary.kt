@@ -68,7 +68,11 @@ import coil.compose.AsyncImage
 import com.example.venturenest.R
 import com.example.venturenest.ui.theme.DaggerHilt.States.GalleryStateCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.GallaryViewModel
+import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.LoadingStateViewmodel
+import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
+import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
 import com.example.venturenest.ui.theme.Presentation.helper.ShimmerEffect
+import com.example.venturenest.ui.theme.background
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -78,8 +82,13 @@ fun GalaryScreen(
     modifier: Modifier = Modifier
     ,window:WindowInsets
 ) {
-    val galleryViewModel :GallaryViewModel= hiltViewModel()
+    HideSystemBars()
+    ChangeStatusBarColorEdgeToEdge(background)
+    val galleryViewModel : LoadingStateViewmodel= hiltViewModel()
     val state by galleryViewModel.state.collectAsState()
+    val galleryViewModel2 : GallaryViewModel=hiltViewModel()
+    val state2 by galleryViewModel2.state.collectAsState()
+
 
     var show by remember {
         mutableStateOf(false)
@@ -97,7 +106,8 @@ fun GalaryScreen(
             .fillMaxSize()
             .windowInsetsPadding(window)
             .background(
-                Color.White
+                background
+
             ), contentAlignment = Alignment.BottomCenter
     ) {
 
@@ -109,7 +119,9 @@ fun GalaryScreen(
         Column(
             modifier
                 .fillMaxHeight()
-                .fillMaxWidth(), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
+                .fillMaxWidth()
+                .background(background),
+            verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
 
 
 
@@ -132,13 +144,13 @@ fun GalaryScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Text(text = "Galary", fontWeight = FontWeight.Bold,
-                fontSize =MaterialTheme.typography.titleLarge.fontSize )
+            Text(text = "Galary", fontWeight = FontWeight.Medium,
+                fontSize =MaterialTheme.typography.titleLarge.fontSize.times(1.3), color = Color.Black )
             Row(modifier.fillMaxWidth()  ,
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { galleryViewModel.changeGrid()},modifier.offset(x=10.dp)) {
-                    Icon(imageVector = if (!state.isGridSelected) Icons.Default.GridView else Icons.Default.GridOn, contentDescription = "", tint = Color(0xffdd1212))
+                IconButton(onClick = { galleryViewModel2.changeGrid()},modifier.offset(x=10.dp)) {
+                    Icon(imageVector = if (!state2.isGridSelected) Icons.Default.GridView else Icons.Default.GridOn, contentDescription = "", tint = Color(0xffdd1212))
                 }
             }
         }
@@ -149,114 +161,19 @@ fun GalaryScreen(
                 .padding(bottom = 20.dp)
                 .wrapContentHeight()
                 ,shape = RectangleShape
-        , colors = CardDefaults.cardColors(containerColor = Color.White)) {
-            when(state.state){
-                is GalleryStateCompanion.Loading->{
+            , elevation = CardDefaults.elevatedCardElevation(0.dp)
+        , colors = CardDefaults.cardColors(containerColor = background)) {
+
+
+
+
+                    var pagerState = rememberPagerState(initialPage = 1, pageCount = { state.Data.photo.size })
                     LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Adaptive(if (!state.isGridSelected)105.dp else 150.dp),
-                        verticalItemSpacing = 8.dp,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                       ){
-                       items(5){
-                           Column(
-                               modifier
-                                   .height(200.dp)
-                                   .width(100.dp)
-                                   .background(ShimmerEffect())) {
-
-                           }
-                       }
-                        items(5){
-                            Column(
-                                modifier
-                                    .height(150.dp)
-                                    .width(100.dp)
-                                    .background(ShimmerEffect())) {
-
-                            }
-                        }
-                        items(5){
-                            Column(
-                                modifier
-                                    .height(100.dp)
-                                    .width(300.dp)
-                                    .background(ShimmerEffect())) {
-
-                            }
-                        }
-                    }
-                }
-                is GalleryStateCompanion.Error->{
-                    LaunchedEffect(key1 = Unit) {
-                        while (true) {
-
-
-                            delay(5000)
-                            galleryViewModel.fetchPhotos()
-                        }}
-
-                    Column(
-                        modifier
-                            .fillMaxWidth()
-                            .height(400.dp), verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally) {
-                        Image(
-                            painter = painterResource(id = R.drawable.nothingfound),
-                            contentDescription = "",
-                            modifier
-                                .padding(bottom = 0.dp)
-                                .size(250.dp),
-                            contentScale = ContentScale.FillBounds
-                        )
-                        Text(
-                            text = "Oops! an error occured ",
-                            modifier
-                                .padding(bottom = 10.dp)
-                                .fillMaxWidth(0.8f),
-                            maxLines = 3,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Center
-                        )
-                        Button(
-                            onClick = {
-                               galleryViewModel.fetchPhotos()
-
-                            },
-                            shape = RoundedCornerShape(25f),
-                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                containerColor = Color.Black
-                            )
-                        ) {
-                            Text(text = "Reload", color = Color.White)
-                        }
-                        }
-//                    Column(modifier.fillMaxSize(1f), verticalArrangement = Arrangement.Center,
-//                        horizontalAlignment = Alignment.CenterHorizontally) {
-//
-//                        Text(
-//                            text =if (state.error!!.contains("Unable to resolve host")) "Oops! unable to connect to server , please check your internet connection " else "Unknown Error Occurred : We are trying to resolve it",
-//                            modifier.fillMaxWidth(0.8f)
-//                                .padding(bottom = 15.dp, top = 0.dp)
-//                            , textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
-//                        Button(onClick = { galleryViewModel.fetchPhotos() },
-//                            shape = RoundedCornerShape(25f)
-//                            , border = BorderStroke(1.dp,Color.Black)
-//                            , colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-//                        ) {
-//                            Text(text = "Try again", color = Color.Black)
-//                        }
-//
-//                    }
-                }
-                is GalleryStateCompanion.Result->{
-
-                    var pagerState = rememberPagerState(initialPage = 1, pageCount = { state.result.size })
-                    LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Adaptive(if (!state.isGridSelected)105.dp else 150.dp),
+                        columns = StaggeredGridCells.Adaptive(if (!state2.isGridSelected)105.dp else 150.dp),
                         verticalItemSpacing = 8.dp,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         content = {
-                            items(state.result) { photo ->
+                            items(state.Data.photo) { photo ->
                                 AsyncImage(
                                     model = photo.imageUrl,
                                     contentScale = ContentScale.Fit,
@@ -267,7 +184,7 @@ fun GalaryScreen(
                                         .wrapContentHeight()
 //                                .border(5.dp, Color.Black, RectangleShape)
                                         .clickable {
-                                            showingContent = state.result.indexOf(photo)
+                                            showingContent = state.Data.photo.indexOf(photo)
                                             show = true
                                             coritine.launch {
                                                 pagerState.scrollToPage(showingContent)
@@ -335,7 +252,7 @@ fun GalaryScreen(
 
 
                                                     AsyncImage(
-                                                        model = state.result[page].imageUrl,
+                                                        model = state.Data.photo[page].imageUrl,
                                                         contentDescription = "",
 
                                                         modifier = Modifier
@@ -365,7 +282,7 @@ fun GalaryScreen(
                                                         contentScale = ContentScale.Fit
                                                     )
                                                     Text(
-                                                        text = state.result[page].photoName,
+                                                        text = state.Data.photo[page].photoName,
                                                         color = Color.White,
                                                         maxLines = 1,
                                                         modifier = modifier.padding(top = 20.dp)
@@ -397,10 +314,6 @@ fun GalaryScreen(
         }
 
 
-    }
-
-
-}
 
 
 

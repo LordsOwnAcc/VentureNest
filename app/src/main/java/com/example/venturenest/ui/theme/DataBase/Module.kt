@@ -24,6 +24,11 @@ class DataModule{
     fun provideUserDao(database: AppDatabase):UserDao {
         return database.userDao()
     }
+    @Provides
+    @Singleton
+    fun provideAppDao(database: AppDatabase): AppdataDao {
+        return database.Appdao()
+    }
 
 
 

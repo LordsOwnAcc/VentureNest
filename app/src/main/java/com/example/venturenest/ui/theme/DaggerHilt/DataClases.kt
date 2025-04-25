@@ -1,6 +1,7 @@
 package com.example.venturenest.ui.theme.DaggerHilt
 
 import android.media.Image
+import kotlinx.serialization.json.JsonNames
 import java.util.Date
 
 data class Events(
@@ -25,6 +26,14 @@ data class laptopSection(
     val uploadedAt: String
 )
 
+data class AchievementResult (
+
+    val patentsList:List<Patents>,
+    val partnersList:List<Partners>,
+    val startUp: List<StartUp>,
+    val councilmembers: List<councilmembers>
+)
+
 data class Patents(
     val _id : String,
     var PatentTitle :String,
@@ -40,13 +49,27 @@ data class Partners(
     var imgName :String,
     var Category : String
 )
+
+data class councilmembers(
+    val _id: String,
+    val name: String,
+    val company: String
+    ,val category: String,
+    val imgpath: String,
+    val imgName: String,
+)
+
 data class StartUp(
     val _id : String,
     var StartupName :String,
     var CIN: String,
     var FounderName :String,
     var Website : String,
-    var ProductName : String
+    var ProductName : String,
+    val FundingRaisedStartup:String,
+    val InvestmentByIncubator:String,
+    val RegistrationStatus: String,
+    val StartupType: String
 )
 data class LatestNews(
     val _id : String,

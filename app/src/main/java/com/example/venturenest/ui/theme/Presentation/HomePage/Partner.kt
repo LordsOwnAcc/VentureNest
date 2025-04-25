@@ -1,8 +1,10 @@
 package com.example.venturenest.ui.theme.Presentation.HomePage
 
 import android.widget.Toast
+import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -56,7 +58,10 @@ fun PartnerPages(
             modifier = Modifier
                 .padding()
                 .fillMaxWidth()
-                .horizontalScroll(schroll)
+               // .horizontalScroll(schroll)
+                .basicMarquee(
+                    animationMode = MarqueeAnimationMode.Immediately, velocity = 25.dp
+                )
 //                .basicMarquee(
 //                    500, MarqueeAnimationMode.Immediately, velocity = 10.dp,
 //                    repeatDelayMillis = 0, spacing = MarqueeSpacing(0.dp)
@@ -71,7 +76,7 @@ fun PartnerPages(
             list.forEach { iconUrl ->
                 ElevatedCard( modifier = Modifier
                     .padding(start = 10.dp, top = 5.dp, bottom = 5.dp
-                        , end = 14.dp)
+                        , end = 5.dp)
                     // .border(0.1.dp, Color.Black, shape = RoundedCornerShape(25f))
                     ,
                     colors = CardDefaults.cardColors(containerColor = Color.White)) {
@@ -83,7 +88,7 @@ fun PartnerPages(
                         contentScale = ContentScale.FillWidth,
                         modifier = Modifier
                             .clip(RoundedCornerShape(20f))
-                            .width(150.dp)
+                            .width(160.dp)
                             .height(200.dp)
 
 

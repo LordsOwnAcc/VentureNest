@@ -10,10 +10,11 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class DataViewModel @Inject constructor(private val repository:dataRepo ): ViewModel() {
+class DataViewModel @Inject constructor(private val repository:dataRepo
+): ViewModel() {
     val _getallUser = repository.allUsers
     var getUser = _getallUser.asLiveData()
-
+    val data = repository.getAppdata.asLiveData()
 
 
    fun insert(users: Users){

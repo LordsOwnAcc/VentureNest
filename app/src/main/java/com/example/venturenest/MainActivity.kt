@@ -48,13 +48,13 @@ import com.example.venturenest.ui.theme.Presentation.HomePage.AboutVenturenest
 import com.example.venturenest.ui.theme.Presentation.HomePage.AboutEcell
 import com.example.venturenest.ui.theme.Presentation.Setting.AboutPage
 import com.example.venturenest.ui.theme.Presentation.EventPage.EventsPage
-import com.example.venturenest.ui.theme.Presentation.Main.ExtraPages.StatisticsPage
+
 import com.example.venturenest.ui.theme.Presentation.Gallery.GalaryScreen
 import com.example.venturenest.ui.theme.Presentation.HomePage.HomePage
 import com.example.venturenest.ui.theme.Presentation.Login.LoginPage
 import com.example.venturenest.ui.theme.Presentation.Login.StartScreen
 
-import com.example.venturenest.ui.theme.Presentation.Profile.ProfileScreen
+
 import com.example.venturenest.ui.theme.Presentation.Profile.ProfileStarter
 import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
 import com.example.venturenest.ui.theme.VentureNestTheme
@@ -133,6 +133,7 @@ class MainActivity : ComponentActivity() {
                                         textColor = Color.White
                                         , itemStyle = ItemStyle.STYLE4
 
+
                                     )
                                 }
 
@@ -152,7 +153,7 @@ class MainActivity : ComponentActivity() {
                     ) {
 
                         composable<HomePage> {
-//                            ProfileScreen()
+
                           HomePage(
                                 window = windowInsets, navController = navController
                             )
@@ -183,20 +184,9 @@ class MainActivity : ComponentActivity() {
                           GalaryScreen(window = windowInsets)
                         }
                         composable<StatsPage> {
-                           StatisticsPage(navHostController = navController,
-                               windowInsets = windowInsets)
-                        }
-
-                        composable<AboutVentureNest> {
-AboutVenturenest(navController = navController, windowInsets = windowInsets)
 
                         }
-                        composable<AboutECell> {
-                            AboutEcell(navController = navController, windowInsets = windowInsets)
-                        }
-//                        composable<Forum> {
-//                          ProfileStarter(navController = navController)
-//                        }
+
 
 
 

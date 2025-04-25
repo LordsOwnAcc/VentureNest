@@ -1,7 +1,10 @@
 package com.example.venturenest.ui.theme.Presentation.HomePage
 
+import androidx.compose.foundation.MarqueeAnimationMode
+import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -53,22 +56,22 @@ fun PartnerPage(
             modifier = Modifier
                 .padding()
                 .fillMaxWidth()
-                .horizontalScroll(schroll)
-//                .basicMarquee(
-//                    500, MarqueeAnimationMode.Immediately, velocity = 10.dp,
-//                    repeatDelayMillis = 0, spacing = MarqueeSpacing(0.dp)
-//                )
+                //.horizontalScroll(schroll)
+                .basicMarquee(
+                    500, MarqueeAnimationMode.Immediately, velocity = 25.dp,
+                    repeatDelayMillis = 0, spacing = MarqueeSpacing(0.dp)
+                )
                 , horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
 
 
 
         ) {
-            Spacer(modifier = modifier.width(16.dp))
+            
             val context = LocalContext.current
             list.forEach { iconUrl ->
                 ElevatedCard(onClick = { /*TODO*/ }, modifier = Modifier
                     .padding(start = 10.dp, top = 5.dp, bottom = 5.dp
-                    , end = 14.dp)
+                    , end = 5.dp)
                    // .border(0.1.dp, Color.Black, shape = RoundedCornerShape(25f))
                     ,
                     colors = CardDefaults.cardColors(containerColor = Color.White)) {
@@ -81,8 +84,8 @@ fun PartnerPage(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20f))
 
-                            .width(180.dp)
-                            .height(220.dp)
+                            .width(160.dp)
+                            .height(200.dp)
 
 
                             .clickable {
@@ -97,7 +100,7 @@ fun PartnerPage(
 
                 }
             }
-            Spacer(modifier = modifier.width(16.dp))
+
         }
     }
 }

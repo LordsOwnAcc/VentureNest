@@ -1,6 +1,7 @@
 package com.example.venturenest.ui.theme.DaggerHilt.Repoitoory
 
 import com.example.venturenest.ui.theme.DaggerHilt.Events
+import com.example.venturenest.ui.theme.DaggerHilt.Interface.getCouncil
 import com.example.venturenest.ui.theme.DaggerHilt.LatestNews
 import com.example.venturenest.ui.theme.DaggerHilt.Partners
 import com.example.venturenest.ui.theme.DaggerHilt.Patents
@@ -14,6 +15,7 @@ import com.example.venturenest.ui.theme.DaggerHilt.Interface.getSuccessStories
 import com.example.venturenest.ui.theme.DaggerHilt.Interface.getevent
 import com.example.venturenest.ui.theme.DaggerHilt.Interface.getphoto
 import com.example.venturenest.ui.theme.DaggerHilt.Interface.heroSection
+import com.example.venturenest.ui.theme.DaggerHilt.councilmembers
 import com.example.venturenest.ui.theme.DaggerHilt.photo
 import retrofit2.Response
 import javax.inject.Inject
@@ -29,6 +31,7 @@ class RecipeRepository @Inject constructor(
     , private val getNews: getNews,
     private val getphoto: getphoto,
     private val getheroSection: heroSection
+    ,private val getCouncilMember: getCouncil
 
 ) {
     suspend fun getheroSection(
@@ -36,7 +39,11 @@ class RecipeRepository @Inject constructor(
     ): Response<List<com.example.venturenest.ui.theme.DaggerHilt.heroSection>> {
         return getheroSection.getHero()
     }
+    suspend fun getCouncilmembe(): Response<List<councilmembers>>{
+        return getCouncilMember.getMembers()
+    }
     suspend fun upcominEvents(
+
 
     ): Response<List<Events>> {
         return getevents.getEvents()

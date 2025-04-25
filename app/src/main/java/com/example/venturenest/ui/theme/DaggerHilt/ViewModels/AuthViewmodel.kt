@@ -22,13 +22,13 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     val repository: AuthRepo
+    , private val gso: GoogleSignInOptions
 ):ViewModel(){
     val _authState = MutableStateFlow(AuthState())
     val authState = _authState.asStateFlow()
 
-    fun gso():GoogleSignInOptions{
-        return repository.gso()
-    }
+
+    fun gso() = gso
     init {
         if (repository.firebaseAuth.currentUser !=null){
             _authState.value =_authState.value.copy(
@@ -130,7 +130,7 @@ class AuthViewModel @Inject constructor(
                         else -> {
                             _authState.value = _authState.value.copy(
                                 state = AuthStateCompanion.Error,
-                                error = "Error occurred Please try after some time"
+                                error = exception?.message.toString()
                             )
                         }
 

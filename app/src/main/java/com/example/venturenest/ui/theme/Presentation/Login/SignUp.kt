@@ -237,7 +237,7 @@ fun SignUpPage(windowInsets: WindowInsets,navController: NavController,modifier:
             )
 
             TextField(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier.padding(top = 10.dp).fillMaxWidth(),
                 visualTransformation = if(!showPassword) PasswordVisualTransformation() else VisualTransformation.None,
                 value = verifyPassword,
                 onValueChange = { verifyPassword = it },

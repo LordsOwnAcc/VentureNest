@@ -28,6 +28,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.MaterialTheme
@@ -230,7 +231,7 @@ fun LoginPage(windowInsets: WindowInsets,navController: NavController,modifier: 
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Email, contentDescription = "",
+                        imageVector = Icons.Default.Password, contentDescription = "",
                         modifier.offset(x = -10.dp)
                     )
                 },

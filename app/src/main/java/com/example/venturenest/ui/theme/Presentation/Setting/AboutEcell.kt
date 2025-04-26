@@ -1,4 +1,4 @@
-package com.example.venturenest.ui.theme.Presentation.HomePage
+package com.example.venturenest.ui.theme.Presentation.Setting
 
 
 import androidx.compose.foundation.Image
@@ -41,7 +41,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.venturenest.R
@@ -53,20 +52,19 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun AboutVenturenest(
+fun AboutEcell(
     modifier: Modifier = Modifier
-    ,navController: NavController
-    ,windowInsets: WindowInsets
-
+    ,navController: NavController,
+windowInsets: WindowInsets
 
 
 ) {
     val collageClass = listOf(
         CollageClass(
-            title = "About VentureNest",
+            title = "About E-Cell",
             description = "VentureNest is the first entrepreneurship incubation centre at Chandigarh Group of Colleges, Jhanjeri; founded to promote innovation, business development and entrepreneurship. Located at Block 3 of the campus, VentureNest is essentially one of the most vibrant hubs for entrepreneurship development with the necessary facilities for startup success. We incubate and mentor creativity and innovation enabling idea developers to turn their visions into business successes."   ),
         CollageClass(
-            title = "How We Work",
+            title = "How E-Cell Work",
             description = "VentureNest is the first entrepreneurship incubation centre at Chandigarh Group of Colleges, Jhanjeri; founded to promote innovation, business development and entrepreneurship. Located at Block 3 of the campus, VentureNest is essentially one of the most vibrant hubs for entrepreneurship development with the necessary facilities for startup success. We incubate and mentor creativity and innovation enabling idea developers to turn their visions into business successes"  ),
         CollageClass(
             title = "Mission",
@@ -94,7 +92,6 @@ fun AboutVenturenest(
         verticalArrangement = Arrangement.Top
     ) {
 
-        ChangeStatusBarColorEdgeToEdge(background)
         Box(
             modifier
                 .fillMaxWidth()
@@ -137,7 +134,7 @@ fun AboutVenturenest(
         ) { page ->
             val offset = pagerState.getOffsetDistanceInPages(page)
             var realoffset = if (offset > 0) offset else -offset
-
+            ChangeStatusBarColorEdgeToEdge(background)
 
             Column(
                 modifier
@@ -156,15 +153,15 @@ fun AboutVenturenest(
                             .fillMaxSize()
                         , horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically ) {
-Button(onClick = {
-    couritine.launch {
-        pagerState.animateScrollToPage(0)
-    }
-}, shape = RoundedCornerShape(25f),
-    colors = ButtonDefaults.buttonColors(containerColor = bg)
-) {
-    Text(text = "Back")
-}
+                        Button(onClick = {
+                            couritine.launch {
+                                pagerState.animateScrollToPage(0)
+                            }
+                        }, shape = RoundedCornerShape(25f),
+                            colors = ButtonDefaults.buttonColors(containerColor = bg)
+                        ) {
+                            Text(text = "Back")
+                        }
                     }
                 } else {
 
@@ -173,7 +170,7 @@ Button(onClick = {
                         .fillMaxHeight(0.9f - (realoffset / 5))
                         .fillMaxWidth(0.8f - (realoffset) / 100)
                         .clip(RoundedCornerShape(25f))
-                        ){
+                    ){
                         Image(painter = painterResource(id = R.drawable.whatsapp),
                             contentDescription = "",
                             modifier
@@ -208,8 +205,7 @@ Button(onClick = {
                                 textAlign = TextAlign.Center,
                                 color = Color.White,
 
-                                text = collageClass[page].description, overflow = TextOverflow.Ellipsis)
-                        }
+                                text = collageClass[page].description)}
                     }
 
 
@@ -223,4 +219,3 @@ Button(onClick = {
     }
 
 }
-

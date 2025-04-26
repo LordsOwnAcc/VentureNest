@@ -73,33 +73,34 @@ fun CardElement2(
     modifier: Modifier = Modifier
     , onClick: () -> Unit
     , events: Events
+    ,color: Long
 ) {
 
 
-   val cardOffset = remember {
-       Animatable(40f)
-   }
+//   val cardOffset = remember {
+//       Animatable(40f)
+//   }
 
-    LaunchedEffect(Unit) {
-        cardOffset.animateTo(
-            targetValue = 0f,
-            animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing)
-        )
-
-    }
+//    LaunchedEffect(Unit) {
+//        cardOffset.animateTo(
+//            targetValue = 0f,
+//            animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing)
+//        )
+//
+//    }
 
 
     ElevatedCard(modifier.fillMaxWidth()
         .padding(top = 10.dp, bottom = 10.dp)
-        .height(110.dp)
-        .graphicsLayer{
-            translationY=cardOffset.value
-        }
+        .height(150.dp)
+//        .graphicsLayer{
+//            translationY=cardOffset.value
+//        }
         .clickable{
             onClick.invoke()
         },
          shape = RoundedCornerShape(25f)
-    , colors = CardDefaults.elevatedCardColors(containerColor = foreground)) {
+    , colors = CardDefaults.elevatedCardColors(containerColor = Color(color = color))) {
 
         Box(modifier.fillMaxSize()) {
 
@@ -133,7 +134,7 @@ fun CardElement2(
                         modifier = modifier.fillMaxWidth().padding(start = 10.dp),
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold
-                        , color = textColor
+                        , color = Color.White
                     )
                     Row(
                         modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
@@ -143,7 +144,7 @@ fun CardElement2(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = null,
                             modifier.scale(0.8f)
-                                .padding(start = 5.dp), tint = Color.Gray
+                                .padding(start = 5.dp), tint = Color.White
                         )
                         Text(
                             text = date,
@@ -151,7 +152,7 @@ fun CardElement2(
                             textAlign = TextAlign.Start,
                             modifier = modifier.fillMaxWidth().padding(start = 5.dp),
                             overflow = TextOverflow.Ellipsis,
-                            color = Color.Gray,
+                            color = Color.White,
                             fontSize = MaterialTheme.typography.bodySmall.fontSize
                         )
                     }
@@ -163,7 +164,7 @@ fun CardElement2(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
                             modifier.scale(0.8f)
-                                .padding(start = 5.dp), tint = Color.Gray
+                                .padding(start = 5.dp), tint = Color.White
                         )
                         Text(
                             text = "CGC Jhanjeri",
@@ -171,7 +172,7 @@ fun CardElement2(
                             textAlign = TextAlign.Start,
                             modifier = modifier.fillMaxWidth().padding(start = 5.dp),
                             overflow = TextOverflow.Ellipsis,
-                            color = Color.Gray,
+                            color = Color.White,
                             fontSize = MaterialTheme.typography.bodySmall.fontSize
                         )
                     }

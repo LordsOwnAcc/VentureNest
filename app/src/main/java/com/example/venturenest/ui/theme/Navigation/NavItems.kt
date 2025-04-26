@@ -118,8 +118,5 @@ enum class NavigationItems(
         , route = "com.example.venturenest.ui.theme.Navigation.GalleryPage"
         ,Icons.Default.Image
     ),
-    SettinPage(
-        title = "Setting"
-        , route = "com.example.venturenest.ui.theme.Navigation.ContactPage"
-        ,Icons.Default.Settings    )
+
 }

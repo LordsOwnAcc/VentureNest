@@ -9,16 +9,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,12 +33,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.venturenest.ui.theme.DaggerHilt.SuccessStories
+import com.example.venturenest.ui.theme.DaggerHilt.councilmembers
 
 @Composable
 fun PartnerPage(
     modifier: Modifier = Modifier,
     schroll :ScrollState
-    ,list :List<SuccessStories>
+    ,list :List<councilmembers>
 ) {
 
 
@@ -69,35 +74,32 @@ fun PartnerPage(
             
             val context = LocalContext.current
             list.forEach { iconUrl ->
-                ElevatedCard(onClick = { /*TODO*/ }, modifier = Modifier
-                    .padding(start = 10.dp, top = 5.dp, bottom = 5.dp
-                    , end = 5.dp)
-                   // .border(0.1.dp, Color.Black, shape = RoundedCornerShape(25f))
-                    ,
-                    colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                ElevatedCard (modifier.padding(10.dp).height(200.dp).width(140.dp)
+                    , shape = RoundedCornerShape(topStart = 15f, topEnd = 15f)) {
+                    Column(modifier.height(200.dp).width(140.dp)) {
+                        AsyncImage(
+                            model = iconUrl.imgpath,
+                            contentDescription = iconUrl.imgName,
+                            modifier.fillMaxWidth()
+                                .height(160.dp)
+                                .background(Color.White), contentScale = ContentScale.Crop
+                        )
 
-
-                    AsyncImage(
-                        model = iconUrl.FounderImg,
-                        contentDescription = null,
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20f))
-
-                            .width(160.dp)
-                            .height(200.dp)
-
-
-                            .clickable {
-
-                            }
-
-
-
-                            .background(Color.White)
-
-                    )
-
+                        Row(
+                            modifier.fillMaxWidth(1f).fillMaxWidth().fillMaxHeight()
+                                .background(Color(0xFFF29727))
+                                .horizontalScroll(rememberScrollState()),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                iconUrl.name,
+                                maxLines = 1,
+                                modifier = modifier.padding(start = 10.dp, end = 10.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
             }
 

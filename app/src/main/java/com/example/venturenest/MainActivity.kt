@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
                     "com.example.venturenest.ui.theme.Navigation.HomePage",
                     "com.example.venturenest.ui.theme.Navigation.EventsPage",
                     "com.example.venturenest.ui.theme.Navigation.GalleryPage",
-                    "com.example.venturenest.ui.theme.Navigation.ContactPage",
+
                    "com.example.venturenest.ui.theme.Navigation.AchievementPage"
                 )
                 val currentBackStackEntry by navController.currentBackStackEntryAsState()

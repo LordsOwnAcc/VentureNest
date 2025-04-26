@@ -37,11 +37,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Scaffold
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -64,8 +71,10 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -87,11 +96,16 @@ import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.HomeViewModel
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.LoadingStateViewmodel
 import com.example.venturenest.ui.theme.Navigation.AboutECell
 import com.example.venturenest.ui.theme.Navigation.AboutVentureNest
+import com.example.venturenest.ui.theme.Navigation.ContactPage
+import com.example.venturenest.ui.theme.Navigation.CouncilScreen
+import com.example.venturenest.ui.theme.Navigation.SettingPage
+import com.example.venturenest.ui.theme.Navigation.partnerScreen
 import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
 import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
 import com.example.venturenest.ui.theme.Presentation.helper.ShimmerEffect
 import com.example.venturenest.ui.theme.background
 import com.example.venturenest.ui.theme.bg
+import com.example.venturenest.ui.theme.foreground
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.delay
 import kotlin.io.path.Path
@@ -155,10 +169,78 @@ fun HomePage(
 //                    .height(200.dp), contentScale = ContentScale.FillBounds
 //            )
             Column(
-                modifier.fillMaxSize(),
+                modifier.fillMaxSize()
+                    .windowInsetsPadding(window),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                Row (modifier.padding(bottom = 20.dp).fillMaxWidth(0.95f).wrapContentHeight()
+                , verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
+                    ElevatedCard(
+                        modifier.size(60.dp)
+                         ,shape=CircleShape
+                        , colors = CardDefaults.elevatedCardColors(contentColor = Color.White)
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.img),
+                            contentDescription = null,
+                            modifier.size(80.dp)
+, contentScale = ContentScale.Crop                        )
+                    }
+
+                    Row (modifier.fillMaxWidth().wrapContentHeight()
+                    , horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically){
+                        ElevatedCard(
+                            modifier .padding(end = 10.dp)
+                                .size(40.dp)
+                                .clickable{navController.navigate(ContactPage)}
+
+                            ,shape=RectangleShape
+                            , colors = CardDefaults.elevatedCardColors(contentColor = Color.White)
+                        ) {
+                            Box(Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Settings,
+                                    contentDescription = null,
+                                    modifier.size(20.dp)
+                                        ,
+                                    tint = Color.Black
+                                )
+                            }
+                            }
+                        ElevatedCard(
+                            modifier.size(40.dp)
+                            ,shape= RectangleShape
+                            , colors = CardDefaults.elevatedCardColors(contentColor = Color.White)
+                        ) {
+                            Box(Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Person,
+                                    contentDescription = null,
+                                    modifier.size(20.dp),
+                                    tint = Color.Black
+                                )
+                            }
+                        }
+                    }
+
+                }
+                Text("Hello Entrepreneur!"
+
+                    ,      fontWeight = FontWeight.W600,
+                    fontSize =MaterialTheme.typography.bodyMedium.fontSize,
+                    color = Color.Black,
+                    modifier = modifier.fillMaxWidth(0.93f))
+        Text("Ready to Crush it Today ?"
+
+          ,      fontWeight = FontWeight.W600,
+            fontSize =MaterialTheme.typography.titleLarge.fontSize,
+            color = Color.Black,
+            modifier = modifier.fillMaxWidth(0.93f))
 
 
 //            }
@@ -191,56 +273,162 @@ fun HomePage(
 //
 //
 //                }
-Box(modifier.fillMaxWidth().height(300.dp)){
+
+
+Box(modifier.padding(top = 10.dp).fillMaxWidth().height(300.dp)){
     Column(
         modifier
-            .padding(0.dp)
+            .padding(15.dp)
             .fillMaxWidth(1f)
             .wrapContentHeight()
+            .clip(RoundedCornerShape(30f))
     ) {
         CoulageElement(modifier.height(300.dp))
 
     }
-    Column (modifier.fillMaxWidth().height(300.dp)
-        .background(brush = Brush.verticalGradient( listOf(Color.Transparent
-            ,Color.Black.copy(alpha = 0.9f)) , tileMode = TileMode.Repeated))){  }
+
 
 }
+                ElevatedCard(  modifier = modifier.padding(top = 10.dp, bottom = 10.dp)
+                    .fillMaxWidth(0.9f)
+                    .height(60.dp)
+                    // .border(1.dp, Color.Black,RoundedCornerShape(25f))
+                    .clickable {  }, shape = RoundedCornerShape(25f)
+                    , colors = CardDefaults.elevatedCardColors(
+                        containerColor = Color.White
 
-                Box(modifier.fillMaxWidth().height(100.dp)){
+                    )
+                ) {
 
-                    Row(modifier.offset(y = -0.dp).fillMaxWidth().height(100.dp)
-                        .background(brush = Brush.verticalGradient( listOf(
-                            Color.Black.copy(alpha = 0.7f),Color.Transparent) , tileMode = TileMode.Repeated))
-                    , verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly){
 
-                       androidx.compose.material.Button(onClick = {}, colors = ButtonDefaults.buttonColors(
-                           backgroundColor = background
-                       )
-                       , border = BorderStroke(1.dp,Color.Black)) {
-                           Text("Incubate Idea")
-                       }
+                    Row(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                            .background(Color(0x0FA6A5A5)), verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Incubate your Startup",
+                            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                            fontWeight = FontWeight.SemiBold,
+                            overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
+                                .padding(start = 10.dp), textAlign = TextAlign.Start
+                        )
 
-                        androidx.compose.material.Button(onClick = {}
-                        , colors = ButtonDefaults.buttonColors(
-                            backgroundColor = background.copy(alpha = 0.5f)
-                        )) {
-                            Text("Join Venturenet")
+                        Icon(
+                            imageVector = Icons.Default.ArrowForwardIos, contentDescription = "",
+                            modifier = modifier
+                                .padding(end = 10.dp)
+                                .scale(0.7f)
+
+                        )
+
+                    }
+
+                }
+
+                Row (modifier = modifier.padding(top = 10.dp).fillMaxWidth(0.9f)){
+                    ElevatedCard(  modifier = modifier.weight(0.5f)
+                        .fillMaxWidth(0.4f)
+                        .height(100.dp)
+                        .padding(end = 10.dp)
+                        // .border(1.dp, Color.Black,RoundedCornerShape(25f))
+                        .clickable {  }, shape = RoundedCornerShape(25f)
+                        , colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color.White
+
+                        )
+                    ) {
+
+
+                        Column (
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .background(Color(0x0FA6A5A5))
+                            , verticalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            Text(
+                                text = "Join Us",
+                                fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                                fontWeight = FontWeight.SemiBold,
+                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp), textAlign = TextAlign.Start
+                          , color = Color.Gray  )
+                            Text(
+                                text = "E-Cell Club",
+                                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                                fontWeight = FontWeight.SemiBold,
+                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp), textAlign = TextAlign.Start
+                            )
+                            Text(
+                                text = "Click here to join us",
+                                fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                                fontWeight = FontWeight.SemiBold,
+                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp, top = 0.dp), textAlign = TextAlign.Start
+                                , color = Color.Gray  )
+
+
                         }
+
+                    }
+
+                    ElevatedCard(  modifier = modifier.weight(0.5f)
+                        .fillMaxWidth(0.4f)
+                        .height(100.dp)
+                        .padding(start = 10.dp)
+                        // .border(1.dp, Color.Black,RoundedCornerShape(25f))
+                        .clickable {  }, shape = RoundedCornerShape(25f)
+                        , colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color.White
+
+                        )
+                    ) {
+
+
+
+                        Column (
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                            , verticalArrangement = Arrangement.SpaceEvenly
+
+                        ) {
+                            Text(
+                                text = "Join Us",
+                                fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                                fontWeight = FontWeight.SemiBold,
+                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp, top = 0.dp), textAlign = TextAlign.Start
+                                , color = Color.Gray  )
+
+                            Text(
+                                text = "Venture Club",
+                                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                                fontWeight = FontWeight.SemiBold,
+                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp), textAlign = TextAlign.Start
+                            )
+                            Text(
+                                text = "Click here to join us",
+                                fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                                fontWeight = FontWeight.SemiBold,
+                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp, top = 0.dp), textAlign = TextAlign.Start
+                                , color = Color.Gray  )
+
+
+                        }
+
                     }
 
 
                 }
-                Column(
-                    modifier
-                        .padding(10.dp)
-                        .fillMaxWidth(1f)
-                        .clip(RoundedCornerShape(25f))
-                        .wrapContentHeight()
-                ) {
-                    CoulageElement(modifier.height(200.dp))
 
-                }
+
 
 
 //
@@ -608,22 +796,33 @@ Box(modifier.fillMaxWidth().height(300.dp)){
 
                                    .height(300.dp)
                            ) {
-                               Image(
-                                   painter = painterResource(R.drawable.whatsapp,
-                                   )  , contentDescription = null,
-                                   modifier.fillMaxSize()
-                                   , contentScale = ContentScale.FillBounds
-
-                               )
+                              //
 //
                                Column(
                                    modifier
-                                       .padding(bottom = 20.dp)
+
+                                       .padding(bottom = 20.dp
+                                       , top = 20.dp)
                                        .fillMaxWidth()
                                        .fillMaxHeight(),
                                    verticalArrangement = Arrangement.SpaceEvenly,
                                    horizontalAlignment = Alignment.CenterHorizontally
                                ) {
+                                   Row(modifier.fillMaxWidth(0.88f).height(80.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+
+                                       Text(
+                                           "Our Partners", fontWeight = FontWeight.W600,
+                                           fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                                           color = Color.Black,
+                                           modifier = modifier.fillMaxWidth(0.5f)
+                                       )
+                                       TextButton(onClick = {
+                                           navController.navigate(partnerScreen(search = "",
+                                               0xFFF29727,""))
+                                       }) {
+                                           Text("See more")
+                                       }
+                                   }
                                    val scrollState = rememberScrollState()
                                    Row(
                                        modifier
@@ -634,25 +833,63 @@ Box(modifier.fillMaxWidth().height(300.dp)){
                                    ) {
 
 
-//                                       Text(
-//                                           modifier = Modifier
-//                                               .fillMaxWidth()
-//                                               .padding(top = 20.dp, bottom = 15.dp),
-//                                           text = "Our Partners",
-//                                           fontSize = MaterialTheme.typography.bodyLarge.fontSize.times(
-//                                               1.5
-//                                           ),
-//                                           lineHeight = MaterialTheme.typography.bodyLarge.lineHeight,
-//                                           letterSpacing = MaterialTheme.typography.bodyLarge.letterSpacing,
-//                                           fontWeight = FontWeight.SemiBold,
-//                                           textAlign = TextAlign.Center, color = Color.White
-//                                       )
 
                                    }
                                    PartnerPages(schroll = scrollState, list = state.Data.partner)
 
                                }
                            }
+
+
+                Box(
+                    modifier = modifier
+                        .padding(top = 0.dp, bottom = 0.dp)
+                        .fillMaxWidth()
+
+                        .height(400.dp)
+                ) {
+
+                    Column(
+                        modifier
+                            .padding(bottom = 20.dp
+                                , top = 20.dp)
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                       Row(modifier.fillMaxWidth(0.88f).height(80.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+
+                           Text(
+                               "Success Stories", fontWeight = FontWeight.W600,
+                               fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                               color = Color.Black,
+                               modifier = modifier.fillMaxWidth(0.5f)
+                           )
+
+                           TextButton(onClick = {
+                               navController.navigate(CouncilScreen(
+                                   search = "", 0xFFF29727,""
+                               ))
+                           }) {
+                               Text("See more")
+                           }
+                       }
+
+                        val scrollState = rememberScrollState()
+                        Row(
+                            modifier
+                                .padding(top = 0.dp)
+                                .fillMaxWidth(0.94f),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+
+                            PartnerPage(modifier, scrollState, state.Data.councilmembers)
+
+                        }
+                    }
+                }
 //
 //
 ////
@@ -757,50 +994,50 @@ Box(modifier.fillMaxWidth().height(300.dp)){
 ////                                   PartnerPage(schroll = scrollState)
 ////                               }
 ////                           }
-                           Box(
-                               modifier = modifier
-                                   .padding(top = 0.dp, bottom = 10.dp)
-                                   .fillMaxWidth()
-
-                                   .height(300.dp)
-                           ) {
-                               Image(painter = painterResource(id = R.drawable.whatsapp), contentDescription = "",modifier.fillMaxSize(), contentScale = ContentScale.FillBounds)
-
-                               Column(
-                                   modifier
-                                       .padding(bottom = 20.dp)
-                                       .fillMaxWidth()
-                                       .fillMaxHeight(),
-                                   verticalArrangement = Arrangement.SpaceEvenly,
-                                   horizontalAlignment = Alignment.CenterHorizontally
-                               ) {
-                                   val scrollState = rememberScrollState()
-                                   Row(
-                                       modifier
-                                           .padding(top = 0.dp)
-                                           .fillMaxWidth(),
-                                       verticalAlignment = Alignment.CenterVertically,
-                                       horizontalArrangement = Arrangement.SpaceBetween
-                                   ) {
-
-
-//                                       Text(
-//                                           modifier = Modifier
-//                                               .fillMaxWidth(0.8f)
-//                                               .padding(top = 20.dp, bottom = 15.dp, start = 16.dp),
-//                                           text = "Inspirational Stories",
-//                                           fontSize = MaterialTheme.typography.bodyLarge.fontSize.times(1.5),
-//                                           lineHeight = MaterialTheme.typography.bodyLarge.lineHeight
-//                                           ,
-//                                           letterSpacing = MaterialTheme.typography.bodyLarge.letterSpacing,
-//                                           fontWeight = FontWeight.SemiBold,
-//                                           textAlign = TextAlign.Start, color = Color.White
-//                                       )
-
-                                   }
-                                   PartnerPage(schroll = scrollState, list = state.Data.sucessStories)
-                               }
-                           }
+//                           Box(
+//                               modifier = modifier
+//                                   .padding(top = 0.dp, bottom = 10.dp)
+//                                   .fillMaxWidth()
+//
+//                                   .height(300.dp)
+//                           ) {
+//                               Image(painter = painterResource(id = R.drawable.whatsapp), contentDescription = "",modifier.fillMaxSize(), contentScale = ContentScale.FillBounds)
+//
+//                               Column(
+//                                   modifier
+//                                       .padding(bottom = 20.dp)
+//                                       .fillMaxWidth()
+//                                       .fillMaxHeight(),
+//                                   verticalArrangement = Arrangement.SpaceEvenly,
+//                                   horizontalAlignment = Alignment.CenterHorizontally
+//                               ) {
+//                                   val scrollState = rememberScrollState()
+//                                   Row(
+//                                       modifier
+//                                           .padding(top = 0.dp)
+//                                           .fillMaxWidth(),
+//                                       verticalAlignment = Alignment.CenterVertically,
+//                                       horizontalArrangement = Arrangement.SpaceBetween
+//                                   ) {
+//
+//
+////                                       Text(
+////                                           modifier = Modifier
+////                                               .fillMaxWidth(0.8f)
+////                                               .padding(top = 20.dp, bottom = 15.dp, start = 16.dp),
+////                                           text = "Inspirational Stories",
+////                                           fontSize = MaterialTheme.typography.bodyLarge.fontSize.times(1.5),
+////                                           lineHeight = MaterialTheme.typography.bodyLarge.lineHeight
+////                                           ,
+////                                           letterSpacing = MaterialTheme.typography.bodyLarge.letterSpacing,
+////                                           fontWeight = FontWeight.SemiBold,
+////                                           textAlign = TextAlign.Start, color = Color.White
+////                                       )
+//
+//                                   }
+//PartnerPages(modifier,scrollState,
+//    state.Data.partner)                               }
+//                           }
 //
 //                       }is HomePageCompanion.Error->{
 //                       LaunchedEffect(key1 = Unit) {
@@ -865,15 +1102,13 @@ Box(modifier.fillMaxWidth().height(300.dp)){
             }
 
 
-            Column(modifier.fillMaxWidth()
-                .fillMaxHeight()) {
-                Spacer(modifier.fillMaxHeight(0.29f))
+
+                Spacer(modifier.height(40.dp))
 
 
 
 
 
-            }
 
 
 

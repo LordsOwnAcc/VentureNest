@@ -1,5 +1,6 @@
 package com.example.venturenest.ui.theme.DaggerHilt.ViewModels
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -76,6 +77,7 @@ init {
     }
 
 
+        @SuppressLint("SuspiciousIndentation")
         fun fetchData(){
  _state.value = _state.value.copy(
      state = LoadingPageCompanion.Loading

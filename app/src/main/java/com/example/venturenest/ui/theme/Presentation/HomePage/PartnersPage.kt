@@ -60,12 +60,11 @@ fun PartnerPage(
         Row(
             modifier = Modifier
                 .padding()
-                .fillMaxWidth()
-                //.horizontalScroll(schroll)
-                .basicMarquee(
-                    500, MarqueeAnimationMode.Immediately, velocity = 25.dp,
-                    repeatDelayMillis = 0, spacing = MarqueeSpacing(0.dp)
-                )
+                .fillMaxWidth().horizontalScroll(schroll)
+//                .basicMarquee(
+//                    500, MarqueeAnimationMode.Immediately, velocity = 25.dp,
+//                    repeatDelayMillis = 0, spacing = MarqueeSpacing(0.dp)
+//                )
                 , horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
 
 
@@ -74,15 +73,15 @@ fun PartnerPage(
             
             val context = LocalContext.current
             list.forEach { iconUrl ->
-                ElevatedCard (modifier.padding(10.dp).height(200.dp).width(140.dp)
+                ElevatedCard (modifier.padding(10.dp).height(180.dp).width(150.dp)
                     , shape = RoundedCornerShape(topStart = 15f, topEnd = 15f)) {
-                    Column(modifier.height(200.dp).width(140.dp)) {
+                    Column(modifier.height(180.dp).width(150.dp)) {
                         AsyncImage(
                             model = iconUrl.imgpath,
                             contentDescription = iconUrl.imgName,
                             modifier.fillMaxWidth()
-                                .height(160.dp)
-                                .background(Color.White), contentScale = ContentScale.Crop
+                                .height(150.dp)
+                                .background(Color.White), contentScale = ContentScale.Fit
                         )
 
                         Row(

@@ -55,7 +55,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.venturenest.R
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AuthViewModel
-import com.example.venturenest.ui.theme.Navigation.Forum
 import com.example.venturenest.ui.theme.Navigation.HomePage
 import com.example.venturenest.ui.theme.Navigation.LoginPage
 import com.example.venturenest.ui.theme.Navigation.StartScreen

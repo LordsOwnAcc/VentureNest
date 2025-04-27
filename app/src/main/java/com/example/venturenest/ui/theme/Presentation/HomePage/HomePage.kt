@@ -98,6 +98,7 @@ import com.example.venturenest.ui.theme.Navigation.AboutECell
 import com.example.venturenest.ui.theme.Navigation.AboutVentureNest
 import com.example.venturenest.ui.theme.Navigation.ContactPage
 import com.example.venturenest.ui.theme.Navigation.CouncilScreen
+import com.example.venturenest.ui.theme.Navigation.Profile
 import com.example.venturenest.ui.theme.Navigation.SettingPage
 import com.example.venturenest.ui.theme.Navigation.partnerScreen
 import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
@@ -175,12 +176,12 @@ fun HomePage(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Row (modifier.padding(bottom = 20.dp).fillMaxWidth(0.95f).wrapContentHeight()
+                Row (modifier.padding(bottom = 20.dp).fillMaxWidth(0.92f).wrapContentHeight()
                 , verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
                     ElevatedCard(
                         modifier.size(60.dp)
                          ,shape=CircleShape
-                        , colors = CardDefaults.elevatedCardColors(contentColor = Color.White)
+                        , colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
                     ) {
                         Image(
                             painter = painterResource(R.drawable.img),
@@ -198,7 +199,7 @@ fun HomePage(
                                 .clickable{navController.navigate(ContactPage)}
 
                             ,shape=RectangleShape
-                            , colors = CardDefaults.elevatedCardColors(contentColor = Color.White)
+                            , colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
                         ) {
                             Box(Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center) {
@@ -213,8 +214,9 @@ fun HomePage(
                             }
                         ElevatedCard(
                             modifier.size(40.dp)
+                                .clickable{navController.navigate(Profile)}
                             ,shape= RectangleShape
-                            , colors = CardDefaults.elevatedCardColors(contentColor = Color.White)
+                            , colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
                         ) {
                             Box(Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center) {
@@ -275,7 +277,7 @@ fun HomePage(
 //                }
 
 
-Box(modifier.padding(top = 10.dp).fillMaxWidth().height(300.dp)){
+Box(modifier.padding(top = 10.dp).fillMaxWidth().height(250.dp)){
     Column(
         modifier
             .padding(15.dp)
@@ -283,13 +285,13 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(300.dp)){
             .wrapContentHeight()
             .clip(RoundedCornerShape(30f))
     ) {
-        CoulageElement(modifier.height(300.dp))
+        CoulageElement(modifier.height(250.dp))
 
     }
 
 
 }
-                ElevatedCard(  modifier = modifier.padding(top = 10.dp, bottom = 10.dp)
+                ElevatedCard(  modifier = modifier.padding(top = 10.dp, bottom = 5.dp)
                     .fillMaxWidth(0.9f)
                     .height(60.dp)
                     // .border(1.dp, Color.Black,RoundedCornerShape(25f))
@@ -328,11 +330,11 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(300.dp)){
 
                 }
 
-                Row (modifier = modifier.padding(top = 10.dp).fillMaxWidth(0.9f)){
+                Row (modifier = modifier.padding(top = 5.dp).fillMaxWidth(0.9f)){
                     ElevatedCard(  modifier = modifier.weight(0.5f)
                         .fillMaxWidth(0.4f)
                         .height(100.dp)
-                        .padding(end = 10.dp)
+                        .padding(end = 5.dp)
                         // .border(1.dp, Color.Black,RoundedCornerShape(25f))
                         .clickable {  }, shape = RoundedCornerShape(25f)
                         , colors = CardDefaults.elevatedCardColors(
@@ -379,7 +381,7 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(300.dp)){
                     ElevatedCard(  modifier = modifier.weight(0.5f)
                         .fillMaxWidth(0.4f)
                         .height(100.dp)
-                        .padding(start = 10.dp)
+                        .padding(start = 5.dp)
                         // .border(1.dp, Color.Black,RoundedCornerShape(25f))
                         .clickable {  }, shape = RoundedCornerShape(25f)
                         , colors = CardDefaults.elevatedCardColors(
@@ -794,21 +796,21 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(300.dp)){
                                    .padding(top = 10.dp, bottom = 0.dp)
                                    .fillMaxWidth()
 
-                                   .height(300.dp)
+                                   .height(250.dp)
                            ) {
                               //
 //
                                Column(
                                    modifier
 
-                                       .padding(bottom = 20.dp
+                                       .padding(bottom = 0.dp
                                        , top = 20.dp)
                                        .fillMaxWidth()
                                        .fillMaxHeight(),
                                    verticalArrangement = Arrangement.SpaceEvenly,
                                    horizontalAlignment = Alignment.CenterHorizontally
                                ) {
-                                   Row(modifier.fillMaxWidth(0.88f).height(80.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                                   Row(modifier.fillMaxWidth(0.88f).height(40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
 
                                        Text(
                                            "Our Partners", fontWeight = FontWeight.W600,
@@ -843,25 +845,25 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(300.dp)){
 
                 Box(
                     modifier = modifier
-                        .padding(top = 0.dp, bottom = 0.dp)
+                        .padding(top = 20.dp, bottom = 0.dp)
                         .fillMaxWidth()
 
-                        .height(400.dp)
+                        .height(280.dp)
                 ) {
 
                     Column(
                         modifier
-                            .padding(bottom = 20.dp
-                                , top = 20.dp)
+                            .padding(bottom = 0.dp
+                                , top = 0.dp)
                             .fillMaxWidth()
                             .fillMaxHeight(),
                         verticalArrangement = Arrangement.SpaceEvenly,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                       Row(modifier.fillMaxWidth(0.88f).height(80.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                       Row(modifier.fillMaxWidth(0.88f).height(40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
 
                            Text(
-                               "Success Stories", fontWeight = FontWeight.W600,
+                               "Council Members", fontWeight = FontWeight.W600,
                                fontSize = MaterialTheme.typography.titleMedium.fontSize,
                                color = Color.Black,
                                modifier = modifier.fillMaxWidth(0.5f)

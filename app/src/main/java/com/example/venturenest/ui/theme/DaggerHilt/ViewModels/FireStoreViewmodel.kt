@@ -27,14 +27,7 @@ class FireStoreViewmodel @Inject constructor(
 
 
 
-    fun containsProfileOffline() : Boolean{
-        val profiles = dataRepo.allUsers.conflate().asLiveData()
-        if (profiles.value.isNullOrEmpty()){
-            return false
-        }else{
-            return true
-        }
-    }
+
 
     val db = Firebase.firestore
      val currentUID = authRepo.firebaseAuth.uid

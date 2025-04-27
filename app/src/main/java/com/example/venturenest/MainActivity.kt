@@ -32,6 +32,8 @@ import com.example.bottombar.components.BottomBarItem
 import com.example.bottombar.model.ItemStyle
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AuthViewModel
 import com.example.venturenest.ui.theme.DataBase.DataViewModel
+import com.example.venturenest.ui.theme.Navigation.AboutECell
+import com.example.venturenest.ui.theme.Navigation.AboutVentureNest
 import com.example.venturenest.ui.theme.Navigation.AchievementPage
 import com.example.venturenest.ui.theme.Navigation.ContactPage
 import com.example.venturenest.ui.theme.Navigation.CouncilScreen
@@ -40,12 +42,16 @@ import com.example.venturenest.ui.theme.Navigation.GalleryPage
 import com.example.venturenest.ui.theme.Navigation.HomePage
 import com.example.venturenest.ui.theme.Navigation.LoginPage
 import com.example.venturenest.ui.theme.Navigation.NavigationItems
+import com.example.venturenest.ui.theme.Navigation.Profile
 import com.example.venturenest.ui.theme.Navigation.SignUpPage
 import com.example.venturenest.ui.theme.Navigation.Start
 import com.example.venturenest.ui.theme.Navigation.StartScreen
 import com.example.venturenest.ui.theme.Navigation.partnerScreen
 import com.example.venturenest.ui.theme.Navigation.startupsScreen
 import com.example.venturenest.ui.theme.Presentation.EventPage.ReEvent
+import com.example.venturenest.ui.theme.Presentation.Setting.AboutEcell
+import com.example.venturenest.ui.theme.Presentation.Setting.AboutVenturenest
+import com.example.venturenest.ui.theme.Presentation.Setting.ProfilePage
 
 import com.example.venturenest.ui.theme.VentureNestTheme
 import com.example.venturenest.ui.theme.auth.AuthStateCompanion
@@ -229,7 +235,16 @@ class MainActivity : ComponentActivity() {
                                 navController, Modifier, windowInsets
                             )
                         }
+                        composable<AboutVentureNest> {
+                            AboutVenturenest(modifier = Modifier,navController,windowInsets)
+                        }
+                        composable<AboutECell> {
+                            AboutEcell(modifier = Modifier,navController,windowInsets)
+                        }
 
+                        composable<Profile> {
+                            ProfilePage(Modifier,navController)
+                        }
 
                     }
                 }

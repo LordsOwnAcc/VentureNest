@@ -54,6 +54,7 @@ import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AuthViewModel
 import com.example.venturenest.ui.theme.DataBase.DataViewModel
 import com.example.venturenest.ui.theme.Navigation.AboutECell
 import com.example.venturenest.ui.theme.Navigation.AboutVentureNest
+import com.example.venturenest.ui.theme.Navigation.Profile
 import com.example.venturenest.ui.theme.Navigation.StartScreen
 import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
 import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
@@ -72,6 +73,7 @@ fun AboutPage(
 ) {
   val authViewModel :AuthViewModel= hiltViewModel()
     var selected = remember { mutableStateOf(0) }
+    var selected2 by remember { mutableStateOf(false) }
     var show = remember { mutableStateOf(false) }
     HideSystemBars()
     ChangeStatusBarColorEdgeToEdge(background)
@@ -216,7 +218,7 @@ fun AboutPage(
                         .letterSpacing, color = secondary
                 )
 SettingElement(modifier = modifier, text ="Profile", onClick = {
-
+navController.navigate(Profile)
 })
 
                 Text(text = "About",
@@ -273,22 +275,23 @@ show.value=true
                         .letterSpacing, color = Color.Red)
 
                 SettingElement(modifier = modifier, text ="Logout" ) {
-                        authViewModel.SignOut()
-                    authViewModel._authState.value=authViewModel._authState.value.copy(
-                        state = AuthStateCompanion.NoUser
-                    )
-                            navController.navigate(StartScreen){
-                                popUpTo(StartScreen){
-                                    inclusive = true
-                                }
-                            }
 
+selected2=true
                 }
 
 
 
         }}
         Dialog2(show = show,selected=selected.value,modifier)
+        ConfirmationDialog(isVisible = selected2, actionText = "Logout", onProceed = {        authViewModel.SignOut()
+            authViewModel._authState.value=authViewModel._authState.value.copy(
+                state = AuthStateCompanion.NoUser
+            )
+            navController.navigate(StartScreen){
+                popUpTo(StartScreen){
+                    inclusive = true
+                }
+            }}, onCancel = {selected2=false}) {selected2=false }
     }
 
 }

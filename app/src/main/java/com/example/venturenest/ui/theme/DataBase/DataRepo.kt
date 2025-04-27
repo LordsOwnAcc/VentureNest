@@ -13,7 +13,7 @@ class dataRepo @Inject constructor(
         appData.insertOrUpdateAppdata(apData)
     }
 
-    val allUsers: Flow<List<Users>> = userDao.getUser()
+    val allUsers: Flow<Users> = userDao.getUser()
 
      suspend fun insert(users: Users) {
         userDao.insertUser(users)

@@ -58,7 +58,7 @@ fun PartnerPages(
             modifier = Modifier
                 .padding()
                 .fillMaxWidth()
-               // .horizontalScroll(schroll)
+                .horizontalScroll(schroll)
                 .basicMarquee(
                     animationMode = MarqueeAnimationMode.Immediately, velocity = 25.dp
                 )
@@ -88,8 +88,8 @@ fun PartnerPages(
                         contentScale = ContentScale.FillWidth,
                         modifier = Modifier
                             .clip(RoundedCornerShape(20f))
-                            .width(160.dp)
-                            .height(200.dp)
+                            .width(150.dp)
+                            .height(180.dp)
 
 
                     )

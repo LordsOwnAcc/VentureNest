@@ -33,8 +33,7 @@ object LoginPage
 @Serializable
 object Start
 
-@Serializable
-object Onboarding
+
 
 @Serializable
 object AchievementPage
@@ -51,8 +50,7 @@ object SettingPage
 @Serializable
 object GalleryPage
 
-@Serializable
-object StatsPage
+
 
 @Serializable
 object StartScreen
@@ -66,7 +64,7 @@ object AboutVentureNest
 object AboutECell
 
 @Serializable
-object Forum
+object Profile
 
 @Serializable
 object SignUpPage

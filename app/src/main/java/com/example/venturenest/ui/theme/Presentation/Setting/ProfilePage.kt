@@ -179,14 +179,14 @@ fun ProfilePage(modifier: Modifier = Modifier
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(120.dp)
+                            .size(100.dp)
                             .clip(CircleShape)
                             .border(
                                 width = 4.dp,
                                 brush = Brush.linearGradient(
                                     colors = listOf(
-                                        Color(0xFF6A11CB),
-                                        Color(0xFF2575FC)
+                                        Color(0xFF403D46),
+                                        Color(0xFFEAEAFA)
                                     )
                                 ),
                                 shape = CircleShape

@@ -53,6 +53,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.venturenest.R
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AuthViewModel
 import com.example.venturenest.ui.theme.Navigation.HomePage
@@ -141,16 +145,18 @@ fun LoginPage(windowInsets: WindowInsets,navController: NavController,modifier: 
         Column(
             modifier
                 .fillMaxWidth(0.9f)
-                .fillMaxHeight(0.4f),
-            verticalArrangement = Arrangement.Center,
+                .fillMaxHeight(0.5f),
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Image(
-                painter = painterResource(id = R.drawable.login_pana),
-                contentDescription = "",
-                modifier.fillMaxSize(0.8f),
-                contentScale = ContentScale.Crop
+
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.login))
+            val progress by animateLottieCompositionAsState(composition, iterations = 500)
+            LottieAnimation(
+                composition = composition,
+                progress = { progress },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 0.dp, top = 30.dp)
             )
 
         }
@@ -162,12 +168,21 @@ fun LoginPage(windowInsets: WindowInsets,navController: NavController,modifier: 
         ) {
 
             Text(
-                text = "Login",
-                modifier = modifier.fillMaxWidth(),
+                text = "Login to connect with us and get latest updates",
+                modifier = modifier.fillMaxWidth(0.8f).padding(top = 30.dp),
                 textAlign = TextAlign.Center,
-                fontSize = MaterialTheme.typography.displayLarge.fontSize.div(2),
+                fontSize = MaterialTheme.typography.displaySmall.fontSize.div(1.5),
                 fontWeight = FontWeight.Bold,
-                lineHeight = MaterialTheme.typography.displayLarge.lineHeight
+                lineHeight = MaterialTheme.typography.titleLarge.lineHeight
+            )
+            Text(
+                text = "Note that by logging in you are accepting to our terms and condition and privacy policy",
+                modifier = modifier.fillMaxWidth(0.8f).padding(top = 20.dp),
+                textAlign = TextAlign.Center,
+                fontSize = MaterialTheme.typography.labelMedium.fontSize,
+                fontWeight = FontWeight.Bold,
+                lineHeight = MaterialTheme.typography.labelLarge.lineHeight
+                , color = Color.Gray
             )
 
         }
@@ -178,80 +193,80 @@ fun LoginPage(windowInsets: WindowInsets,navController: NavController,modifier: 
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextField(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp),
-                value = userName,
-                onValueChange = { userName = it },
-                colors = androidx.compose.material.TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    unfocusedIndicatorColor = Color.LightGray,
-                    focusedIndicatorColor = Color.Gray
-                ),
-                placeholder = {
-                    Text(text = "Email")
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Email, contentDescription = "",
-                        modifier.offset(x = -10.dp)
-                    )
-                },
-                trailingIcon = {
-                    if (userName != "") {
-
-
-                        Icon(imageVector = Icons.Default.Clear, contentDescription = "",
-                            modifier
-                                .size(20.dp)
-                                .clickable {
-                                    userName = ""
-                                }
-                        )
-                    }
-                },
-                singleLine = true,
-                maxLines = 1
-, enabled = state.value.state !=AuthStateCompanion.Loading
-            )
-
-            TextField(
-                modifier = modifier.fillMaxWidth(),
-                visualTransformation = if (!showPassword) PasswordVisualTransformation() else VisualTransformation.None,
-                value = Password,
-                onValueChange = { Password = it },
-                colors = androidx.compose.material.TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    unfocusedIndicatorColor = Color.LightGray,
-                    focusedIndicatorColor = Color.Gray
-                ),
-                placeholder = {
-                    Text(text = "Password")
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Password, contentDescription = "",
-                        modifier.offset(x = -10.dp)
-                    )
-                },
-                trailingIcon = {
-
-
-                    Icon(imageVector = if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                        contentDescription = "",
-                        modifier
-                            .size(20.dp)
-                            .clickable {
-                                showPassword = !showPassword
-                            }, tint = if (Password == "") Color.LightGray else Color.Gray
-                    )
-
-                },
-                singleLine = true,
-                maxLines = 1, enabled = state.value.state !=AuthStateCompanion.Loading
-
-            )
+//            TextField(
+//                modifier = modifier
+//                    .fillMaxWidth()
+//                    .padding(bottom = 10.dp),
+//                value = userName,
+//                onValueChange = { userName = it },
+//                colors = androidx.compose.material.TextFieldDefaults.textFieldColors(
+//                    backgroundColor = Color.White,
+//                    unfocusedIndicatorColor = Color.LightGray,
+//                    focusedIndicatorColor = Color.Gray
+//                ),
+//                placeholder = {
+//                    Text(text = "Email")
+//                },
+//                leadingIcon = {
+//                    Icon(
+//                        imageVector = Icons.Default.Email, contentDescription = "",
+//                        modifier.offset(x = -10.dp)
+//                    )
+//                },
+//                trailingIcon = {
+//                    if (userName != "") {
+//
+//
+//                        Icon(imageVector = Icons.Default.Clear, contentDescription = "",
+//                            modifier
+//                                .size(20.dp)
+//                                .clickable {
+//                                    userName = ""
+//                                }
+//                        )
+//                    }
+//                },
+//                singleLine = true,
+//                maxLines = 1
+//, enabled = state.value.state !=AuthStateCompanion.Loading
+//            )
+//
+//            TextField(
+//                modifier = modifier.fillMaxWidth(),
+//                visualTransformation = if (!showPassword) PasswordVisualTransformation() else VisualTransformation.None,
+//                value = Password,
+//                onValueChange = { Password = it },
+//                colors = androidx.compose.material.TextFieldDefaults.textFieldColors(
+//                    backgroundColor = Color.White,
+//                    unfocusedIndicatorColor = Color.LightGray,
+//                    focusedIndicatorColor = Color.Gray
+//                ),
+//                placeholder = {
+//                    Text(text = "Password")
+//                },
+//                leadingIcon = {
+//                    Icon(
+//                        imageVector = Icons.Default.Password, contentDescription = "",
+//                        modifier.offset(x = -10.dp)
+//                    )
+//                },
+//                trailingIcon = {
+//
+//
+//                    Icon(imageVector = if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+//                        contentDescription = "",
+//                        modifier
+//                            .size(20.dp)
+//                            .clickable {
+//                                showPassword = !showPassword
+//                            }, tint = if (Password == "") Color.LightGray else Color.Gray
+//                    )
+//
+//                },
+//                singleLine = true,
+//                maxLines = 1, enabled = state.value.state !=AuthStateCompanion.Loading
+//
+//            )
 
             Column(
                 modifier
@@ -261,124 +276,130 @@ fun LoginPage(windowInsets: WindowInsets,navController: NavController,modifier: 
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
+//
+//                Column(
+//                    modifier
+//                        .fillMaxWidth()
+//                        .fillMaxHeight(0.6f),
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+//                    verticalArrangement = Arrangement.SpaceEvenly
+//                ) {
+//                    Button(
+//                        onClick = {
+//                            if (!isValidEmail(email = userName)){
+//                                Toast.makeText(context,"Enter Valid Email",Toast.LENGTH_SHORT).show()
+//                                return@Button
+//                            }
+//                            if (!isValidPassword(Password)){
+//                                Toast.makeText(context,"Password must be 6+ chars, include a number & special char",Toast.LENGTH_SHORT).show()
+//                                return@Button
+//                            }
+//
+//                            //authViewModel.createUserWithEmailPassword(email, password)
+//                            authViewModel.logInWithEmailPassword(userName, password = Password)
+//
+//
+//
+//                        }, enabled = state.value.state !=AuthStateCompanion.Loading , modifier =
+//                        modifier.fillMaxWidth(),
+//                        shape = RoundedCornerShape(25f)
+//                        , colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
+//                    ) {
+//                        Text("Login", color = Color.White)
+//                    }
+//                    Row(
+//                        modifier.fillMaxWidth(0.7f),
+//                        horizontalArrangement = Arrangement.Center,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Spacer(
+//                            modifier = modifier
+//                                .fillMaxWidth(0.39f)
+//                                .height(2.dp)
+//                                .background(Color.DarkGray)
+//                        )
+//                        Text(text = "or", modifier.padding(start = 10.dp, end = 10.dp))
+//                        Spacer(
+//                            modifier = modifier
+//                                .fillMaxWidth(0.9f)
+//                                .height(2.dp)
+//                                .background(Color.DarkGray)
+//                        )
+//
+//                    }
 
-                Column(
-                    modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.6f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = {
-                            if (!isValidEmail(email = userName)){
-                                Toast.makeText(context,"Enter Valid Email",Toast.LENGTH_SHORT).show()
-                                return@Button
-                            }
-                            if (!isValidPassword(Password)){
-                                Toast.makeText(context,"Password must be 6+ chars, include a number & special char",Toast.LENGTH_SHORT).show()
-                                return@Button
-                            }
+//                    Button(
+//                        onClick = {
+//                            authViewModel.makeLoading()
+//
+//                            val googleSignInClient = try {
+//                                GoogleSignIn.getClient(context, authViewModel.gso())
+//                            } catch (e: Exception) {
+//                                Toast.makeText(context, "Sign-in configuration failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+//                                authViewModel.onGoogleFailure("Error : Google Verification Not Available")
+//                                return@Button
+//                            }
+//
+//                            try {
+//                                launcher.launch(googleSignInClient.signInIntent)
+//                            } catch (e: Exception) {
+//                                Toast.makeText(context, "Failed to start Google Sign-In: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+//                            }
+//
+//
+//
+//
+//
+//
+//
+//
+//                        }, enabled = state.value.state !=AuthStateCompanion.Loading, modifier =
+//                        modifier.fillMaxWidth(0.9f),
+//                        shape = RoundedCornerShape(25f),
+//                        colors = androidx.compose.material.ButtonDefaults
+//                            .buttonColors(backgroundColor = Color.LightGray)
+//                    ) {
+//                        Row(
+//                            modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.Absolute.SpaceEvenly                        ) {
+//                            Image(
+//                                painter = painterResource(id = R.drawable.google_icon_icons_com_62736),
+//                                contentDescription = "", modifier.size(20.dp)
+//                            )
+//
+//                            Text("Login with Google")
+//                        }
+//                    }
 
-                            //authViewModel.createUserWithEmailPassword(email, password)
-                            authViewModel.logInWithEmailPassword(userName, password = Password)
 
 
+                ModernGoogleSignInButton(onClick = {
+                    authViewModel.makeLoading()
 
-                        }, enabled = state.value.state !=AuthStateCompanion.Loading , modifier =
-                        modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(25f)
-                        , colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
-                    ) {
-                        Text("Login", color = Color.White)
+                    val googleSignInClient = try {
+                        GoogleSignIn.getClient(context, authViewModel.gso())
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Sign-in configuration failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                        authViewModel.onGoogleFailure("Error : Google Verification Not Available")
+                        return@ModernGoogleSignInButton
                     }
-                    Row(
-                        modifier.fillMaxWidth(0.7f),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Spacer(
-                            modifier = modifier
-                                .fillMaxWidth(0.39f)
-                                .height(2.dp)
-                                .background(Color.DarkGray)
-                        )
-                        Text(text = "or", modifier.padding(start = 10.dp, end = 10.dp))
-                        Spacer(
-                            modifier = modifier
-                                .fillMaxWidth(0.9f)
-                                .height(2.dp)
-                                .background(Color.DarkGray)
-                        )
 
+                    try {
+                        launcher.launch(googleSignInClient.signInIntent)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Failed to start Google Sign-In: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
                     }
 
-                    Button(
-                        onClick = {
-                            authViewModel.makeLoading()
-
-                            val googleSignInClient = try {
-                                GoogleSignIn.getClient(context, authViewModel.gso())
-                            } catch (e: Exception) {
-                                Toast.makeText(context, "Sign-in configuration failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
-                                authViewModel.onGoogleFailure("Error : Google Verification Not Available")
-                                return@Button
-                            }
-
-                            try {
-                                launcher.launch(googleSignInClient.signInIntent)
-                            } catch (e: Exception) {
-                                Toast.makeText(context, "Failed to start Google Sign-In: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
-                            }
-
-
-
-
-
-
-
-
-                        }, enabled = state.value.state !=AuthStateCompanion.Loading, modifier =
-                        modifier.fillMaxWidth(0.8f),
-                        shape = RoundedCornerShape(25f),
-                        colors = androidx.compose.material.ButtonDefaults
-                            .buttonColors(backgroundColor = Color.LightGray)
-                    ) {
-                        Row(
-                            modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Absolute.SpaceEvenly
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.google_icon_icons_com_62736),
-                                contentDescription = "", modifier.size(20.dp)
-                            )
-
-                            Text("Login with Google")
-                        }
-                    }
+                }, Modifier.fillMaxWidth(), enabled =state.value.state !=AuthStateCompanion.Loading, )
                 }
 
 
-                Row(
-                    modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "New to VentureNest ?")
-                    TextButton(onClick = {
-navController.navigate(SignUpPage){
-    popUpTo(SignUpPage){
-        inclusive=true
-    }
-}
-                    }) {
-                        Text(text = "SignUp")
-                    }
-                }
+
 
             }
 
 
         }
     }
-}
+
 

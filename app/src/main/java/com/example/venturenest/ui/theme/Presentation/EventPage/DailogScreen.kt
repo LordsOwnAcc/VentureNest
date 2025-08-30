@@ -93,7 +93,7 @@ Column(modifier = Modifier.fillMaxWidth(0.9f).wrapContentHeight()
                             .padding(top = 20.dp)
                             .clip(RoundedCornerShape(25f))
                             .fillMaxWidth(0.9f)
-                            .height(250.dp)
+                            .height(200.dp)
 
                             .shadow(
                                 elevation = 5.dp,

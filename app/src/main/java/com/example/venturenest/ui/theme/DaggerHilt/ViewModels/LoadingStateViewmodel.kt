@@ -39,9 +39,29 @@ class LoadingStateViewmodel @Inject constructor(
     val state = _state.asStateFlow()
 
 init {
-    fetchData()
-    addData()
+    viewModelScope.launch {
+        if (databaseRepo.getAppdata.first().heroSection.isEmpty()) {
+            fetchData()
+            addData()
+        }else{
+            val data = databaseRepo.getAppdata.first()
+            _state.value = _state.value.copy(
+                state= LoadingPageCompanion.Result
+            , Data = AppData(
+                    id = 1,
+                    events = data!!.events,
+                    heroSection=data!!.heroSection,
+                    photo = data!!.photo,
+                    patents = data!!.patents,
+                    sucessStories = data!!.sucessStories,
+                    councilmembers = data!!.councilmembers,
+                    partner = data!!.partner,
+                    startUp = data!!.startUp
 
+                )
+            )
+        }
+    }
 }
     fun addData() {
         viewModelScope.launch {

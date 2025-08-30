@@ -1,6 +1,7 @@
 package com.example.venturenest.ui.theme.Presentation.Profile
 
 import android.util.Log
+import android.widget.Toast
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.GridOn
@@ -79,6 +81,7 @@ fun ProfileStarter(
     windowInsets: WindowInsets
 ) {
     ChangeStatusBarColorEdgeToEdge(background)
+
     val loadingViewmodel: LoadingStateViewmodel = hiltViewModel()
     val state by loadingViewmodel.state.collectAsState()
 
@@ -92,14 +95,15 @@ fun ProfileStarter(
             is LoadingPageCompanion.Error -> {
                 if (state.Data.events.isEmpty()
                     || state.Data.partner.isEmpty()
-                    || state.Data.patents.isEmpty()
                     || state.Data.photo.isEmpty() ||
                     state.Data.councilmembers.isEmpty()
                     || state.Data.heroSection.isEmpty()
                     || state.Data.startUp.isEmpty()
                     || state.Data.sucessStories.isEmpty()
                 ) {
-                    Text("Error empty")
+                    Log.e( "Netcheck","error not loaded")
+                    Log.e( "Netcheck","${state.Data.events}")
+                 Text("")
                 } else {
                     LaunchedEffect(Unit) {
                         navController.navigate(HomePage)
@@ -110,7 +114,11 @@ fun ProfileStarter(
 
             is LoadingPageCompanion.Result -> {
                 LaunchedEffect(Unit) {
-                    navController.navigate(HomePage)
+                    navController.navigate(HomePage){
+                        popUpTo(HomePage){
+                            inclusive=true
+                        }
+                    }
                 }
             }
 

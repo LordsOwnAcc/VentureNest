@@ -99,24 +99,14 @@ fun StartScreen(windowInsets: WindowInsets,navController: NavController,modifier
         horizontalArrangement = Arrangement.Start
     ) {
 
-        TextButton(onClick = {
 
-navController.navigate(LoginPage)
-
-
-        }) {
-            androidx.compose.material3.Text(
-                text = "Skip",
-                modifier.padding(end = 20.dp)
-            )
-        }
         Row(
             modifier.fillMaxWidth(), horizontalArrangement =
             Arrangement.End
         ) {
             Button(
                 modifier = modifier.fillMaxWidth(), onClick = {
-navController.navigate(SignUpPage)
+navController.navigate(LoginPage)
 
                 }, shape = RoundedCornerShape(25f)
                 , colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)

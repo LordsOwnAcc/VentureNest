@@ -1,7 +1,10 @@
 package com.example.venturenest.ui.theme.Presentation.HomePage
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -75,6 +78,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -108,6 +112,8 @@ import com.example.venturenest.ui.theme.background
 import com.example.venturenest.ui.theme.bg
 import com.example.venturenest.ui.theme.foreground
 import com.google.ai.client.generativeai.type.content
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
 import kotlin.io.path.Path
 import kotlin.io.path.moveTo
@@ -121,11 +127,15 @@ fun HomePage(
 ) {
     HideSystemBars()
     ChangeStatusBarColorEdgeToEdge(Color.Transparent)
+    val context  = LocalContext.current
 
-    val homeViewModel: LoadingStateViewmodel= hiltViewModel()
+    val activity = context as? Activity
+    var backPressedTime by remember { mutableStateOf(0L) }
+    val toast = remember { Toast.makeText(context, "Press back again to exit", Toast.LENGTH_SHORT) }
+
+    val homeViewModel: LoadingStateViewmodel = hiltViewModel()
     val state by homeViewModel.state.collectAsState()
-   var show = remember { mutableStateOf(false) }
-
+    var show = remember { mutableStateOf(false) }
     val schroll = rememberScrollState()
     val infinite = rememberInfiniteTransition()
     val transition by infinite.animateFloat(
@@ -135,31 +145,47 @@ fun HomePage(
     )
 
 
-    Scaffold(contentWindowInsets = window, modifier
-        .padding(bottom = 64.dp).fillMaxSize(),
+    Scaffold(
+        contentWindowInsets = window, modifier
+            .padding(bottom = 64.dp)
+            .fillMaxSize(),
         floatingActionButton = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-            ExtendedFloatingActionButton(onClick = {
-                show.value=true
+                ExtendedFloatingActionButton(onClick = {
+                    show.value = true
+                }, containerColor = background) {
+                    Image(
+                        painter = painterResource(R.drawable.aing),
+                        contentDescription = null,
+                        modifier
+                            .size(25.dp)
+                            .offset(x = -5.dp)
+                    )
+                    Text(
+                        "Chat with VentureBot",
+                        modifier.padding(start = 5.dp),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
-            , containerColor = background) {
-                Image(painter = painterResource(R.drawable.aing)
-                , contentDescription = null
-                ,modifier.size(25.dp).offset(x = -5.dp))
-                Text("Chat with VentureBot"
-                ,modifier.padding(start = 5.dp)
-                , fontWeight = FontWeight.SemiBold)
-            }
-            }
-            }
-        ) {
-
+        }
+    ) {
+BackHandler {
+    val currentTime = System.currentTimeMillis()
+    if (currentTime - backPressedTime < 2000) {
+        toast.cancel()
+        activity?.finish()
+    } else {
+        backPressedTime = currentTime
+        toast.show()
+    }
+}
 
         Box(
             modifier = modifier
                 .fillMaxSize(1f)
                 .background(Color.White)
-                .verticalScroll(rememberScrollState()), contentAlignment = Alignment.TopCenter
+                .verticalScroll(schroll), contentAlignment = Alignment.TopCenter
         ) {
 
 
@@ -170,79 +196,26 @@ fun HomePage(
 //                    .height(200.dp), contentScale = ContentScale.FillBounds
 //            )
             Column(
-                modifier.fillMaxSize()
+                modifier
+                    .fillMaxSize()
                     .windowInsetsPadding(window),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Row (modifier.padding(bottom = 20.dp).fillMaxWidth(0.92f).wrapContentHeight()
-                , verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
-                    ElevatedCard(
-                        modifier.size(60.dp)
-                         ,shape=CircleShape
-                        , colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.img),
-                            contentDescription = null,
-                            modifier.size(80.dp)
-, contentScale = ContentScale.Crop                        )
-                    }
-
-                    Row (modifier.fillMaxWidth().wrapContentHeight()
-                    , horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically){
-                        ElevatedCard(
-                            modifier .padding(end = 10.dp)
-                                .size(40.dp)
-                                .clickable{navController.navigate(ContactPage)}
-
-                            ,shape=RectangleShape
-                            , colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
-                        ) {
-                            Box(Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Settings,
-                                    contentDescription = null,
-                                    modifier.size(20.dp)
-                                        ,
-                                    tint = Color.Black
-                                )
-                            }
-                            }
-                        ElevatedCard(
-                            modifier.size(40.dp)
-                                .clickable{navController.navigate(Profile)}
-                            ,shape= RectangleShape
-                            , colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
-                        ) {
-                            Box(Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Person,
-                                    contentDescription = null,
-                                    modifier.size(20.dp),
-                                    tint = Color.Black
-                                )
-                            }
-                        }
-                    }
-
-                }
-                Text("Hello Entrepreneur!"
-
-                    ,      fontWeight = FontWeight.W600,
-                    fontSize =MaterialTheme.typography.bodyMedium.fontSize,
+              Spacer(modifier.padding(top = 15.dp).height( 80.dp))
+                Text(
+                    "Hello ${Firebase.auth.currentUser?.displayName} !", fontWeight = FontWeight.W600,
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
                     color = Color.Black,
-                    modifier = modifier.fillMaxWidth(0.93f))
-        Text("Ready to Crush it Today ?"
-
-          ,      fontWeight = FontWeight.W600,
-            fontSize =MaterialTheme.typography.titleLarge.fontSize,
-            color = Color.Black,
-            modifier = modifier.fillMaxWidth(0.93f))
+                    modifier = modifier.fillMaxWidth(0.93f)
+                )
+                Text(
+                    "Ready to Crush it Today ?", fontWeight = FontWeight.W600,
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    color = Color.Black,
+                    modifier = modifier.fillMaxWidth(0.93f)
+                )
 
 
 //            }
@@ -277,26 +250,32 @@ fun HomePage(
 //                }
 
 
-Box(modifier.padding(top = 10.dp).fillMaxWidth().height(250.dp)){
-    Column(
-        modifier
-            .padding(15.dp)
-            .fillMaxWidth(1f)
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(30f))
-    ) {
-        CoulageElement(modifier.height(250.dp))
+                Box(modifier
+                    .padding(top = 10.dp)
+                    .fillMaxWidth()
+                    .height(250.dp)) {
+                    Column(
+                        modifier
+                            .padding(15.dp)
+                            .fillMaxWidth(1f)
+                            .wrapContentHeight()
+                            .clip(RoundedCornerShape(30f))
+                    ) {
+                        CoulageElement(modifier.height(250.dp))
 
-    }
+                    }
 
 
-}
-                ElevatedCard(  modifier = modifier.padding(top = 10.dp, bottom = 5.dp)
-                    .fillMaxWidth(0.9f)
-                    .height(60.dp)
-                    // .border(1.dp, Color.Black,RoundedCornerShape(25f))
-                    .clickable {  }, shape = RoundedCornerShape(25f)
-                    , colors = CardDefaults.elevatedCardColors(
+                }
+                ElevatedCard(
+                    modifier = modifier
+                        .padding(top = 10.dp, bottom = 5.dp)
+                        .fillMaxWidth(0.9f)
+                        .height(60.dp)
+                        // .border(1.dp, Color.Black,RoundedCornerShape(25f))
+                        .clickable { },
+                    shape = RoundedCornerShape(25f),
+                    colors = CardDefaults.elevatedCardColors(
                         containerColor = Color.White
 
                     )
@@ -307,14 +286,16 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(250.dp)){
                         modifier = modifier
                             .fillMaxWidth()
                             .height(60.dp)
-                            .background(Color(0x0FA6A5A5)), verticalAlignment = Alignment.CenterVertically,
+                            .background(Color(0x0FA6A5A5)),
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
                             text = "Incubate your Startup",
                             fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                             fontWeight = FontWeight.SemiBold,
-                            overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
+                            overflow = TextOverflow.Ellipsis, modifier = modifier
+                                .fillMaxWidth(0.8f)
                                 .padding(start = 10.dp), textAlign = TextAlign.Start
                         )
 
@@ -330,97 +311,125 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(250.dp)){
 
                 }
 
-                Row (modifier = modifier.padding(top = 5.dp).fillMaxWidth(0.9f)){
-                    ElevatedCard(  modifier = modifier.weight(0.5f)
-                        .fillMaxWidth(0.4f)
-                        .height(100.dp)
-                        .padding(end = 5.dp)
-                        // .border(1.dp, Color.Black,RoundedCornerShape(25f))
-                        .clickable {  }, shape = RoundedCornerShape(25f)
-                        , colors = CardDefaults.elevatedCardColors(
+                Row(modifier = modifier
+                    .padding(top = 5.dp)
+                    .fillMaxWidth(0.9f)) {
+                    ElevatedCard(
+                        modifier = modifier
+                            .weight(0.5f)
+                            .fillMaxWidth(0.4f)
+                            .height(100.dp)
+                            .padding(end = 5.dp)
+                            // .border(1.dp, Color.Black,RoundedCornerShape(25f))
+                            .clickable { },
+                        shape = RoundedCornerShape(25f),
+                        colors = CardDefaults.elevatedCardColors(
                             containerColor = Color.White
 
                         )
                     ) {
 
 
-                        Column (
+                        Column(
                             modifier = modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .background(Color(0x0FA6A5A5))
-                            , verticalArrangement = Arrangement.SpaceEvenly
+                                .background(Color(0x0FA6A5A5)),
+                            verticalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
                                 text = "Join Us",
                                 fontSize = MaterialTheme.typography.labelSmall.fontSize,
                                 fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp), textAlign = TextAlign.Start
-                          , color = Color.Gray  )
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = modifier
+                                    .fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp),
+                                textAlign = TextAlign.Start,
+                                color = Color.Gray
+                            )
                             Text(
                                 text = "E-Cell Club",
                                 fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                                 fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp), textAlign = TextAlign.Start
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = modifier
+                                    .fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp),
+                                textAlign = TextAlign.Start
                             )
                             Text(
                                 text = "Click here to join us",
                                 fontSize = MaterialTheme.typography.labelSmall.fontSize,
                                 fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp, top = 0.dp), textAlign = TextAlign.Start
-                                , color = Color.Gray  )
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = modifier
+                                    .fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp, top = 0.dp),
+                                textAlign = TextAlign.Start,
+                                color = Color.Gray
+                            )
 
 
                         }
 
                     }
 
-                    ElevatedCard(  modifier = modifier.weight(0.5f)
-                        .fillMaxWidth(0.4f)
-                        .height(100.dp)
-                        .padding(start = 5.dp)
-                        // .border(1.dp, Color.Black,RoundedCornerShape(25f))
-                        .clickable {  }, shape = RoundedCornerShape(25f)
-                        , colors = CardDefaults.elevatedCardColors(
+                    ElevatedCard(
+                        modifier = modifier
+                            .weight(0.5f)
+                            .fillMaxWidth(0.4f)
+                            .height(100.dp)
+                            .padding(start = 5.dp)
+                            // .border(1.dp, Color.Black,RoundedCornerShape(25f))
+                            .clickable { },
+                        shape = RoundedCornerShape(25f),
+                        colors = CardDefaults.elevatedCardColors(
                             containerColor = Color.White
 
                         )
                     ) {
 
 
-
-                        Column (
+                        Column(
                             modifier = modifier
                                 .fillMaxWidth()
-                                .fillMaxHeight()
-                            , verticalArrangement = Arrangement.SpaceEvenly
+                                .fillMaxHeight(), verticalArrangement = Arrangement.SpaceEvenly
 
                         ) {
                             Text(
                                 text = "Join Us",
                                 fontSize = MaterialTheme.typography.labelSmall.fontSize,
                                 fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp, top = 0.dp), textAlign = TextAlign.Start
-                                , color = Color.Gray  )
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = modifier
+                                    .fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp, top = 0.dp),
+                                textAlign = TextAlign.Start,
+                                color = Color.Gray
+                            )
 
                             Text(
                                 text = "Venture Club",
                                 fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                                 fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp), textAlign = TextAlign.Start
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = modifier
+                                    .fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp),
+                                textAlign = TextAlign.Start
                             )
                             Text(
                                 text = "Click here to join us",
                                 fontSize = MaterialTheme.typography.labelSmall.fontSize,
                                 fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp, top = 0.dp), textAlign = TextAlign.Start
-                                , color = Color.Gray  )
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = modifier
+                                    .fillMaxWidth(0.8f)
+                                    .padding(start = 10.dp, top = 0.dp),
+                                textAlign = TextAlign.Start,
+                                color = Color.Gray
+                            )
 
 
                         }
@@ -429,8 +438,6 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(250.dp)){
 
 
                 }
-
-
 
 
 //
@@ -791,56 +798,66 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(250.dp)){
 //                       }
 //                       is HomePageCompanion.Result->{
 //
-                           Box(
-                               modifier = modifier
-                                   .padding(top = 10.dp, bottom = 0.dp)
-                                   .fillMaxWidth()
+                Box(
+                    modifier = modifier
+                        .padding(top = 10.dp, bottom = 0.dp)
+                        .fillMaxWidth()
 
-                                   .height(250.dp)
-                           ) {
-                              //
+                        .height(250.dp)
+                ) {
+                    //
 //
-                               Column(
-                                   modifier
+                    Column(
+                        modifier
 
-                                       .padding(bottom = 0.dp
-                                       , top = 20.dp)
-                                       .fillMaxWidth()
-                                       .fillMaxHeight(),
-                                   verticalArrangement = Arrangement.SpaceEvenly,
-                                   horizontalAlignment = Alignment.CenterHorizontally
-                               ) {
-                                   Row(modifier.fillMaxWidth(0.88f).height(40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                            .padding(
+                                bottom = 0.dp, top = 20.dp
+                            )
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            modifier
+                                .fillMaxWidth(0.88f)
+                                .height(40.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
 
-                                       Text(
-                                           "Our Partners", fontWeight = FontWeight.W600,
-                                           fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                                           color = Color.Black,
-                                           modifier = modifier.fillMaxWidth(0.5f)
-                                       )
-                                       TextButton(onClick = {
-                                           navController.navigate(partnerScreen(search = "",
-                                               0xFFF29727,""))
-                                       }) {
-                                           Text("See more")
-                                       }
-                                   }
-                                   val scrollState = rememberScrollState()
-                                   Row(
-                                       modifier
-                                           .padding(top = 0.dp)
-                                           .fillMaxWidth(0.94f),
-                                       verticalAlignment = Alignment.CenterVertically,
-                                       horizontalArrangement = Arrangement.SpaceBetween
-                                   ) {
+                            Text(
+                                "Our Partners", fontWeight = FontWeight.W600,
+                                fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                                color = Color.Black,
+                                modifier = modifier.fillMaxWidth(0.5f)
+                            )
+                            TextButton(onClick = {
+                                navController.navigate(
+                                    partnerScreen(
+                                        search = "",
+                                        0xFFF29727, ""
+                                    )
+                                )
+                            }) {
+                                Text("view all", color = Color.Gray)
+                            }
+                        }
+                        val scrollState = rememberScrollState()
+                        Row(
+                            modifier
+                                .padding(top = 0.dp)
+                                .fillMaxWidth(0.94f),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
 
 
+                        }
+                        PartnerPages(schroll = scrollState, list = state.Data.partner)
 
-                                   }
-                                   PartnerPages(schroll = scrollState, list = state.Data.partner)
-
-                               }
-                           }
+                    }
+                }
 
 
                 Box(
@@ -853,30 +870,52 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(250.dp)){
 
                     Column(
                         modifier
-                            .padding(bottom = 0.dp
-                                , top = 0.dp)
+                            .padding(
+                                bottom = 0.dp, top = 0.dp
+                            )
                             .fillMaxWidth()
                             .fillMaxHeight(),
                         verticalArrangement = Arrangement.SpaceEvenly,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                       Row(modifier.fillMaxWidth(0.88f).height(40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row(
+                            modifier
+                                .fillMaxWidth(0.88f)
+                                .height(40.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
 
-                           Text(
-                               "Council Members", fontWeight = FontWeight.W600,
-                               fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                               color = Color.Black,
-                               modifier = modifier.fillMaxWidth(0.5f)
-                           )
+                            Text(
 
-                           TextButton(onClick = {
-                               navController.navigate(CouncilScreen(
-                                   search = "", 0xFFF29727,""
-                               ))
-                           }) {
-                               Text("See more")
-                           }
-                       }
+
+                                "Council Members", fontWeight = FontWeight.SemiBold
+
+
+
+
+
+
+
+
+
+
+                                ,
+                                fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                                color = Color.Black,
+                                modifier = modifier.fillMaxWidth(0.5f)
+                            )
+
+                            TextButton(onClick = {
+                                navController.navigate(
+                                    CouncilScreen(
+                                        search = "", 0xFFF29727, ""
+                                    )
+                                )
+                            }) {
+                                Text("view all", color = Color.Gray)
+                            }
+                        }
 
                         val scrollState = rememberScrollState()
                         Row(
@@ -1105,44 +1144,114 @@ Box(modifier.padding(top = 10.dp).fillMaxWidth().height(250.dp)){
 
 
 
-                Spacer(modifier.height(40.dp))
-
-
-
-
-
-
-
-
+            Spacer(modifier.height(40.dp))
 
 
         }
+        Column (modifier = modifier.fillMaxSize()
+            ,
+            verticalArrangement = Arrangement.Top
+        , horizontalAlignment = Alignment.CenterHorizontally){
+            Row(
+                modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .padding(bottom = 20.dp, start = 15.dp, end = 15.dp)
+                    .background(Color.White)
+                    .padding(bottom = 10.dp)
+                    .windowInsetsPadding(window)
+
+
+                    ,
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                ElevatedCard(
+                    modifier.size(55.dp),
+                    shape = CircleShape,
+                    colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.img),
+                        contentDescription = null,
+                        modifier.size(100.dp), contentScale = ContentScale.Crop
+                    )
+                }
+
+                Row(
+                    modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ElevatedCard(
+                        modifier
+                            .padding(end = 10.dp)
+                            .size(40.dp)
+                            .clickable { navController.navigate(ContactPage) },
+                        shape = RectangleShape,
+                        colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+                    ) {
+                        Box(
+                            Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Settings,
+                                contentDescription = null,
+                                modifier.size(20.dp),
+                                tint = Color.Black
+                            )
+                        }
+                    }
+                    ElevatedCard(
+                        modifier
+                            .size(40.dp)
+                            .clickable { navController.navigate(Profile) },
+                        shape = RectangleShape,
+                        colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+                    ) {
+                        Box(
+                            Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Person,
+                                contentDescription = null,
+                                modifier.size(20.dp),
+                                tint = Color.Black
+                            )
+                        }
+                    }
+                }
+
+            }
+        }
+
+
         AiDialog(
             show,
             modifier
-            )
+        )
 
-    }}
-
-
-
-
-
-
-
+    }
+}
 
 
 @Composable
 fun ChatBubbleWithArrow(message: String, isUser: Boolean) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
     ) {
         var displayedText by remember { mutableStateOf("") }
 
         LaunchedEffect(message) {
             displayedText = "" // Reset
-           message.forEachIndexed { index, _ ->
+            message.forEachIndexed { index, _ ->
                 displayedText = message.substring(0, index + 1)
                 delay(5) // Delay between each character
             }
@@ -1159,8 +1268,11 @@ fun ChatBubbleWithArrow(message: String, isUser: Boolean) {
                 )
                 .padding(12.dp)
         ) {
-            Text(text = if (!isUser) displayedText else message, color = Color.Black
-                , fontSize = 16.sp)
+            Text(
+                text = if (!isUser) displayedText else message,
+                color = Color.Black,
+                fontSize = 16.sp
+            )
         }
         Canvas(modifier = Modifier.size(10.dp)) {
             drawPath(

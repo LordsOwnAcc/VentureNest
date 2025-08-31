@@ -151,7 +151,7 @@ fun LoginPage(windowInsets: WindowInsets,navController: NavController,modifier: 
         ) {
 
 
-            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.login))
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.man))
             val progress by animateLottieCompositionAsState(composition, iterations = 500)
             LottieAnimation(
                 composition = composition,

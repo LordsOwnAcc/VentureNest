@@ -258,7 +258,7 @@ fun ReEvent(
             Column(
                 modifier = Modifier
                     .fillMaxSize(1f)
-                    .verticalScroll(rememberScrollState())
+
             ) {
 
 
@@ -266,7 +266,7 @@ fun ReEvent(
                     modifier
                         .padding(bottom = 10.dp)
                         .fillMaxWidth()
-                        .height(50.dp), horizontalArrangement = Arrangement.SpaceEvenly,
+                        .height(55.dp), horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
@@ -279,7 +279,7 @@ fun ReEvent(
                                 RoundedCornerShape(15f)
                             ),
                         horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.Bottom
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         TextField(
                             value = search,
@@ -295,7 +295,7 @@ fun ReEvent(
                                 focusedIndicatorColor = Color.Transparent
                             ),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            placeholder = { Text(text = "Search",modifier.offset(y = -4.dp)
+                            placeholder = { Text(text = "Search",modifier.offset(y = -1.dp)
                                 , color = Color.Gray) },
                             leadingIcon = {
                                 Icon(
@@ -355,7 +355,9 @@ fun ReEvent(
                         modifier
 
 
-                            .fillMaxSize()
+                            .fillMaxWidth()
+                            .fillMaxHeight(1f)
+
                             .background(Color.White)
                             .padding(bottom = 10.dp)
                             .padding(top = 10.dp), verticalArrangement = Arrangement.Top,
@@ -523,18 +525,18 @@ fun ReEvent(
                         }
 
 
-                        FlowRow(
+                        Column(
                             modifier
-                                .padding(bottom = 400.dp)
 
                                 // .clip(RoundedCornerShape(topEnd = 80f, topStart = 80f))
                                 .fillMaxWidth(0.9f)
                                 .fillMaxHeight(1f)
 
+                                .verticalScroll(rememberScrollState())
                                 .background(
                                    Color.White
                                 ), verticalArrangement = Arrangement.Top,
-                            horizontalArrangement = Arrangement.Absolute.SpaceBetween
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
 //               when(state.state){
@@ -670,8 +672,10 @@ color = colorlist[state.Data.events.indexOf(it)%4])
 
 
                             }
-                            Dialog(show = selected1, events, modifier, color = selectedColor)
 
+                            Dialog(show = selected1, events, modifier, color = selectedColor)
+Spacer(modifier.height(if (offsetY.value > (minOffset+maxOffset)/2) 400.dp else 100.dp)
+)
                         }
                     }
 

@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +41,10 @@ fun PartnerPage(
     modifier: Modifier = Modifier,
     schroll :ScrollState
     ,list :List<councilmembers>
+
+    ,isVisible: MutableState<Boolean>
+    ,image: MutableState<String>,
+    name : MutableState<String>
 ) {
 
 
@@ -81,7 +86,12 @@ fun PartnerPage(
                             contentDescription = iconUrl.imgName,
                             modifier.fillMaxWidth()
                                 .height(150.dp)
-                                .background(Color.White), contentScale = ContentScale.Fit
+                                .background(Color.White)
+                                .clickable{
+                                    name.value = iconUrl.name
+                                    image.value=iconUrl.imgpath
+                                    isVisible.value=true
+                                }, contentScale = ContentScale.Fit
                         )
 
                         Row(

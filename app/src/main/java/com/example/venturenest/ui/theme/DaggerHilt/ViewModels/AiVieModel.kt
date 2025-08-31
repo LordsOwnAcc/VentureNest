@@ -2,9 +2,11 @@ package com.example.venturenest.ui.theme.DaggerHilt.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.venturenest.BuildConfig
 import com.example.venturenest.ui.theme.DaggerHilt.Repoitoory.AuthRepo
 import com.example.venturenest.ui.theme.DaggerHilt.States.Ai
 import com.example.venturenest.ui.theme.DaggerHilt.States.AiStatesCompanion
+
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.GenerationConfig
 
@@ -24,7 +26,7 @@ class AiViewModel @Inject constructor(
 
     private val model = GenerativeModel(
         modelName = "gemini-2.0-flash",
-        apiKey = "AIzaSyDq9bxQWy4tKSwL0gXgP1Uw5Bw7UPqqu6k"
+        apiKey = BuildConfig.API_KEY
 
     )
 

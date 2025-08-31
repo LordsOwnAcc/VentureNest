@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,7 +78,7 @@ fun startupsScreen(
             modifier
                 .padding(bottom = 10.dp)
                 .fillMaxWidth(0.9f)
-                .height(50.dp), horizontalArrangement = Arrangement.SpaceEvenly,
+                .height(55.dp), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
@@ -100,13 +102,13 @@ fun startupsScreen(
                         .fillMaxSize(),
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.White,
-
+textColor = Color.Gray,
 
                         unfocusedIndicatorColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent
                     ),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    placeholder = { Text(text = "Search in Startups",modifier.offset(y=-4.dp)
+                    placeholder = { Text(text = "Search in Startups",modifier
                     , color = Color.Gray) },
                     leadingIcon = {
                         Icon(
@@ -114,6 +116,7 @@ fun startupsScreen(
                             contentDescription = "",modifier.scale(0.8f)
                         )
                     },
+                    textStyle = TextStyle(fontSize = MaterialTheme.typography.body1.fontSize),
                     maxLines = 1,
                     trailingIcon = {
                         if (search != "") {

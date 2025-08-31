@@ -1,5 +1,6 @@
 package com.example.venturenest.ui.theme.DaggerHilt.Module
 
+import com.example.venturenest.BuildConfig
 import com.example.venturenest.ui.theme.DaggerHilt.Interface.getCouncil
 import com.example.venturenest.ui.theme.DaggerHilt.Interface.getNews
 import com.example.venturenest.ui.theme.DaggerHilt.Interface.getPartners
@@ -39,8 +40,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+
         return Retrofit.Builder()
-            .baseUrl("https://venturenest.onrender.com")
+            .baseUrl(BuildConfig.url)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

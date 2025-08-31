@@ -1,5 +1,6 @@
 package com.example.venturenest.ui.theme.Presentation.AchievementsPage
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ import androidx.compose.material.BottomSheetValue
 
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 
@@ -104,6 +106,7 @@ import kotlinx.coroutines.launch
 import kotlin.collections.filter
 import kotlin.text.contains
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ExpandableBottoSheet(
@@ -122,7 +125,7 @@ fun ExpandableBottoSheet(
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(0, 0f, { 4 })
     val pagerState2 = rememberPagerState(0, 0f, { 4 })
-
+    var searchIn by remember { mutableStateOf("council members") }
 
     val achievementViewModel: LoadingStateViewmodel = hiltViewModel()
     val state by achievementViewModel.state.collectAsState()
@@ -476,7 +479,7 @@ fun ExpandableBottoSheet(
                     modifier
                         .padding(bottom = 10.dp)
                         .fillMaxWidth()
-                        .height(50.dp), horizontalArrangement = Arrangement.SpaceEvenly,
+                        .height(55.dp), horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
@@ -500,13 +503,14 @@ fun ExpandableBottoSheet(
                             colors = TextFieldDefaults.textFieldColors(
                                 backgroundColor = Color.White,
 
-
+textColor = Color.Gray,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent
                             ),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            placeholder = { Text(text = "Search",modifier.offset(y = -4.dp)
+                            placeholder = { Text(text = "Search in ${searchIn}",modifier
                             , color = Color.Gray) },
+                            textStyle = TextStyle(fontSize = MaterialTheme.typography.body1.fontSize),
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Search,
@@ -525,7 +529,7 @@ fun ExpandableBottoSheet(
                                         modifier.clickable {
                                             search = ""
 
-                                        }.scale(0.8f),
+                                        }.scale(0.8f).offset(y = -4.dp),
                                          tint = Color.Gray
                                     )
                                 }
@@ -547,7 +551,7 @@ fun ExpandableBottoSheet(
 
 
                     if (pagerState.currentPage == 0) {
-
+                     searchIn = "council members"
                         Column(
                             modifier.fillMaxSize(1f),
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -770,7 +774,7 @@ fun ExpandableBottoSheet(
 
 
                     } else if (pagerState.currentPage == 1) {
-
+searchIn = "partners"
                         Column(
                             modifier.fillMaxSize(1f),
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -994,6 +998,7 @@ fun ExpandableBottoSheet(
 
 
                     } else if (pagerState.currentPage == 2) {
+                        searchIn = "startup type"
                         val data = state.Data.startUp.count {
                             it.StartupType == "Virtual" &&
                                     (it.StartupName.contains(search, ignoreCase = true) ||
@@ -1109,6 +1114,7 @@ fun ExpandableBottoSheet(
 
 
                     } else if (pagerState.currentPage == 3) {
+                        searchIn = "startup status"
                         val data1 = state.Data.startUp.count {
                             it.RegistrationStatus == "Not Registered" &&
                                     (it.StartupName.contains(search, ignoreCase = true) ||

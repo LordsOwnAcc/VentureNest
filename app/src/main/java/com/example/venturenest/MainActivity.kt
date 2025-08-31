@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +32,7 @@ import com.example.bottombar.AnimatedBottomBar
 import com.example.bottombar.components.BottomBarItem
 import com.example.bottombar.model.ItemStyle
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AuthViewModel
+import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.LoadingStateViewmodel
 import com.example.venturenest.ui.theme.DataBase.DataViewModel
 import com.example.venturenest.ui.theme.Navigation.AboutECell
 import com.example.venturenest.ui.theme.Navigation.AboutVentureNest
@@ -71,6 +73,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val autViewmodel: AuthViewModel = hiltViewModel()
             val dataViewModel: DataViewModel = hiltViewModel()
+            val homeViewModel: LoadingStateViewmodel = hiltViewModel()
 
             val state by autViewmodel.authState.collectAsState()
             var navController = rememberNavController()
@@ -138,27 +141,59 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         startDestination = if (state.state == AuthStateCompanion.UserExist) Start else StartScreen,
                         enterTransition = {
-                            slideIntoContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Left,
-                                tween(300)
-                            )
+                            when (targetState.destination.route) {
+                                "com.example.venturenest.ui.theme.Navigation.HomePage" -> {
+                                    slideIntoContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.Right,
+                                        animationSpec = tween(
+                                            durationMillis = 100,
+                                            easing = FastOutSlowInEasing
+                                        )
+                                    )
+                                }
+                                else -> {
+                                    slideIntoContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.Left,
+                                        animationSpec = tween(
+                                            durationMillis = 100,
+                                            easing = FastOutSlowInEasing
+                                        )
+                                    )
+                                }
+                            }
                         },
                         exitTransition = {
-                            slideOutOfContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Left,
-                                tween(300)
-                            )
+                            when (targetState.destination.route) {
+                                "com.example.venturenest.ui.theme.Navigation.HomePage" -> {
+                                    slideOutOfContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.Left,
+                                        animationSpec = tween(
+                                            durationMillis = 100,
+                                            easing = FastOutSlowInEasing
+                                        )
+                                    )
+                                }
+                                else -> {
+                                    slideOutOfContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.Right,
+                                        animationSpec = tween(
+                                            durationMillis = 100,
+                                            easing = FastOutSlowInEasing
+                                        )
+                                    )
+                                }
+                            }
                         },
                         popEnterTransition = {
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
-                                tween(300)
+                                tween(100, easing = FastOutSlowInEasing)
                             )
                         },
                         popExitTransition = {
                             slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
-                                tween(300)
+                                tween(100, easing = FastOutSlowInEasing)
                             )
                         }
 
@@ -168,7 +203,7 @@ class MainActivity : ComponentActivity() {
 
                             com.example.venturenest.ui.theme.Presentation.HomePage.HomePage(
                                 window = windowInsets, navController = navController
-                            )
+                            , homeViewModel = homeViewModel)
                         }
 
                         composable<EventsPage> {

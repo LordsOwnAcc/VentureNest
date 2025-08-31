@@ -1,5 +1,5 @@
 import org.jetbrains.kotlin.fir.declarations.builder.buildScript
-
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -11,11 +11,24 @@ plugins {
 
 }
 
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
+val url =localProperties["url"] as String
+val apiKey = localProperties["API_KEY"] as String
+
+android {
+    // ...
+
+}
+
 android {
     namespace = "com.example.venturenest"
     compileSdk = 34
 
     defaultConfig {
+
         applicationId = "com.example.venturenest"
         minSdk = 26
         targetSdk = 34
@@ -26,7 +39,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
+        buildConfigField("String", "url", "\"$url\"")
+
     }
+
+
 
 
     buildTypes {
@@ -48,6 +66,9 @@ android {
     }
     buildFeatures {
         compose = true
+
+            buildConfig = true
+        
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"

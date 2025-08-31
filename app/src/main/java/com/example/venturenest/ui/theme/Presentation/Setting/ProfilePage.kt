@@ -195,15 +195,14 @@ fun ProfilePage(modifier: Modifier = Modifier
                             .clip(CircleShape)
                             .clickable {  }
                     ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(currentUser!!.photoUrl)
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = "Profile Image",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
+                        currentUser?.photoUrl?.let { imageUrl ->
+                            AsyncImage(
+                                model = imageUrl.toString(),
+                                contentDescription = "Profile Image",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
 
 
                     }
@@ -312,25 +311,27 @@ fun ProfilePage(modifier: Modifier = Modifier
             }
         ConfirmationDialog(isVisible = selected, actionText = actionText, onProceed = {
             if (actionText=="Logout"){
+                navController.navigate(StartScreen){
+                    popUpTo(StartScreen){
+                        inclusive = true
+                    }
+                }
                 authViewModel.SignOut()
                 authViewModel._authState.value=authViewModel._authState.value.copy(
                     state = AuthStateCompanion.NoUser
                 )
+
+            }else{
+
                 navController.navigate(StartScreen){
                     popUpTo(StartScreen){
                         inclusive = true
                     }
                 }
-            }else{
                 currentUser?.delete()
                 authViewModel._authState.value=authViewModel._authState.value.copy(
                     state = AuthStateCompanion.NoUser
                 )
-                navController.navigate(StartScreen){
-                    popUpTo(StartScreen){
-                        inclusive = true
-                    }
-                }
             }
         }, onCancel = {selected=false} ) {selected=false }
         }

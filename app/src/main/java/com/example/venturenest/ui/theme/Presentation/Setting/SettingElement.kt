@@ -56,6 +56,7 @@ fun SettingElement(modifier: Modifier,
                     fontWeight = FontWeight.SemiBold,
                     overflow = TextOverflow.Ellipsis, modifier = modifier.fillMaxWidth(0.8f)
                         .padding(start = 10.dp), textAlign = TextAlign.Start
+                    , color = Color.Black
                 )
 
             Icon(

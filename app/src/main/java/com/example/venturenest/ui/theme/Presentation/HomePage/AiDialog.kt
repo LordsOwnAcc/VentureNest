@@ -306,6 +306,7 @@ fun AiDialog(show: MutableState<Boolean>, modifier: Modifier) {
                                 unfocusedIndicatorColor = Color.Transparent,
                                 disabledIndicatorColor = Color.Transparent
 
+
                             ),
                             maxLines = 3
                             , placeholder = {

@@ -19,11 +19,14 @@ import com.example.venturenest.ui.theme.DaggerHilt.photo
 import com.example.venturenest.ui.theme.DataBase.AppData
 import com.example.venturenest.ui.theme.DataBase.dataRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 
 
 import kotlinx.coroutines.launch
@@ -38,31 +41,32 @@ class LoadingStateViewmodel @Inject constructor(
     val _state = MutableStateFlow(LoadingPageState())
     val state = _state.asStateFlow()
 
-init {
-    viewModelScope.launch {
-        if (databaseRepo.getAppdata.first().heroSection.isEmpty()) {
-            fetchData()
-            addData()
-        }else{
-            val data = databaseRepo.getAppdata.first()
-            _state.value = _state.value.copy(
-                state= LoadingPageCompanion.Result
-            , Data = AppData(
-                    id = 1,
-                    events = data!!.events,
-                    heroSection=data!!.heroSection,
-                    photo = data!!.photo,
-                    patents = data!!.patents,
-                    sucessStories = data!!.sucessStories,
-                    councilmembers = data!!.councilmembers,
-                    partner = data!!.partner,
-                    startUp = data!!.startUp
+    init {
+        viewModelScope.launch {
+            val data = databaseRepo.getAppdata.firstOrNull()
 
+            if (data == null || data.heroSection.isNullOrEmpty()) {
+                fetchData()
+                addData()
+            } else {
+                _state.value = _state.value.copy(
+                    state = LoadingPageCompanion.Result,
+                    Data = AppData(
+                        id = 1,
+                        events = data.events,
+                        heroSection = data.heroSection,
+                        photo = data.photo,
+                        patents = data.patents,
+                        sucessStories = data.sucessStories,
+                        councilmembers = data.councilmembers,
+                        partner = data.partner,
+                        startUp = data.startUp
+                    )
                 )
-            )
+            }
         }
     }
-}
+
     fun addData() {
         viewModelScope.launch {
             val data = databaseRepo.getAppdata.first()
@@ -97,114 +101,97 @@ init {
     }
 
 
-        @SuppressLint("SuspiciousIndentation")
-        fun fetchData(){
- _state.value = _state.value.copy(
-     state = LoadingPageCompanion.Loading
- )
+    @SuppressLint("SuspiciousIndentation")
+    fun fetchData() {
+        _state.value = _state.value.copy(state = LoadingPageCompanion.Loading)
+
         viewModelScope.launch {
-            val data = databaseRepo.getAppdata.first()
+            val currentData = databaseRepo.getAppdata.firstOrNull() // might be null on first launch
+
             try {
+                // Launch all network calls in parallel
+                val eventsDeferred = async { datarepo.upcominEvents() }
+                val heroSectionDeferred = async { datarepo.getheroSection() }
+                val patentsDeferred = async { datarepo.getPatents() }
+                val partnersDeferred = async { datarepo.getPartners() }
+                val successDeferred = async { datarepo.getSuccess() }
+                val councilDeferred = async { datarepo.getCouncilmembe() }
+                val startupsDeferred = async { datarepo.getStartups() }
+                val photosDeferred = async { datarepo.getphoto() }
 
-                val events = datarepo.upcominEvents()
-                val heroSection = datarepo.getheroSection()
-                val patents =datarepo.getPatents()
-                val partner =datarepo.getPartners()
-                val sucessStories =datarepo.getSuccess()
-                val councilmembers =datarepo.getCouncilmembe()
-                val startUp =datarepo.getStartups()
-                val photo =datarepo.getphoto()
-                if (events.isSuccessful && !events.body().isNullOrEmpty() ||
-                    heroSection.isSuccessful && !heroSection.body().isNullOrEmpty()
-                    || partner.isSuccessful && !partner.body().isNullOrEmpty()
-                    || patents.isSuccessful && !patents.body().isNullOrEmpty()
-                    || sucessStories.isSuccessful && !sucessStories.body().isNullOrEmpty()
-                    || councilmembers.isSuccessful && !councilmembers.body().isNullOrEmpty()
-                    ||startUp.isSuccessful && !startUp.body().isNullOrEmpty()
-                    ||photo.isSuccessful && !photo.body().isNullOrEmpty()){
+                val events = eventsDeferred.await()
+                val heroSection = heroSectionDeferred.await()
+                val patents = patentsDeferred.await()
+                val partner = partnersDeferred.await()
+                val successStories = successDeferred.await()
+                val councilMembers = councilDeferred.await()
+                val startUps = startupsDeferred.await()
+                val photos = photosDeferred.await()
 
-                    databaseRepo.insertAppData(
-                        AppData(
-                            id =1,
-                            events=events.body()!!
-                            , heroSection = heroSection.body()!!,
-                            patents=patents.body()!!,
-                            sucessStories=sucessStories.body()!!,
-                            startUp = startUp.body()!!,
-                            councilmembers = councilmembers.body()!!
-                            , partner = partner.body()!!, photo = photo.body()!!
-                        )
+                // Extract body from each response or fallback to empty list
+                val eventsData = events.body().orEmpty()
+                val heroData = heroSection.body().orEmpty()
+                val patentsData = patents.body().orEmpty()
+                val partnersData = partner.body().orEmpty()
+                val successData = successStories.body().orEmpty()
+                val councilData = councilMembers.body().orEmpty()
+                val startupData = startUps.body().orEmpty()
+                val photoData = photos.body().orEmpty()
 
+                val isDataAvailable = listOf(
+                    eventsData, heroData, patentsData, partnersData,
+                    successData, councilData, startupData, photoData
+                ).any { it.isNotEmpty() }
+
+                if (isDataAvailable) {
+                    val newData = AppData(
+                        id = 1,
+                        events = eventsData,
+                        heroSection = heroData,
+                        patents = patentsData,
+                        sucessStories = successData,
+                        councilmembers = councilData,
+                        partner = partnersData,
+                        startUp = startupData,
+                        photo = photoData
                     )
 
-
-
-_state.value = _state.value.copy(
-    state = LoadingPageCompanion.Result,
-    Data = AppData(
-        id = 1,
-        events = data!!.events,
-        heroSection=data!!.heroSection,
-        photo = data!!.photo,
-        patents = data!!.patents,
-        sucessStories = data!!.sucessStories,
-        councilmembers = data!!.councilmembers,
-        partner = data!!.partner,
-        startUp = data!!.startUp
-
-    )
-)
-
-                }else{
-
+                    databaseRepo.insertAppData(newData)
 
                     _state.value = _state.value.copy(
-                        state = LoadingPageCompanion.Error,
-                        Data = AppData(
-                            id = 1,
-                            events = data!!.events,
-                            heroSection=data!!.heroSection,
-                            photo = data!!.photo,
-                            patents = data!!.patents,
-                            sucessStories = data!!.sucessStories,
-                            councilmembers = data!!.councilmembers,
-                            partner = data!!.partner,
-                            startUp = data!!.startUp
-
-                        )
-                    , error = "Check internet connection and try again"
+                        state = LoadingPageCompanion.Result,
+                        Data = newData
                     )
-
-
+                } else {
+                    // If all data is empty, show error
+                    _state.value = _state.value.copy(
+                        state = LoadingPageCompanion.Error,
+                        error = "No data received from server."
+                    )
                 }
-            }catch (e: Exception){
+
+            } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     state = LoadingPageCompanion.Error,
 
-                     error = e.localizedMessage
+                    error = "Network error: ${e.localizedMessage ?: "Unknown error"}"
                 )
-
-
             }
-
-            }
-
-
-
         }
-
-
-
-
-
-
-
-
-
-
-
-
     }
+
+
+
+
+
+
+
+
+
+
+
+
+}
 
 
 

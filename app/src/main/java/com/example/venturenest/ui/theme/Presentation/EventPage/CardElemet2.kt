@@ -167,7 +167,7 @@ fun CardElement2(
                                 .padding(start = 5.dp), tint = Color.White
                         )
                         Text(
-                            text = "CGC Jhanjeri",
+                            text = "CGCU Mohali",
                             maxLines = 2,
                             textAlign = TextAlign.Start,
                             modifier = modifier.fillMaxWidth().padding(start = 5.dp),
@@ -191,13 +191,14 @@ fun CardElement2(
 
                     Box(
                         modifier.height(25.dp).width(25.dp)
-                            .background(Color.White)
-                            .border(1.dp, Color.Black, RectangleShape),
+                            .background(Color.White.copy(alpha = 0.5f)),
+                         //   .border(1.dp, Color.Black, RectangleShape),
                         contentAlignment = Alignment.TopStart
                     ) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = null, modifier = modifier.scale(0.5f)
+                            , tint = Color.Black.copy(alpha = 0.5f)
                         )
                     }
                 }

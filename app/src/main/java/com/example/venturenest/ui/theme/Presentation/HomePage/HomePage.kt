@@ -5,15 +5,24 @@ import android.app.Activity
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -58,6 +67,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -85,6 +95,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -124,16 +136,22 @@ import kotlin.io.path.moveTo
 fun HomePage(
     modifier: Modifier = Modifier,
     window: WindowInsets, navController: NavController
+    , homeViewModel: LoadingStateViewmodel
 ) {
+    val animationState = remember { MutableTransitionState(false) }
+
     HideSystemBars()
     ChangeStatusBarColorEdgeToEdge(Color.Transparent)
     val context  = LocalContext.current
-
+    val image= remember { mutableStateOf("") }
+    val name = remember { mutableStateOf("") }
+    var isVisible = remember {
+        mutableStateOf(false)
+    }
     val activity = context as? Activity
     var backPressedTime by remember { mutableStateOf(0L) }
     val toast = remember { Toast.makeText(context, "Press back again to exit", Toast.LENGTH_SHORT) }
 
-    val homeViewModel: LoadingStateViewmodel = hiltViewModel()
     val state by homeViewModel.state.collectAsState()
     var show = remember { mutableStateOf(false) }
     val schroll = rememberScrollState()
@@ -165,6 +183,7 @@ fun HomePage(
                         "Chat with VentureBot",
                         modifier.padding(start = 5.dp),
                         fontWeight = FontWeight.SemiBold
+                        , color = Color.Black
                     )
                 }
             }
@@ -203,19 +222,21 @@ BackHandler {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-              Spacer(modifier.padding(top = 15.dp).height( 80.dp))
-                Text(
-                    "Hello ${Firebase.auth.currentUser?.displayName} !", fontWeight = FontWeight.W600,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    color = Color.Black,
-                    modifier = modifier.fillMaxWidth(0.93f)
-                )
-                Text(
-                    "Ready to Crush it Today ?", fontWeight = FontWeight.W600,
-                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                    color = Color.Black,
-                    modifier = modifier.fillMaxWidth(0.93f)
-                )
+        Spacer(modifier
+            .padding(top = 15.dp)
+            .height(80.dp))
+//                Text(
+//                    "Hello ${Firebase.auth.currentUser?.displayName} !", fontWeight = FontWeight.W600,
+//                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+//                    color = Color.Black,
+//                    modifier = modifier.fillMaxWidth(0.93f)
+//                )
+//                Text(
+//                    "Ready to Crush it Today ?", fontWeight = FontWeight.W600,
+//                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+//                    color = Color.Black,
+//                    modifier = modifier.fillMaxWidth(0.93f)
+//                )
 
 
 //            }
@@ -297,6 +318,7 @@ BackHandler {
                             overflow = TextOverflow.Ellipsis, modifier = modifier
                                 .fillMaxWidth(0.8f)
                                 .padding(start = 10.dp), textAlign = TextAlign.Start
+                            , color = Color.Black
                         )
 
                         Icon(
@@ -357,6 +379,7 @@ BackHandler {
                                     .fillMaxWidth(0.8f)
                                     .padding(start = 10.dp),
                                 textAlign = TextAlign.Start
+                                , color = Color.Black
                             )
                             Text(
                                 text = "Click here to join us",
@@ -418,6 +441,7 @@ BackHandler {
                                     .fillMaxWidth(0.8f)
                                     .padding(start = 10.dp),
                                 textAlign = TextAlign.Start
+                                , color = Color.Black
                             )
                             Text(
                                 text = "Click here to join us",
@@ -827,7 +851,7 @@ BackHandler {
                         ) {
 
                             Text(
-                                "Our Partners", fontWeight = FontWeight.W600,
+                                "Partners", fontWeight = FontWeight.W600,
                                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
                                 color = Color.Black,
                                 modifier = modifier.fillMaxWidth(0.5f)
@@ -854,7 +878,65 @@ BackHandler {
 
 
                         }
-                        PartnerPages(schroll = scrollState, list = state.Data.partner)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 5.dp, bottom = 0.dp)
+                                .wrapContentHeight()
+
+                                .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+                                .background(androidx.compose.ui.graphics.Color.Transparent)
+                            , contentAlignment = Alignment.Center
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .padding()
+                                    .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState())
+
+//                .basicMarquee(
+//                    500, MarqueeAnimationMode.Immediately, velocity = 10.dp,
+//                    repeatDelayMillis = 0, spacing = MarqueeSpacing(0.dp)
+//                )
+                                , horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
+
+
+
+                            ) {
+                                Spacer(modifier = modifier.width(16.dp))
+                                val context = LocalContext.current
+                                state.Data.partner.forEach { iconUrl ->
+                                    ElevatedCard( modifier = Modifier
+                                        .padding(start = 10.dp, top = 5.dp, bottom = 5.dp
+                                            , end = 5.dp)
+                                        // .border(0.1.dp, Color.Black, shape = RoundedCornerShape(25f))
+                                        ,
+                                        colors = CardDefaults.cardColors(containerColor = Color.White)) {
+
+
+                                        AsyncImage(
+                                            model = iconUrl.imgpath,
+                                            contentDescription = null,
+                                            contentScale = ContentScale.FillWidth,
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(20f))
+                                                .width(150.dp)
+                                                .height(180.dp)
+                                                .clickable{
+                                                    image.value=iconUrl.imgpath
+                                                    name.value=iconUrl.Name
+                                                    isVisible.value=true
+                                                }
+
+
+                                        )
+
+
+                                    }
+                                }
+                                Spacer(modifier = modifier.width(16.dp))
+                            }
+                        }
 
                     }
                 }
@@ -862,7 +944,7 @@ BackHandler {
 
                 Box(
                     modifier = modifier
-                        .padding(top = 20.dp, bottom = 0.dp)
+                        .padding(top = 20.dp, bottom = 55.dp)
                         .fillMaxWidth()
 
                         .height(280.dp)
@@ -926,223 +1008,153 @@ BackHandler {
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
 
-                            PartnerPage(modifier, scrollState, state.Data.councilmembers)
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 5.dp, bottom = 0.dp)
+                                    .wrapContentHeight()
+
+                                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+                                    .background(androidx.compose.ui.graphics.Color.Transparent)
+                                , contentAlignment = Alignment.Center
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .padding()
+                                        .fillMaxWidth().horizontalScroll(rememberScrollState())
+//                .basicMarquee(
+//                    500, MarqueeAnimationMode.Immediately, velocity = 25.dp,
+//                    repeatDelayMillis = 0, spacing = MarqueeSpacing(0.dp)
+//                )
+                                    , horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
+
+
+
+                                ) {
+
+                                    val context = LocalContext.current
+                                    state.Data.councilmembers.forEach { it ->
+                                        ElevatedCard (modifier.padding(10.dp).height(180.dp).width(150.dp)
+                                            , shape = RoundedCornerShape(topStart = 15f, topEnd = 15f)) {
+                                            Column(modifier.height(180.dp).width(150.dp)) {
+                                                AsyncImage(
+                                                    model = it.imgpath,
+                                                    contentDescription = it.imgName,
+                                                    modifier.fillMaxWidth()
+                                                        .height(150.dp)
+                                                        .background(Color.White)
+                                                        .clickable{
+                                                            name.value = it.name
+                                                            image.value=it.imgpath
+                                                            isVisible.value=true
+                                                        }, contentScale = ContentScale.Fit
+                                                )
+
+                                                Row(
+                                                    modifier.fillMaxWidth(1f).fillMaxWidth().fillMaxHeight()
+                                                        .background(Color(0xFFF29727))
+                                                        .horizontalScroll(rememberScrollState()),
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.Center
+                                                ) {
+                                                    Text(
+                                                       it.name,
+                                                        maxLines = 1,
+                                                        modifier = modifier.padding(start = 10.dp, end = 10.dp),
+                                                        color = Color.White
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
 
                         }
                     }
                 }
-//
-//
-////
-////                           Box(
-////                               modifier = modifier
-////                                   .padding(top = 10.dp, bottom = 10.dp)
-////                                   .fillMaxWidth()
-////
-////                                   .height(220.dp)
-////                           ) {
-////                               Column(
-////                                   modifier
-////                                       .fillMaxWidth()
-////                                       .fillMaxHeight(),
-////                                   verticalArrangement = Arrangement.SpaceEvenly,
-////                                   horizontalAlignment = Alignment.CenterHorizontally
-////                               ) {
-////                                   val scrollState = rememberScrollState()
-////                                   Row(
-////                                       modifier
-////                                           .padding(top = 0.dp)
-////                                           .fillMaxWidth(0.9f),
-////                                       verticalAlignment = Alignment.CenterVertically,
-////                                       horizontalArrangement = Arrangement.SpaceBetween
-////                                   ) {
-////
-////
-////                                       Text(
-////                                           modifier = Modifier
-////                                               .padding(start = 0.dp)
-////                                               .fillMaxWidth(0.8f)
-////                                               .padding(top = 10.dp, bottom = 0.dp),
-////                                           text = "Associate and Partners",
-////                                           fontSize = MaterialTheme.typography.bodyLarge.fontSize.times(1.3),
-////                                           lineHeight = MaterialTheme.typography.bodyLarge.lineHeight,
-////                                           letterSpacing = MaterialTheme.typography.bodyLarge.letterSpacing,
-////                                           fontWeight = FontWeight.SemiBold,
-////                                           textAlign = TextAlign.Start, color = Color.Black
-////                                       )
-////                                       if (scrollState.value>80) {
-////
-////
-////                                           Icon(
-////                                               imageVector = Icons.Default.ArrowForwardIos,
-////                                               contentDescription = "",
-////                                               tint = Color.Black,
-////                                               modifier = modifier.scale(0.7f)
-////                                           )
-////                                       }
-////                                   }
-////                                   PartnerPage(schroll = scrollState)
-////                               }
-////                           }
-////
-////                           Box(
-////                               modifier = modifier
-////                                   .padding(top = 10.dp, bottom = 10.dp)
-////                                   .fillMaxWidth()
-////
-////                                   .height(220.dp)
-////                           ) {
-////                               val scrollState = rememberScrollState()
-////
-////                               Column(
-////                                   modifier
-////                                       .fillMaxWidth()
-////                                       .fillMaxHeight(),
-////                                   verticalArrangement = Arrangement.SpaceEvenly,
-////                                   horizontalAlignment = Alignment.CenterHorizontally
-////                               ) {
-////                                   Row(
-////                                       modifier
-////                                           .padding(top = 0.dp)
-////                                           .fillMaxWidth(0.9f),
-////                                       verticalAlignment = Alignment.CenterVertically,
-////                                       horizontalArrangement = Arrangement.SpaceBetween
-////                                   ) {
-////
-////
-////                                       Text(
-////                                           modifier = Modifier
-////                                               .fillMaxWidth(0.8f)
-////                                               .padding(top = 10.dp, bottom = 0.dp),
-////                                           text = "Council and members",
-////                                           fontSize = MaterialTheme.typography.bodyLarge.fontSize.times(1.5),
-////                                           lineHeight = MaterialTheme.typography.bodyLarge.lineHeight,
-////                                           letterSpacing = MaterialTheme.typography.bodyLarge.letterSpacing,
-////                                           fontWeight = FontWeight.SemiBold,
-////                                           textAlign = TextAlign.Start, color = Color.Black
-////                                       )
-////                                       if (scrollState.value>80) {
-////
-////
-////                                           Icon(
-////                                               imageVector = Icons.Default.ArrowForwardIos,
-////                                               contentDescription = "",
-////                                               tint = Color.Black,
-////                                               modifier = modifier.scale(0.7f)
-////                                           )
-////                                       }
-////                                   }
-////                                   PartnerPage(schroll = scrollState)
-////                               }
-////                           }
-//                           Box(
-//                               modifier = modifier
-//                                   .padding(top = 0.dp, bottom = 10.dp)
-//                                   .fillMaxWidth()
-//
-//                                   .height(300.dp)
-//                           ) {
-//                               Image(painter = painterResource(id = R.drawable.whatsapp), contentDescription = "",modifier.fillMaxSize(), contentScale = ContentScale.FillBounds)
-//
-//                               Column(
-//                                   modifier
-//                                       .padding(bottom = 20.dp)
-//                                       .fillMaxWidth()
-//                                       .fillMaxHeight(),
-//                                   verticalArrangement = Arrangement.SpaceEvenly,
-//                                   horizontalAlignment = Alignment.CenterHorizontally
-//                               ) {
-//                                   val scrollState = rememberScrollState()
-//                                   Row(
-//                                       modifier
-//                                           .padding(top = 0.dp)
-//                                           .fillMaxWidth(),
-//                                       verticalAlignment = Alignment.CenterVertically,
-//                                       horizontalArrangement = Arrangement.SpaceBetween
-//                                   ) {
-//
-//
-////                                       Text(
-////                                           modifier = Modifier
-////                                               .fillMaxWidth(0.8f)
-////                                               .padding(top = 20.dp, bottom = 15.dp, start = 16.dp),
-////                                           text = "Inspirational Stories",
-////                                           fontSize = MaterialTheme.typography.bodyLarge.fontSize.times(1.5),
-////                                           lineHeight = MaterialTheme.typography.bodyLarge.lineHeight
-////                                           ,
-////                                           letterSpacing = MaterialTheme.typography.bodyLarge.letterSpacing,
-////                                           fontWeight = FontWeight.SemiBold,
-////                                           textAlign = TextAlign.Start, color = Color.White
-////                                       )
-//
-//                                   }
-//PartnerPages(modifier,scrollState,
-//    state.Data.partner)                               }
-//                           }
-//
-//                       }is HomePageCompanion.Error->{
-//                       LaunchedEffect(key1 = Unit) {
-//                           while (true) {
-//
-//
-//                               delay(5000)
-//                               homeViewModel.fetchSuccess()
-//                           }}
-//
-//                       Column(
-//                           modifier
-//                               .fillMaxWidth()
-//                               .height(400.dp), verticalArrangement = Arrangement.Center,
-//                           horizontalAlignment = Alignment.CenterHorizontally) {
-//                           Image(painter = painterResource(id = R.drawable.nothingfound), contentDescription = "",
-//                               modifier
-//                                   .padding(bottom = 0.dp)
-//                                   .size(250.dp)
-//                               , contentScale = ContentScale.FillBounds)
-//                           Text(text = "Oops! an error occured ",
-//                               modifier
-//                                   .padding(bottom = 10.dp)
-//                                   .fillMaxWidth(0.8f)
-//                               , maxLines = 3, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
-//                           Button(onClick = {
-//                               homeViewModel.fetchSuccess()
-//
-//                           }, shape = RoundedCornerShape(25f), colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color.Black)) {
-//                               Text(text = "Reload", color = Color.White)        }
-//
-////                           Text(
-////                               text =if (state.error!!.contains("Unable to resolve host")) "Oops! unable to connect to server , please check your internet connection " else "Unknown Error Occurred : We are trying to resolve it",
-////                               modifier
-////                                   .fillMaxWidth(0.8f)
-////                                   .padding(bottom = 15.dp, top = 0.dp)
-////                               , textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
-////                           Button(onClick = { homeViewModel.fetchSuccess() },
-////                               shape = RoundedCornerShape(25f)
-////                               , border = BorderStroke(1.dp,Color.Black)
-////                               , colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-////                           ) {
-////                               Text(text = "Try again", color = Color.Black)
-////                           }
-//
-//                       }
-//                       }
-//                   }
-//
-//
-//
-//Spacer(modifier = modifier.height(50.dp))
-//
-//
-//                }
-//
-//
-//            }
-//
-//
-//        }
+                Text("@all rights reserved to VentureNest ", color = Color.LightGray)
+
+
             }
 
 
+            LaunchedEffect(isVisible.value) {
+                animationState.targetState = isVisible.value
+            }
+
+            // Only show the Dialog when the animation state is visible or was visible
+            if ( isVisible.value==true) {
+                Dialog(
+                    onDismissRequest = { isVisible.value=false
+
+                    },
+                    properties = DialogProperties(
+                        dismissOnBackPress = true,
+                        dismissOnClickOutside = true,
+                        usePlatformDefaultWidth = true
+                    )
+                ) {
+                    // Background scrim with fade animation
+                    AnimatedVisibility(
+                        visibleState = animationState,
+                        enter = fadeIn(tween(300)),
+                        exit = fadeOut(tween(300))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .wrapContentWidth()
+                                ,
+                            contentAlignment = Alignment.Center
+                        ) {
+                            // Dialog content with scale animation
+                            AnimatedVisibility(
+                                visibleState = animationState,
+                                enter = scaleIn(tween(300)) + fadeIn(tween(300)),
+                                exit = scaleOut(tween(300)) + fadeOut(tween(300))
+                            ) {
+                                Card(
+                                    modifier = Modifier
+
+                                        .fillMaxWidth(0.85f),
+                                    shape = RoundedCornerShape(24.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color.White
+                                    ),
+                                    elevation = CardDefaults.cardElevation(
+                                        defaultElevation = 8.dp
+                                    )
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(24.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        AsyncImage(
+                                            model = image.value,
+                                            contentDescription = null,modifier.height(300.dp)
+                                                .fillMaxWidth()
+, contentScale = ContentScale.FillWidth
+                                        )
+                                        if (name.value!=null){
+                                            Text(name.value
+                                                ,color= Color.Black
+                                                , fontWeight = FontWeight.Bold,
+                                                fontSize = androidx.compose.material.MaterialTheme.typography.h6.fontSize
+                                                , modifier = modifier.fillMaxWidth()
+                                                , textAlign = TextAlign.Center)
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             Spacer(modifier.height(40.dp))
 

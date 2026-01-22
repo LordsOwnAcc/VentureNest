@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.venturenest.ui.theme.Presentation.CollageClass
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 object HomePage
 

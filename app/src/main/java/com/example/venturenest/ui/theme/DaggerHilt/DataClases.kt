@@ -84,7 +84,8 @@ data class SuccessStories(
     var FounderImg :String,
     var FounderImgName : String,
     var uploadedAt: String,
-    val isStarred: Boolean
+    val isStarred: Boolean,
+    val FounderLogoImg: String
 )
 data class photo(
     val _id : String,

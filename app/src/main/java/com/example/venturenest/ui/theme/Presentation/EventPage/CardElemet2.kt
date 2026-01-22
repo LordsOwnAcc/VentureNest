@@ -100,7 +100,7 @@ fun CardElement2(
             onClick.invoke()
         },
          shape = RoundedCornerShape(25f)
-    , colors = CardDefaults.elevatedCardColors(containerColor = Color(color = color))) {
+    , colors = CardDefaults.elevatedCardColors(containerColor = Color.White)) {
 
         Box(modifier.fillMaxSize()) {
 
@@ -134,7 +134,7 @@ fun CardElement2(
                         modifier = modifier.fillMaxWidth().padding(start = 10.dp),
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold
-                        , color = Color.White
+                        , color = Color.Black.copy(alpha = 0.65f)
                     )
                     Row(
                         modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
@@ -144,7 +144,7 @@ fun CardElement2(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = null,
                             modifier.scale(0.8f)
-                                .padding(start = 5.dp), tint = Color.White
+                                .padding(start = 5.dp), tint = Color.LightGray
                         )
                         Text(
                             text = date,
@@ -152,7 +152,7 @@ fun CardElement2(
                             textAlign = TextAlign.Start,
                             modifier = modifier.fillMaxWidth().padding(start = 5.dp),
                             overflow = TextOverflow.Ellipsis,
-                            color = Color.White,
+                            color = Color.Black,
                             fontSize = MaterialTheme.typography.bodySmall.fontSize
                         )
                     }
@@ -164,7 +164,7 @@ fun CardElement2(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
                             modifier.scale(0.8f)
-                                .padding(start = 5.dp), tint = Color.White
+                                .padding(start = 5.dp), tint = Color.LightGray
                         )
                         Text(
                             text = "CGCU Mohali",
@@ -172,7 +172,7 @@ fun CardElement2(
                             textAlign = TextAlign.Start,
                             modifier = modifier.fillMaxWidth().padding(start = 5.dp),
                             overflow = TextOverflow.Ellipsis,
-                            color = Color.White,
+                            color = Color.Black,
                             fontSize = MaterialTheme.typography.bodySmall.fontSize
                         )
                     }

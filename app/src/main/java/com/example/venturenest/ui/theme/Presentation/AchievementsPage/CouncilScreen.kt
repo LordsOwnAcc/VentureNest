@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,11 +26,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -66,6 +69,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -118,7 +122,7 @@ fun CouncilScreen(windowInsets: WindowInsets,modifier: Modifier,
         Row(
             modifier
                 .padding(bottom = 10.dp)
-                .fillMaxWidth(0.9f)
+                .fillMaxWidth(0.85f)
                 .height(55.dp), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -195,66 +199,64 @@ textColor = Color.Gray,
                     search.toString(), true
                 )
             }.forEach { council ->
-                ElevatedCard(
+                Column (
                     modifier.padding(10.dp).fillMaxWidth()
-                        .height(200.dp), shape = RoundedCornerShape(topStart = 15f, topEnd = 15f)
+                        .wrapContentHeight()
+                    , horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(
-                        modifier.fillMaxWidth().height(200.dp)
-                            .border(
-                                0.1.dp,
-                                Color(color),
-                                RoundedCornerShape(topStart = 15f, topEnd = 15f)
-                            ).clickable{
-                                image.value=council.imgpath
-                                name.value=council.name
-                                isVisible.value=true
-                            }
-                    ) {
-                        AsyncImage(
-                            model = council.imgpath,
-                            contentDescription = council.imgName,
-                            modifier.fillMaxHeight()
-                                .fillMaxWidth(0.45f)
-                                .background(Color.White), contentScale = ContentScale.Crop
-                        )
 
-                        Column(
-                            modifier.fillMaxWidth(1f).fillMaxHeight()
-                                .background(Color(color)),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                council.name,
-                                maxLines = 1,
-                                modifier = modifier.padding(start = 10.dp, end = 10.dp),
-                                color = Color.White,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = MaterialTheme.typography.h6.fontSize
+//                        AsyncImage(
+//                            model = council.imgpath,
+//                            contentDescription = council.imgName,
+//                            modifier.fillMaxHeight()
+//                                .fillMaxWidth(0.45f)
+//                                .background(Color.White), contentScale = ContentScale.Crop
+//                        )
+//
+//                        Column(
+//                            modifier.fillMaxWidth(1f).fillMaxHeight()
+//                                .background(Color(color)),
+//                            verticalArrangement = Arrangement.Center,
+//                            horizontalAlignment = Alignment.Start
+//                        ) {
+//                            Text(
+//                                council.name,
+//                                maxLines = 1,
+//                                modifier = modifier.padding(start = 10.dp, end = 10.dp),
+//                                color = Color.White,
+//                                fontWeight = FontWeight.ExtraBold,
+//                                fontSize = MaterialTheme.typography.h6.fontSize
+//
+//                                , overflow = TextOverflow.Ellipsis
+//                            )
+//                            Text(
+//                                d.get(council.category) + " Committee".toString(),
+//                                modifier = modifier.fillMaxWidth()
+//                                    .padding(start = 10.dp, end = 10.dp),
+//                                fontWeight = FontWeight.W700,
+//                                color = Color.Black,
+//                                maxLines = 2,
+//                                overflow = TextOverflow.Ellipsis,
+//                                fontSize = MaterialTheme.typography.body1.fontSize
+//                            )
+//                            Text(
+//                                council.company,
+//                                modifier = modifier.padding(start = 10.dp, end = 10.dp),
+//                                color = Color.DarkGray
+//                                , maxLines = 2
+//                                ,overflow = TextOverflow.Ellipsis,
+//                            )
+//
+//                        }
 
-                                , overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                d.get(council.category) + " Committee".toString(),
-                                modifier = modifier.fillMaxWidth()
-                                    .padding(start = 10.dp, end = 10.dp),
-                                fontWeight = FontWeight.W700,
-                                color = Color.Black,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                fontSize = MaterialTheme.typography.body1.fontSize
-                            )
-                            Text(
-                                council.company,
-                                modifier = modifier.padding(start = 10.dp, end = 10.dp),
-                                color = Color.DarkGray
-                                , maxLines = 2
-                                ,overflow = TextOverflow.Ellipsis,
-                            )
 
-                        }
-                    }
+                     MemberCard(
+                         imageUrl = council.imgpath,
+                         name = council.name,
+                         role = council.company,
+                        lineColor =Color(color)
+                     )
+
                 }
 
 
@@ -344,4 +346,68 @@ textColor = Color.Gray,
 }
 
 
+}
+@Composable
+fun MemberCard(
+    imageUrl: String,
+    name: String,
+    role: String,
+    lineColor: Color = Color(0xFFE53935) // red / change to blue if needed
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxSize(0.85f),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
+        , colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Profile Image
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Name
+            Text(
+                text = name,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Role
+            Text(
+                text = role,
+                fontSize = 12.sp,
+                color = Color.Gray,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Bottom Colored Line
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(lineColor)
+            )
+        }
+    }
 }

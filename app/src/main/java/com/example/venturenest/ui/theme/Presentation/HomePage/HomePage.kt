@@ -2,11 +2,14 @@ package com.example.venturenest.ui.theme.Presentation.HomePage
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.AnimationState
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
@@ -17,8 +20,13 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.background
@@ -43,19 +51,25 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
@@ -104,9 +118,14 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.venturenest.MeetTheBoardCard
+import com.example.venturenest.OurJourneyCard
 import com.example.venturenest.R
+import com.example.venturenest.StatCard
+import com.example.venturenest.stats
 import com.example.venturenest.ui.theme.DaggerHilt.States.AiStatesCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.States.HomePageCompanion
+import com.example.venturenest.ui.theme.DaggerHilt.SuccessStories
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AiViewModel
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.HomeViewModel
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.LoadingStateViewmodel
@@ -117,6 +136,7 @@ import com.example.venturenest.ui.theme.Navigation.CouncilScreen
 import com.example.venturenest.ui.theme.Navigation.Profile
 import com.example.venturenest.ui.theme.Navigation.SettingPage
 import com.example.venturenest.ui.theme.Navigation.partnerScreen
+import com.example.venturenest.ui.theme.Presentation.Setting.AboutEcell
 import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
 import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
 import com.example.venturenest.ui.theme.Presentation.helper.ShimmerEffect
@@ -127,6 +147,7 @@ import com.google.ai.client.generativeai.type.content
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
+import java.nio.file.WatchEvent
 import kotlin.io.path.Path
 import kotlin.io.path.moveTo
 
@@ -135,11 +156,12 @@ import kotlin.io.path.moveTo
 @Composable
 fun HomePage(
     modifier: Modifier = Modifier,
-    window: WindowInsets, navController: NavController
+    window: WindowInsets,
+    navController: NavController
     , homeViewModel: LoadingStateViewmodel
 ) {
     val animationState = remember { MutableTransitionState(false) }
-
+    var showSuccess by remember { mutableStateOf(false) }
     HideSystemBars()
     ChangeStatusBarColorEdgeToEdge(Color.Transparent)
     val context  = LocalContext.current
@@ -151,7 +173,7 @@ fun HomePage(
     val activity = context as? Activity
     var backPressedTime by remember { mutableStateOf(0L) }
     val toast = remember { Toast.makeText(context, "Press back again to exit", Toast.LENGTH_SHORT) }
-
+    var isNavOpen by remember { mutableStateOf(false) }
     val state by homeViewModel.state.collectAsState()
     var show = remember { mutableStateOf(false) }
     val schroll = rememberScrollState()
@@ -168,6 +190,9 @@ fun HomePage(
             .padding(bottom = 64.dp)
             .fillMaxSize(),
         floatingActionButton = {
+            if (!showSuccess){
+
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ExtendedFloatingActionButton(onClick = {
                     show.value = true
@@ -178,6 +203,7 @@ fun HomePage(
                         modifier
                             .size(25.dp)
                             .offset(x = -5.dp)
+
                     )
                     Text(
                         "Chat with VentureBot",
@@ -186,9 +212,17 @@ fun HomePage(
                         , color = Color.Black
                     )
                 }
-            }
+            }}
         }
     ) {
+
+
+        Box(modifier = Modifier.fillMaxSize()) {
+
+
+
+
+
 BackHandler {
     val currentTime = System.currentTimeMillis()
     if (currentTime - backPressedTime < 2000) {
@@ -294,7 +328,16 @@ BackHandler {
                         .fillMaxWidth(0.9f)
                         .height(60.dp)
                         // .border(1.dp, Color.Black,RoundedCornerShape(25f))
-                        .clickable { },
+                        .clickable {
+
+
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLScvFkGdQcnDYvt0OsJi-27FlAXjslt-48RC5wP6JRxAI4oSMg/viewform")
+                            )
+                            context.startActivity(intent)
+
+                        },
                     shape = RoundedCornerShape(25f),
                     colors = CardDefaults.elevatedCardColors(
                         containerColor = Color.White
@@ -343,7 +386,16 @@ BackHandler {
                             .height(100.dp)
                             .padding(end = 5.dp)
                             // .border(1.dp, Color.Black,RoundedCornerShape(25f))
-                            .clickable { },
+                            .clickable {
+
+
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLScH3XNhBUvAOoNPsjxd7LzxoNBjTVfasJa5_Iqwq3aFsRWmcA/viewform")
+                                )
+                                context.startActivity(intent)
+
+                            },
                         shape = RoundedCornerShape(25f),
                         colors = CardDefaults.elevatedCardColors(
                             containerColor = Color.White
@@ -405,7 +457,16 @@ BackHandler {
                             .height(100.dp)
                             .padding(start = 5.dp)
                             // .border(1.dp, Color.Black,RoundedCornerShape(25f))
-                            .clickable { },
+                            .clickable {
+
+
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLScH3XNhBUvAOoNPsjxd7LzxoNBjTVfasJa5_Iqwq3aFsRWmcA/viewform")
+                                )
+                                context.startActivity(intent)
+
+                            },
                         shape = RoundedCornerShape(25f),
                         colors = CardDefaults.elevatedCardColors(
                             containerColor = Color.White
@@ -822,6 +883,32 @@ BackHandler {
 //                       }
 //                       is HomePageCompanion.Result->{
 //
+                OurJourneyCard(
+                    imageRes = "https://plus.unsplash.com/premium_photo-1706061121842-7ba956c57670?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                )
+
+                Row (modifier
+                    .fillMaxWidth(1f)
+                    .padding(top = 15.dp, bottom = 15.dp)
+                    .horizontalScroll(rememberScrollState())
+                    ){
+                    Spacer(modifier.width(10.dp))
+                    stats.forEach {
+                        StatCard(
+                            it
+                        )
+                    }
+
+                }
+                MeetTheBoardCard(
+members = state.Data.councilmembers.take(4)
+               , onclick = {
+                        navController.navigate(
+                                    CouncilScreen(
+                                        search = "", 0xFFF29727, ""
+                                    )
+                                )
+                    } )
                 Box(
                     modifier = modifier
                         .padding(top = 10.dp, bottom = 0.dp)
@@ -922,10 +1009,10 @@ BackHandler {
                                                 .clip(RoundedCornerShape(20f))
                                                 .width(150.dp)
                                                 .height(180.dp)
-                                                .clickable{
-                                                    image.value=iconUrl.imgpath
-                                                    name.value=iconUrl.Name
-                                                    isVisible.value=true
+                                                .clickable {
+                                                    image.value = iconUrl.imgpath
+                                                    name.value = iconUrl.Name
+                                                    isVisible.value = true
                                                 }
 
 
@@ -942,138 +1029,138 @@ BackHandler {
                 }
 
 
-                Box(
-                    modifier = modifier
-                        .padding(top = 20.dp, bottom = 55.dp)
-                        .fillMaxWidth()
-
-                        .height(280.dp)
-                ) {
-
-                    Column(
-                        modifier
-                            .padding(
-                                bottom = 0.dp, top = 0.dp
-                            )
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row(
-                            modifier
-                                .fillMaxWidth(0.88f)
-                                .height(40.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-
-                            Text(
-
-
-                                "Council Members", fontWeight = FontWeight.SemiBold
-
-
-
-
-
-
-
-
-
-
-                                ,
-                                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                                color = Color.Black,
-                                modifier = modifier.fillMaxWidth(0.5f)
-                            )
-
-                            TextButton(onClick = {
-                                navController.navigate(
-                                    CouncilScreen(
-                                        search = "", 0xFFF29727, ""
-                                    )
-                                )
-                            }) {
-                                Text("view all", color = Color.Gray)
-                            }
-                        }
-
-                        val scrollState = rememberScrollState()
-                        Row(
-                            modifier
-                                .padding(top = 0.dp)
-                                .fillMaxWidth(0.94f),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 5.dp, bottom = 0.dp)
-                                    .wrapContentHeight()
-
-                                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
-                                    .background(androidx.compose.ui.graphics.Color.Transparent)
-                                , contentAlignment = Alignment.Center
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .padding()
-                                        .fillMaxWidth().horizontalScroll(rememberScrollState())
-//                .basicMarquee(
-//                    500, MarqueeAnimationMode.Immediately, velocity = 25.dp,
-//                    repeatDelayMillis = 0, spacing = MarqueeSpacing(0.dp)
-//                )
-                                    , horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
-
-
-
-                                ) {
-
-                                    val context = LocalContext.current
-                                    state.Data.councilmembers.forEach { it ->
-                                        ElevatedCard (modifier.padding(10.dp).height(180.dp).width(150.dp)
-                                            , shape = RoundedCornerShape(topStart = 15f, topEnd = 15f)) {
-                                            Column(modifier.height(180.dp).width(150.dp)) {
-                                                AsyncImage(
-                                                    model = it.imgpath,
-                                                    contentDescription = it.imgName,
-                                                    modifier.fillMaxWidth()
-                                                        .height(150.dp)
-                                                        .background(Color.White)
-                                                        .clickable{
-                                                            name.value = it.name
-                                                            image.value=it.imgpath
-                                                            isVisible.value=true
-                                                        }, contentScale = ContentScale.Fit
-                                                )
-
-                                                Row(
-                                                    modifier.fillMaxWidth(1f).fillMaxWidth().fillMaxHeight()
-                                                        .background(Color(0xFFF29727))
-                                                        .horizontalScroll(rememberScrollState()),
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    horizontalArrangement = Arrangement.Center
-                                                ) {
-                                                    Text(
-                                                       it.name,
-                                                        maxLines = 1,
-                                                        modifier = modifier.padding(start = 10.dp, end = 10.dp),
-                                                        color = Color.White
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                }
-                            }
-
-                        }
-                    }
-                }
+//                Box(
+//                    modifier = modifier
+//                        .padding(top = 20.dp, bottom = 55.dp)
+//                        .fillMaxWidth()
+//
+//                        .height(280.dp)
+//                ) {
+//
+//                    Column(
+//                        modifier
+//                            .padding(
+//                                bottom = 0.dp, top = 0.dp
+//                            )
+//                            .fillMaxWidth()
+//                            .fillMaxHeight(),
+//                        verticalArrangement = Arrangement.SpaceEvenly,
+//                        horizontalAlignment = Alignment.CenterHorizontally
+//                    ) {
+//                        Row(
+//                            modifier
+//                                .fillMaxWidth(0.88f)
+//                                .height(40.dp),
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.SpaceBetween
+//                        ) {
+//
+//                            Text(
+//
+//
+//                                "Council Members", fontWeight = FontWeight.SemiBold
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//                                ,
+//                                fontSize = MaterialTheme.typography.titleMedium.fontSize,
+//                                color = Color.Black,
+//                                modifier = modifier.fillMaxWidth(0.5f)
+//                            )
+//
+//                            TextButton(onClick = {
+//                                navController.navigate(
+//                                    CouncilScreen(
+//                                        search = "", 0xFFF29727, ""
+//                                    )
+//                                )
+//                            }) {
+//                                Text("view all", color = Color.Gray)
+//                            }
+//                        }
+//
+//                        val scrollState = rememberScrollState()
+////                        Row(
+////                            modifier
+////                                .padding(top = 0.dp)
+////                                .fillMaxWidth(0.94f),
+////                            verticalAlignment = Alignment.CenterVertically,
+////                            horizontalArrangement = Arrangement.SpaceBetween
+////                        ) {
+////
+////                            Box(
+////                                modifier = Modifier
+////                                    .fillMaxWidth()
+////                                    .padding(top = 5.dp, bottom = 0.dp)
+////                                    .wrapContentHeight()
+////
+////                                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+////                                    .background(androidx.compose.ui.graphics.Color.Transparent)
+////                                , contentAlignment = Alignment.Center
+////                            ) {
+////                                Row(
+////                                    modifier = Modifier
+////                                        .padding()
+////                                        .fillMaxWidth().horizontalScroll(rememberScrollState())
+//////                .basicMarquee(
+//////                    500, MarqueeAnimationMode.Immediately, velocity = 25.dp,
+//////                    repeatDelayMillis = 0, spacing = MarqueeSpacing(0.dp)
+//////                )
+////                                    , horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
+////
+////
+////
+////                                ) {
+////
+////                                    val context = LocalContext.current
+////                                    state.Data.councilmembers.forEach { it ->
+////                                        ElevatedCard (modifier.padding(10.dp).height(180.dp).width(150.dp)
+////                                            , shape = RoundedCornerShape(topStart = 15f, topEnd = 15f)) {
+////                                            Column(modifier.height(180.dp).width(150.dp)) {
+////                                                AsyncImage(
+////                                                    model = it.imgpath,
+////                                                    contentDescription = it.imgName,
+////                                                    modifier.fillMaxWidth()
+////                                                        .height(150.dp)
+////                                                        .background(Color.White)
+////                                                        .clickable{
+////                                                            name.value = it.name
+////                                                            image.value=it.imgpath
+////                                                            isVisible.value=true
+////                                                        }, contentScale = ContentScale.Fit
+////                                                )
+////
+////                                                Row(
+////                                                    modifier.fillMaxWidth(1f).fillMaxWidth().fillMaxHeight()
+////                                                        .background(Color(0xFFF29727))
+////                                                        .horizontalScroll(rememberScrollState()),
+////                                                    verticalAlignment = Alignment.CenterVertically,
+////                                                    horizontalArrangement = Arrangement.Center
+////                                                ) {
+////                                                    Text(
+////                                                       it.name,
+////                                                        maxLines = 1,
+////                                                        modifier = modifier.padding(start = 10.dp, end = 10.dp),
+////                                                        color = Color.White
+////                                                    )
+////                                                }
+////                                            }
+////                                        }
+////                                    }
+////
+////                                }
+////                            }
+////
+////                        }
+//                    }
+//                }
                 Text("@all rights reserved to VentureNest ", color = Color.LightGray)
 
 
@@ -1135,7 +1222,8 @@ BackHandler {
                                     ) {
                                         AsyncImage(
                                             model = image.value,
-                                            contentDescription = null,modifier.height(300.dp)
+                                            contentDescription = null,modifier
+                                                .height(300.dp)
                                                 .fillMaxWidth()
 , contentScale = ContentScale.FillWidth
                                         )
@@ -1186,7 +1274,13 @@ BackHandler {
                     Image(
                         painter = painterResource(R.drawable.img),
                         contentDescription = null,
-                        modifier.size(100.dp), contentScale = ContentScale.Crop
+                        modifier
+                            .size(100.dp)
+                            .clickable {
+
+                                isNavOpen = !isNavOpen
+
+                            }, contentScale = ContentScale.Crop
                     )
                 }
 
@@ -1240,13 +1334,73 @@ BackHandler {
 
             }
         }
+            AnimatedVisibility(showSuccess
+            , enter = slideInVertically(
+                    initialOffsetY = { it },   // from bottom
+                    animationSpec = tween(
+                        durationMillis = 350,
+                        easing = FastOutSlowInEasing
+                    )
 
+                )
+            ,  exit = slideOutVertically(
+                    targetOffsetY = { it },    // to bottom
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = FastOutSlowInEasing
+                    ))) {
+
+
+
+                    SuccessStoriesReels(  state.Data.sucessStories
+                    ,{showSuccess=false})
+
+
+
+
+
+            }
 
         AiDialog(
             show,
             modifier
         )
 
+
+    }
+        // 🔹 OVERLAY (click to close)
+        if (isNavOpen) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))
+                    .clickable { isNavOpen = false }
+            )
+        }
+
+        // 🔹 SLIDING NAV COLUMN
+        AnimatedVisibility(
+            visible = isNavOpen,
+            enter = slideInHorizontally(
+                initialOffsetX = { -it }
+            ),
+            exit = slideOutHorizontally(
+                targetOffsetX = { -it }
+            )
+        ) {
+            SideNavigation(
+                onClose = { isNavOpen = false }
+                , onE = {
+                    navController.navigate(AboutECell)
+                }
+                , onM = {
+                    isNavOpen=false
+                    showSuccess=true},
+                onV = {
+                    navController.navigate(AboutVentureNest)
+                }
+            )
+        }
     }
 }
 
@@ -1299,3 +1453,214 @@ fun ChatBubbleWithArrow(message: String, isUser: Boolean) {
         }
     }
 }
+
+
+@Composable
+fun SideNavigation(
+    onClose: () -> Unit
+    ,onV:()-> Unit,
+    onE:()-> Unit,
+    onM:()-> Unit
+) {
+    Column(
+        modifier = Modifier
+
+            .fillMaxHeight()
+            .width(260.dp)
+            .background(Color.Transparent)
+            .padding(top = 50.dp, bottom = 16.dp, start = 0.dp, end = 16.dp)
+    ) {
+
+//        Text(
+//            text = "VentureNest",
+//            fontSize = 20.sp,
+//            fontWeight = FontWeight.Bold
+//            , modifier = Modifier.padding(start = 16.dp)
+//        )
+
+        Spacer(modifier = Modifier.height(50.dp))
+
+        NavItem("About E-Cell",onE=onE)
+        NavItem("About VentureNest",
+        onE=onV)
+        NavItem("Success Stories",onE=onM)
+
+
+        Spacer(modifier = Modifier.weight(1f))
+
+
+    }
+}
+
+@Composable
+fun NavItem(title: String,onE : () -> Unit) {
+    Card (modifier = Modifier
+        .padding(top = 15.dp)
+        .fillMaxWidth(1f)
+        .clickable{
+            onE.invoke()
+        }
+        , shape =RoundedCornerShape(topStart = 0.dp, bottomEnd = 15.dp,
+            topEnd = 5.dp, bottomStart = 0.dp)
+    , colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))){
+        Row(modifier = Modifier.padding(start = 10.dp)
+        ) {
+    Text(
+        text = title,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onE.invoke()
+            }
+            .padding(vertical = 12.dp),
+        fontSize = 16.sp
+        , color = Color.DarkGray
+        , fontWeight = FontWeight.SemiBold
+    )}
+    }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun SuccessStoriesReels(
+    stories: List<SuccessStories>
+    ,onBack: () -> Unit
+) {
+    val pagerstate = rememberPagerState(
+   0,0f,{stories.size}
+    )
+    VerticalPager(
+     state = pagerstate  ,
+        modifier = Modifier.fillMaxSize()
+    ) { page ->
+        SuccessStoryReelItem(story = stories[page]
+        , onBack = onBack)
+    }
+}
+@Composable
+fun SuccessStoryReelItem(
+    story: SuccessStories
+    ,onBack:()-> Unit
+) {
+    BackHandler {
+onBack.invoke()
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+
+            .fillMaxHeight()
+
+        , contentAlignment = Alignment.Center
+    ) {
+        Box (modifier = Modifier.fillMaxWidth(
+
+        ).fillMaxHeight(1f)){
+
+        // 🔹 Background Founder Image
+        AsyncImage(
+            model = story.FounderImg,
+            contentDescription = story.StartupName,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        // 🔹 Dark Gradient Overlay
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.7f)
+                        ),
+                        startY = 300f
+                    )
+                )
+        )
+
+        // 🔹 Bottom Content
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            var textShow by remember { mutableStateOf(false) }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                AsyncImage(
+                    model = story.FounderLogoImg,
+                    contentDescription = "Logo",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                    , contentScale = ContentScale.Crop
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = story.StartupName,
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = story.StartupAbout,
+                color = Color.White,
+                fontSize = 14.sp,
+                maxLines =if (textShow) 10 else 3,
+                overflow = TextOverflow.Ellipsis
+                , modifier = Modifier.clickable{
+                    textShow= !textShow
+                }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Founded by ${story.FounderImgName}",
+                color = Color.LightGray,
+                fontSize = 12.sp
+            )
+        }
+
+        // 🔹 Right Side Actions (Like Insta)
+//        Column(
+//            modifier = Modifier
+//                .align(Alignment.BottomEnd)
+//                .padding(16.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//
+//            IconButton(onClick = { /* like */ }) {
+//                Icon(
+//                    imageVector = if (story.isStarred)
+//                        Icons.Filled.Favorite
+//                    else Icons.Outlined.FavoriteBorder,
+//                    contentDescription = "Like",
+//                    tint = Color.White
+//                )
+//            }
+//
+//            Spacer(modifier = Modifier.height(12.dp))
+//
+//            IconButton(onClick = { /* share */ }) {
+//                Icon(
+//                    imageVector = Icons.Default.Share,
+//                    contentDescription = "Share",
+//                    tint = Color.White
+//                )
+//            }
+//        }
+        }
+    }
+}
+

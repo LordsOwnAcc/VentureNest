@@ -85,7 +85,7 @@ fun Dialog(
                     .background(Color.White), verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally) {
 Column(modifier = Modifier.fillMaxWidth(0.9f).wrapContentHeight()
-    .background(Color(color))
+    .background(Color.LightGray)
     .clip(RoundedCornerShape(25f)), verticalArrangement = Arrangement.Top,
     horizontalAlignment = Alignment.CenterHorizontally) {
                     AsyncImage(

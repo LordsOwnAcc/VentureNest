@@ -123,18 +123,17 @@ fun CouncilScreen(windowInsets: WindowInsets,modifier: Modifier,
             modifier
                 .padding(bottom = 10.dp)
                 .fillMaxWidth(0.85f)
-                .height(55.dp), horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+                .height(55.dp), horizontalArrangement = Arrangement.SpaceEvenly
+                ,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 modifier
                     .clip(RoundedCornerShape(15f))
                     .fillMaxWidth(0.95f)
                     .fillMaxHeight()
-                    .border(
-                        1.dp, Color.LightGray,
-                        RoundedCornerShape(15f)
-                    ),
+
+                   ,
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -142,14 +141,15 @@ fun CouncilScreen(windowInsets: WindowInsets,modifier: Modifier,
                     value = search,
                     onValueChange = { search = it },
                     modifier
-                        .clip(RoundedCornerShape(15f))
+                        .clip(RoundedCornerShape(25f))
                         .fillMaxWidth(),
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.White,
+                        backgroundColor = Color.Transparent,
 
-textColor = Color.Gray,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent
+                        textColor = Color.Gray,
+                        unfocusedIndicatorColor = Color.LightGray,
+                        focusedIndicatorColor = Color.DarkGray
+
                     ),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done,),
                     placeholder = {
@@ -180,18 +180,19 @@ textColor = Color.Gray,
                                 tint = Color.Gray
                             )
                         }
-                    })
+                    }
+                )
             }
 
         }
 
 
 
-        FlowRow(
+        Column(
             modifier.fillMaxHeight(1f)
                 .fillMaxWidth(0.9f)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Top, horizontalArrangement = Arrangement.SpaceEvenly
+            verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             state.Data.councilmembers.filter { it ->
@@ -199,70 +200,24 @@ textColor = Color.Gray,
                     search.toString(), true
                 )
             }.forEach { council ->
-                Column (
-                    modifier.padding(10.dp).fillMaxWidth()
-                        .wrapContentHeight()
-                    , horizontalAlignment = Alignment.CenterHorizontally
+                // Vertical feed with overflow enabled
+                Box(
+                    modifier = Modifier
+                        .padding(vertical = 50.dp) // Extra top padding to accommodate overflow
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    contentAlignment = Alignment.TopCenter
                 ) {
-
-//                        AsyncImage(
-//                            model = council.imgpath,
-//                            contentDescription = council.imgName,
-//                            modifier.fillMaxHeight()
-//                                .fillMaxWidth(0.45f)
-//                                .background(Color.White), contentScale = ContentScale.Crop
-//                        )
-//
-//                        Column(
-//                            modifier.fillMaxWidth(1f).fillMaxHeight()
-//                                .background(Color(color)),
-//                            verticalArrangement = Arrangement.Center,
-//                            horizontalAlignment = Alignment.Start
-//                        ) {
-//                            Text(
-//                                council.name,
-//                                maxLines = 1,
-//                                modifier = modifier.padding(start = 10.dp, end = 10.dp),
-//                                color = Color.White,
-//                                fontWeight = FontWeight.ExtraBold,
-//                                fontSize = MaterialTheme.typography.h6.fontSize
-//
-//                                , overflow = TextOverflow.Ellipsis
-//                            )
-//                            Text(
-//                                d.get(council.category) + " Committee".toString(),
-//                                modifier = modifier.fillMaxWidth()
-//                                    .padding(start = 10.dp, end = 10.dp),
-//                                fontWeight = FontWeight.W700,
-//                                color = Color.Black,
-//                                maxLines = 2,
-//                                overflow = TextOverflow.Ellipsis,
-//                                fontSize = MaterialTheme.typography.body1.fontSize
-//                            )
-//                            Text(
-//                                council.company,
-//                                modifier = modifier.padding(start = 10.dp, end = 10.dp),
-//                                color = Color.DarkGray
-//                                , maxLines = 2
-//                                ,overflow = TextOverflow.Ellipsis,
-//                            )
-//
-//                        }
-
-
-                     MemberCard(
-                         imageUrl = council.imgpath,
-                         name = council.name,
-                         role = council.company,
-                        lineColor =Color(color)
-                     )
-
+                    MemberCard(
+                        imageUrl = council.imgpath,
+                        name = council.name,
+                        role = council.company,
+                        lineColor = Color(color)
+                    )
                 }
 
-
             }
-
-
+            Spacer(modifier.height(50.dp))
         }
 
 
@@ -354,60 +309,78 @@ fun MemberCard(
     role: String,
     lineColor: Color = Color(0xFFE53935) // red / change to blue if needed
 ) {
-    Card(
+    val imageSize = 120.dp
+    val imageOverflowOffset = imageSize / 2// 50% overflow
+
+    // Parent Box with clipToBounds disabled to allow overflow
+    Box(
         modifier = Modifier
-            .fillMaxSize(0.85f),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(8.dp)
-        , colors = CardDefaults.cardColors(containerColor = Color.White)
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        contentAlignment = Alignment.TopCenter
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+        // Base layer: White card with rounded corners
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.85f)
+                .offset(y = imageOverflowOffset)
+            , // Push card down to accommodate overflow image
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults
+                .cardElevation(8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Profile Image
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Name
-            Text(
-                text = name,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Role
-            Text(
-                text = role,
-                fontSize = 12.sp,
-                color = Color.Gray,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 12.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Bottom Colored Line
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(4.dp)
-                    .background(lineColor)
-            )
+                    .padding(top = imageOverflowOffset + 16.dp), // Extra padding for overflow space
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Name
+                Text(
+                    text = name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Role
+                Text(
+                    text = role,
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Bottom Colored Line
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .background(lineColor)
+                )
+            }
         }
+
+        // Top layer: Circular profile image with 50% overflow
+        // Positioned at the top center with negative offset
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = name,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier
+                .size(imageSize)
+                .clip(CircleShape)
+                .border(4.dp, Color.White, CircleShape) // White border for separation
+                .align(Alignment.TopCenter) // Anchor to top center
+        )
     }
 }

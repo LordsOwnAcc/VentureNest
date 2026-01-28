@@ -322,59 +322,59 @@ BackHandler {
 
 
                 }
-                ElevatedCard(
-                    modifier = modifier
-                        .padding(top = 10.dp, bottom = 5.dp)
-                        .fillMaxWidth(0.9f)
-                        .height(60.dp)
-                        // .border(1.dp, Color.Black,RoundedCornerShape(25f))
-                        .clickable {
-
-
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLScvFkGdQcnDYvt0OsJi-27FlAXjslt-48RC5wP6JRxAI4oSMg/viewform")
-                            )
-                            context.startActivity(intent)
-
-                        },
-                    shape = RoundedCornerShape(25f),
-                    colors = CardDefaults.elevatedCardColors(
-                        containerColor = Color.White
-
-                    )
-                ) {
-
-
-                    Row(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .height(60.dp)
-                            .background(Color(0x0FA6A5A5)),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Incubate your Startup",
-                            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                            fontWeight = FontWeight.SemiBold,
-                            overflow = TextOverflow.Ellipsis, modifier = modifier
-                                .fillMaxWidth(0.8f)
-                                .padding(start = 10.dp), textAlign = TextAlign.Start
-                            , color = Color.Black
-                        )
-
-                        Icon(
-                            imageVector = Icons.Default.ArrowForwardIos, contentDescription = "",
-                            modifier = modifier
-                                .padding(end = 10.dp)
-                                .scale(0.7f)
-
-                        )
-
-                    }
-
-                }
+//                ElevatedCard(
+//                    modifier = modifier
+//                        .padding(top = 10.dp, bottom = 5.dp)
+//                        .fillMaxWidth(0.9f)
+//                        .height(60.dp)
+//                        // .border(1.dp, Color.Black,RoundedCornerShape(25f))
+//                        .clickable {
+//
+//
+//                            val intent = Intent(
+//                                Intent.ACTION_VIEW,
+//                                Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLScH3XNhBUvAOoNPsjxd7LzxoNBjTVfasJa5_Iqwq3aFsRWmcA/viewform")
+//                            )
+//                            context.startActivity(intent)
+//
+//                        },
+//                    shape = RoundedCornerShape(25f),
+//                    colors = CardDefaults.elevatedCardColors(
+//                        containerColor = Color.White
+//
+//                    )
+//                ) {
+//
+//
+//                    Row(
+//                        modifier = modifier
+//                            .fillMaxWidth()
+//                            .height(60.dp)
+//                            .background(Color(0x0FA6A5A5)),
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//                        Text(
+//                            text = "Incubate your Startup",
+//                            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+//                            fontWeight = FontWeight.SemiBold,
+//                            overflow = TextOverflow.Ellipsis, modifier = modifier
+//                                .fillMaxWidth(0.8f)
+//                                .padding(start = 10.dp), textAlign = TextAlign.Start
+//                            , color = Color.Black
+//                        )
+//
+//                        Icon(
+//                            imageVector = Icons.Default.ArrowForwardIos, contentDescription = "",
+//                            modifier = modifier
+//                                .padding(end = 10.dp)
+//                                .scale(0.7f)
+//
+//                        )
+//
+//                    }
+//
+//                }
 
                 Row(modifier = modifier
                     .padding(top = 5.dp)
@@ -391,7 +391,7 @@ BackHandler {
 
                                 val intent = Intent(
                                     Intent.ACTION_VIEW,
-                                    Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLScH3XNhBUvAOoNPsjxd7LzxoNBjTVfasJa5_Iqwq3aFsRWmcA/viewform")
+                                    Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLScvFkGdQcnDYvt0OsJi-27FlAXjslt-48RC5wP6JRxAI4oSMg/viewform")
                                 )
                                 context.startActivity(intent)
 

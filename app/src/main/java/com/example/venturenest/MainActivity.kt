@@ -1,4 +1,4 @@
-package com.example.venturenest
+ package com.example.venturenest
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -276,7 +276,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable<GalleryPage> {
-                            com.example.venturenest.ui.theme.Presentation.Gallery.GalaryScreen(window = windowInsets)
+                            com.example.venturenest.ui.theme.Presentation.Gallery.GalleryScreen(window = windowInsets)
                         }
 
                         composable<CouncilScreen> {

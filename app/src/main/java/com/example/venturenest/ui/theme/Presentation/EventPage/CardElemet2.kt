@@ -11,6 +11,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,6 +41,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -90,7 +93,7 @@ fun CardElement2(
 //    }
 
 
-    ElevatedCard(modifier.fillMaxWidth()
+    OutlinedCard(modifier.fillMaxWidth()
         .padding(top = 10.dp, bottom = 10.dp)
         .height(150.dp)
 //        .graphicsLayer{
@@ -100,7 +103,9 @@ fun CardElement2(
             onClick.invoke()
         },
          shape = RoundedCornerShape(25f)
-    , colors = CardDefaults.elevatedCardColors(containerColor = Color.White)) {
+    , colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+    , border = BorderStroke(0.1.dp,Color.LightGray)
+    )  {
 
         Box(modifier.fillMaxSize()) {
 
@@ -112,8 +117,8 @@ fun CardElement2(
             ) {
                 AsyncImage(
                     model = events.imageUrl,
-                    contentDescription = null, modifier.padding(start = 10.dp).fillMaxWidth(0.45f)
-                        .fillMaxHeight(0.8f)
+                    contentDescription = null, modifier.padding(start = 10.dp).fillMaxWidth(0.38f)
+                        .fillMaxHeight(0.7f)
 //                        .graphicsLayer{
 //                            scaleX=imageOffset.value
 //                            scaleY=imageOffset.value
@@ -144,7 +149,7 @@ fun CardElement2(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = null,
                             modifier.scale(0.8f)
-                                .padding(start = 5.dp), tint = Color.LightGray
+                                .padding(start = 5.dp), tint = Color(0xFF8C1D2A)
                         )
                         Text(
                             text = date,
@@ -164,7 +169,7 @@ fun CardElement2(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
                             modifier.scale(0.8f)
-                                .padding(start = 5.dp), tint = Color.LightGray
+                                .padding(start = 5.dp), tint =Color(0xFF8C1D2A)
                         )
                         Text(
                             text = "CGCU Mohali",

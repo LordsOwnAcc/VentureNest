@@ -1,6 +1,12 @@
 *.iml
 .gradle
+.caches/
+wrapper/dists/
+generated-gradle-jars/
+/caches
 /local.properties
+/.idea
+/.tmp
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml

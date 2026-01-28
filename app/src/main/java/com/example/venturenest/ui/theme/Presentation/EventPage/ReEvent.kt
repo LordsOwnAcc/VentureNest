@@ -275,8 +275,8 @@ fun ReEvent(
                             .fillMaxWidth(0.95f)
                             .fillMaxHeight()
                             .border(
-                                1.dp, Color.Black,
-                                RoundedCornerShape(15f)
+                                1.dp,Color(0x8F8FABD4),
+                                RoundedCornerShape(50f)
                             ),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
@@ -296,12 +296,15 @@ fun ReEvent(
                             ),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             placeholder = { Text(text = "Search",modifier.offset(y = -1.dp)
-                                , color = Color.Gray) },
+                                , color = Color(0x8F7698CB)
+                            ) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Search,
                                     contentDescription = ""
                                     ,modifier.scale(0.8f)
+                                    , tint =  Color(0x8F496786)
+
 
                                 )
                             },
@@ -438,18 +441,21 @@ fun ReEvent(
                                         eventsPageViewModel.changeToStarred()
                                     }
                                 },
-                                shape = RoundedCornerShape(25f),
+                                shape = RoundedCornerShape(50f),
                                 border = BorderStroke(
                                     1.dp,
-                                    if (state2.searchState != EventsStateSearching.Starred) Color.LightGray.copy(
-                                        alpha = 0.2f
-                                    ) else Color.Black
+                                    if (state2.searchState != EventsStateSearching.Starred) Color(
+                                        0x8FBECEE3
+                                    )
+                                     else Color.Black
                                 ),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.1f))
+                                colors = ButtonDefaults.buttonColors(containerColor = if (state2.searchState != EventsStateSearching.Starred) Color(
+                                    0x8FBECEE3
+                                ) else Color.Black)
                             ) {
                                 Text(
                                     "Starred",
-                                    color = if (state2.searchState != EventsStateSearching.Starred) Color.LightGray else Color.Black
+                                    color = if (state2.searchState != EventsStateSearching.Starred) Color.Black else Color.White
                                 )
                             }
                             Button(
@@ -461,43 +467,45 @@ fun ReEvent(
                                         eventsPageViewModel.changeToNonStarred()
                                     }
                                 },
-                                shape = RoundedCornerShape(25f),
+                                shape = RoundedCornerShape(50f),
                                 border = BorderStroke(
                                     1.dp,
                                     if (state2.searchState != EventsStateSearching.Nonstarred) Color.LightGray.copy(
                                         alpha = 0.2f
                                     ) else Color.Black
                                 ),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.1f))
+                                colors = ButtonDefaults.buttonColors(containerColor = if (state2.searchState != EventsStateSearching.Nonstarred) Color(
+                                    0x8FBECEE3
+                                ) else Color.Black)
                             ) {
                                 Text(
                                     "Non-Starred",
-                                    color = if (state2.searchState != EventsStateSearching.Nonstarred) Color.Gray else Color.Black
+                                    color = if (state2.searchState != EventsStateSearching.Nonstarred) Color.Black else Color.White
                                 )
                             }
-                            Button(
-                                modifier = Modifier.padding(start = 10.dp),
-                                onClick = {
-                                    if (state2.searchState == EventsStateSearching.Latest) {
-
-                                    } else {
-                                        eventsPageViewModel.changeToLatest()
-                                    }
-                                },
-                                shape = RoundedCornerShape(25f),
-                                border = BorderStroke(
-                                    1.dp,
-                                    if (state2.searchState != EventsStateSearching.Latest) Color.LightGray.copy(
-                                        alpha = 0.2f
-                                    ) else Color.Black
-                                ),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.1f))
-                            ) {
-                                Text(
-                                    "latest",
-                                    color = if (state2.searchState != EventsStateSearching.Latest) Color.Gray else Color.Black
-                                )
-                            }
+//                            Button(
+//                                modifier = Modifier.padding(start = 10.dp),
+//                                onClick = {
+//                                    if (state2.searchState == EventsStateSearching.Latest) {
+//
+//                                    } else {
+//                                        eventsPageViewModel.changeToLatest()
+//                                    }
+//                                },
+//                                shape = RoundedCornerShape(25f),
+//                                border = BorderStroke(
+//                                    1.dp,
+//                                    if (state2.searchState != EventsStateSearching.Latest) Color.LightGray.copy(
+//                                        alpha = 0.2f
+//                                    ) else Color.Black
+//                                ),
+//                                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.1f))
+//                            ) {
+//                                Text(
+//                                    "latest",
+//                                    color = if (state2.searchState != EventsStateSearching.Latest) Color.Gray else Color.Black
+//                                )
+//                            }
                             Button(
                                 modifier = Modifier.padding(start = 10.dp, end = 16.dp),
                                 onClick = {
@@ -507,18 +515,20 @@ fun ReEvent(
                                         eventsPageViewModel.changeToAll()
                                     }
                                 },
-                                shape = RoundedCornerShape(25f),
+                                shape = RoundedCornerShape(50f),
                                 border = BorderStroke(
                                     1.dp,
                                     if (state2.searchState != EventsStateSearching.AllEvents) Color.LightGray.copy(
                                         alpha = 0.2f
                                     ) else Color.Black
                                 ),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.1f))
+                                colors =ButtonDefaults.buttonColors(containerColor = if (state2.searchState != EventsStateSearching.AllEvents) Color(
+                                    0x8FBECEE3
+                                ) else Color.Black)
                             ) {
                                 Text(
                                     "All-Events",
-                                    color = if (state2.searchState != EventsStateSearching.AllEvents) Color.Gray else Color.Black
+                                    color = if (state2.searchState != EventsStateSearching.AllEvents) Color.Black else Color.White
                                 )
                             }
 

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -28,11 +29,13 @@ import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.Card
 
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -434,7 +437,7 @@ fun ExpandableBottoSheet(
             .fillMaxWidth()
             .fillMaxHeight()
             .offset { IntOffset(0, offsetY.value.roundToPx()) }
-            .background(Color.White, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .background(background, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             .pointerInput(Unit) {
                 detectVerticalDragGestures(
                     onVerticalDrag = { _, dragAmount ->
@@ -486,11 +489,7 @@ fun ExpandableBottoSheet(
                         modifier
                             .clip(RoundedCornerShape(15f))
                             .fillMaxWidth(0.95f)
-                            .fillMaxHeight()
-                            .border(
-                                1.dp, Color.Black,
-                                RoundedCornerShape(15f)
-                            ),
+                            .fillMaxHeight(),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.Bottom
                     ) {
@@ -498,24 +497,26 @@ fun ExpandableBottoSheet(
                             value = search,
                             onValueChange = { search = it },
                             modifier
-                                .clip(RoundedCornerShape(15f))
+                                .clip(RoundedCornerShape(25f))
                                 .fillMaxSize(),
                             colors = TextFieldDefaults.textFieldColors(
-                                backgroundColor = Color.White,
+                                backgroundColor = Color.Transparent,
 
-textColor = Color.Gray,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent
+                                textColor = Color.Gray,
+                                unfocusedIndicatorColor = Color.LightGray,
+                                focusedIndicatorColor = Color.DarkGray
                             ),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            placeholder = { Text(text = "Search in ${searchIn}",modifier
-                            , color = Color.Gray) },
+                            placeholder = {
+                                Text(
+                                    text = "Search in ${searchIn}", modifier, color = Color.Gray
+                                )
+                            },
                             textStyle = TextStyle(fontSize = MaterialTheme.typography.body1.fontSize),
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Search,
-                                    contentDescription = ""
-                                    ,modifier.scale(0.8f)
+                                    contentDescription = "", modifier.scale(0.8f)
 
                                 )
                             },
@@ -526,11 +527,14 @@ textColor = Color.Gray,
                                     Icon(
                                         imageVector = Icons.Default.Clear,
                                         contentDescription = "",
-                                        modifier.clickable {
-                                            search = ""
+                                        modifier
+                                            .clickable {
+                                                search = ""
 
-                                        }.scale(0.8f).offset(y = -4.dp),
-                                         tint = Color.Gray
+                                            }
+                                            .scale(0.8f)
+                                            .offset(y = -4.dp),
+                                        tint = Color.Gray
                                     )
                                 }
                             })
@@ -551,451 +555,655 @@ textColor = Color.Gray,
 
 
                     if (pagerState.currentPage == 0) {
-                     searchIn = "council members"
+                        searchIn = "council members"
                         Column(
-                            modifier.fillMaxSize(1f),
+                            modifier
+                                .fillMaxSize(1f)
+                                .padding(horizontal = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Top
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFF22A699))
-                                    .clickable{
-                                        navController.navigate(CouncilScreen(
-                                            search = search,
-                                         color =   0xFF22A699 ,
-                                            category = "advisory"
-                                        ))
-                                    },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    "Advisory Council",
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        start = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = if (state.Data.councilmembers.filter { it ->
-                                            it.category == "advisory" && it
-                                                .name.contains(
-                                                search,true
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            // Advisory Council Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
+                                    .clickable {
+                                        navController.navigate(
+                                            CouncilScreen(
+                                                search = search,
+                                                color = 0xFF00897B,
+                                                category = "advisory"
                                             )
-                                        }
-                                            .isNullOrEmpty()) "0" else state.Data.councilmembers.filter { it ->
-                                        it.category == "advisory" && it.name.contains(
-                                            search,true
                                         )
-                                    }.size.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-
-                            }
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFFF29727)).clickable{
-                                        navController.navigate(CouncilScreen(
-                                            search = search,
-                                            color =   0xFFF29727 ,
-                                            category = "techinnov"
-                                        ))
                                     },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                )
                             ) {
-
-                                Text(
-                                    "Technology and Innovation Council",
-                                    modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(
-                                            top = 15.dp,
-                                            bottom = 15.dp,
-                                            start = 16.dp
-                                        ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = if (state.Data.councilmembers.filter { it ->
-                                            it.category == "techinnov" && it.name.contains(
-                                                search,true
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Left accent bar
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
                                             )
-                                        }
-                                            .isNullOrEmpty()) "0" else state.Data.councilmembers.filter { it ->
-                                        it.category == "techinnov" && it.name.contains(
-                                            search,true
-                                        )
-                                    }.size.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-
-                            }
-
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFFDE908A))
-                                    .clickable{
-                                        navController.navigate(CouncilScreen(
-                                            search = search,
-                                            color =  0xFFDE908A ,
-                                            category = "mentorship"
-                                        ))
-                                    },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    "Mentorship Council",
-                                    modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(
-                                            top = 15.dp,
-                                            bottom = 15.dp,
-                                            start = 16.dp
-                                        ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = if (state.Data.councilmembers.filter { it ->
-                                            it.category == "mentorship" && it.name.contains(
-                                                search,true
-                                            )
-                                        }
-                                            .isNullOrEmpty()) "0" else state.Data.councilmembers.filter { it ->
-                                        it.category == "mentorship" && it.name.contains(
-                                            search,true
-                                        )
-                                    }.size.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-
-                            }
-
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFFF24C3D))
-                                    .clickable{
-                                        navController.navigate(CouncilScreen(
-                                            search = search,
-                                            color =   0xFFF24C3D ,
-                                            category = "legalcompl"
-                                        ))
-                                    },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    "Legal and Compliance Council",
-                                    modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(
-                                            top = 15.dp,
-                                            bottom = 15.dp,
-                                            start = 16.dp
-                                        ),
-                                    maxLines = 1,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Text(
-                                    text = if (state.Data.councilmembers.filter { it ->
-                                            it.category == "legalcompl" && it.name.contains(
-                                                search,true
-                                            )
-                                        }
-                                            .isNullOrEmpty()) "0" else state.Data.councilmembers.filter { it ->
-                                        it.category == "techinnov" && it.name.contains(
-                                            search,true
-                                        )
-                                    }.size.toString(),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
+                                            .background(Color(0xFF00897B))
                                     )
-                                )
 
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Advisory Council",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFF00897B).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = state.Data.councilmembers.filter { 
+                                                    it.category == "advisory" && it.name.contains(search, true)
+                                                }.size.toString(),
+                                                color = Color(0xFF00897B),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
                             }
 
+                            // Technology & Innovation Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
+                                    .clickable {
+                                        navController.navigate(
+                                            CouncilScreen(
+                                                search = search,
+                                                color = 0xFFFBC02D,
+                                                category = "techinnov"
+                                            )
+                                        )
+                                    },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                )
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFFFBC02D))
+                                    )
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Technology & Innovation",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFFFBC02D).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = state.Data.councilmembers.filter { 
+                                                    it.category == "techinnov" && it.name.contains(search, true)
+                                                }.size.toString(),
+                                                color = Color(0xFFFBC02D),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Mentorship Council Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
+                                    .clickable {
+                                        navController.navigate(
+                                            CouncilScreen(
+                                                search = search,
+                                                color = 0xFFF06292,
+                                                category = "mentorship"
+                                            )
+                                        )
+                                    },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                )
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFFF06292))
+                                    )
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Mentorship Council",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFFF06292).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = state.Data.councilmembers.filter { 
+                                                    it.category == "mentorship" && it.name.contains(search, true)
+                                                }.size.toString(),
+                                                color = Color(0xFFF06292),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Legal and Compliance Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
+                                    .clickable {
+                                        navController.navigate(
+                                            CouncilScreen(
+                                                search = search,
+                                                color = 0xFFE91E63,
+                                                category = "legalcompl"
+                                            )
+                                        )
+                                    },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                )
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFFE91E63))
+                                    )
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Legal and Compliance",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFFE91E63).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = state.Data.councilmembers.filter { 
+                                                    it.category == "legalcompl" && it.name.contains(search, true)
+                                                }.size.toString(),
+                                                color = Color(0xFFE91E63),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
+                            }
 
                         }
-
 
                     } else if (pagerState.currentPage == 1) {
-searchIn = "partners"
+                        searchIn = "partners"
                         Column(
-                            modifier.fillMaxSize(1f),
+                            modifier
+                                .fillMaxSize(1f)
+                                .padding(horizontal = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Top
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFFB69F5F))
-                                    .clickable{
-                                        navController.navigate(partnerScreen(
-                                            search = search,
-                                            color =  0xFFB69F5F ,
-                                            category = "government"
-                                        ))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            // Government Catalyst Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
+                                    .clickable {
+                                        navController.navigate(
+                                            partnerScreen(
+                                                search = search,
+                                                color = 0xFFB69F5F,
+                                                category = "government"
+                                            )
+                                        )
                                     },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    "Government Catalyst",
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        start = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
                                 )
-                                Text(
-                                    text = if (state.Data.partner.filter { it ->
-                                            it.Category == "government" && it.Name.contains(
-                                                search,true
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFFB69F5F))
+                                    )
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Government Catalyst",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFFB69F5F).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = state.Data.partner.filter { 
+                                                    it.Category == "government" && it.Name.contains(search, true)
+                                                }.size.toString(),
+                                                color = Color(0xFFB69F5F),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
                                             )
                                         }
-                                            .isNullOrEmpty()) "0" else state.Data.partner.filter { it ->
-                                        it.Category == "government" && it.Name.contains(
-                                            search,true
-                                        )
-                                    }.size.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-
+                                    }
+                                }
                             }
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFF32BBBB))
-                                    .clickable{
-                                        navController.navigate(partnerScreen(
-                                            search = search,
-                                            color =   0xFF32BBBB ,
-                                            category = "ecosystem"
-                                        ))
-                                    },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
 
-                                Text(
-                                    "Eco-system Partners",
-                                    modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(
-                                            top = 15.dp,
-                                            bottom = 15.dp,
-                                            start = 16.dp
-                                        ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
+                            // Eco-system Partners Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
+                                    .clickable {
+                                        navController.navigate(
+                                            partnerScreen(
+                                                search = search,
+                                                color = 0xFF32BBBB,
+                                                category = "ecosystem"
+                                            )
+                                        )
+                                    },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
                                 )
-                                Text(
-                                    text = if (state.Data.partner.filter { it ->
-                                            it.Category == "ecosystem" && it.Name.contains(
-                                                search,true
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFF32BBBB))
+                                    )
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Eco-system Partners",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFF32BBBB).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = state.Data.partner.filter { 
+                                                    it.Category == "ecosystem" && it.Name.contains(search, true)
+                                                }.size.toString(),
+                                                color = Color(0xFF32BBBB),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
                                             )
                                         }
-                                            .isNullOrEmpty()) "0" else state.Data.partner.filter { it ->
-                                        it.Category == "ecosystem" && it.Name.contains(
-                                            search,true
-                                        )
-                                    }.size.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-
+                                    }
+                                }
                             }
 
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFFF29727))
-                                    .clickable{
-                                        navController.navigate(partnerScreen(
-                                            search = search,
-                                            color =  0xFFF29727 ,
-                                            category = "investor"
-                                        ))
+                            // Investment Partner Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
+                                    .clickable {
+                                        navController.navigate(
+                                            partnerScreen(
+                                                search = search,
+                                                color = 0xFFF29727,
+                                                category = "investor"
+                                            )
+                                        )
                                     },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    "Investment Partner",
-                                    modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(
-                                            top = 15.dp,
-                                            bottom = 15.dp,
-                                            start = 16.dp
-                                        ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
                                 )
-                                Text(
-                                    text = if (state.Data.partner.filter { it ->
-                                            it.Category == "investor" && it.Name.contains(
-                                                search,true
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFFF29727))
+                                    )
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Investment Partner",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFFF29727).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = state.Data.partner.filter { 
+                                                    it.Category == "investor" && it.Name.contains(search, true)
+                                                }.size.toString(),
+                                                color = Color(0xFFF29727),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
                                             )
                                         }
-                                            .isNullOrEmpty()) "0" else state.Data.partner.filter { it ->
-                                        it.Category == "investor" && it.Name.contains(
-                                            search,true
-                                        )
-                                    }.size.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-
+                                    }
+                                }
                             }
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFFB349D2))
-                                    .clickable{
-                                        navController.navigate(partnerScreen(
-                                            search = search,
-                                            color =  0xFFB349D2 ,
-                                            category = "accelerator"
-                                        ))
-                                    },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
 
-                                Text(
-                                    "Accelerator Collaborator",
-                                    modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(
-                                            top = 15.dp,
-                                            bottom = 15.dp,
-                                            start = 16.dp
-                                        ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
+                            // Accelerator Collaborator Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
+                                    .clickable {
+                                        navController.navigate(
+                                            partnerScreen(
+                                                search = search,
+                                                color = 0xFFB349D2,
+                                                category = "accelerator"
+                                            )
+                                        )
+                                    },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
                                 )
-                                Text(
-                                    text = if (state.Data.partner.filter { it ->
-                                            it.Category == "accelerator" && it.Name.contains(
-                                                search,true
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFFB349D2))
+                                    )
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Accelerator Collaborator",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFFB349D2).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = state.Data.partner.filter { 
+                                                    it.Category == "accelerator" && it.Name.contains(search, true)
+                                                }.size.toString(),
+                                                color = Color(0xFFB349D2),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
                                             )
                                         }
-                                            .isNullOrEmpty()) "0" else state.Data.partner.filter { it ->
-                                        it.Category == "accelerator" && it.Name.contains(
-                                            search,true
-                                        )
-                                    }.size.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-
+                                    }
+                                }
                             }
-
-
-
 
                         }
-
 
                     } else if (pagerState.currentPage == 2) {
                         searchIn = "startup type"
@@ -1013,105 +1221,168 @@ searchIn = "partners"
                                             it.FounderName.contains(search, ignoreCase = true))
                         }
 
-
-
-
                         Column(
-                            modifier.fillMaxSize(1f),
+                            modifier
+                                .fillMaxSize(1f)
+                                .padding(horizontal = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Top
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFF22A699))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            // Virtual Startups Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
                                     .clickable {
                                         navController.navigate(
                                             startupsScreen(
                                                 search = search,
-                                                type = "type", contain = "Virtual"
+                                                type = "type", 
+                                                contain = "Virtual"
                                             )
                                         )
                                     },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                )
                             ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFF00897B))
+                                    )
 
-                                Text(
-                                    "Virtual",
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        start = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = data.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Virtual",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
 
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFF00897B).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = data.toString(),
+                                                color = Color(0xFF00897B),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
                             }
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFFF29727))
+
+                            // Physical Startups Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
                                     .clickable {
                                         navController.navigate(
                                             startupsScreen(
                                                 search = search,
-                                                type = "type", contain = "Physical"
+                                                type = "type", 
+                                                contain = "Physical"
                                             )
                                         )
                                     },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                )
                             ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFFF29727))
+                                    )
 
-                                Text(
-                                    "Physical",
-                                    modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(
-                                            top = 15.dp,
-                                            bottom = 15.dp,
-                                            start = 16.dp
-                                        ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = data1.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Physical",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
 
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFFF29727).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = data1.toString(),
+                                                color = Color(0xFFF29727),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
                             }
-
 
                         }
-
 
                     } else if (pagerState.currentPage == 3) {
                         searchIn = "startup status"
@@ -1144,194 +1415,317 @@ searchIn = "partners"
                         }
 
                         Column(
-                            modifier.fillMaxSize(1f),
+                            modifier
+                                .fillMaxSize(1f)
+                                .padding(horizontal = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Top
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFFF24C3D))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            // Not Registered Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
                                     .clickable {
                                         navController.navigate(
                                             startupsScreen(
                                                 search = search,
-                                                type = "reg", contain = "Not Registered"
-
+                                                type = "reg", 
+                                                contain = "Not Registered"
                                             )
                                         )
                                     },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                )
                             ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFFE91E63))
+                                    )
 
-                                Text(
-                                    "Not Registered",
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        start = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = data1.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Not Registered",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
 
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFFE91E63).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = data1.toString(),
+                                                color = Color(0xFFE91E63),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
                             }
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFF22A699))
+
+                            // Private Limited Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
                                     .clickable {
                                         navController.navigate(
                                             startupsScreen(
                                                 search = search,
-                                                type = "reg", contain = "Private Limited"
-
+                                                type = "reg", 
+                                                contain = "Private Limited"
                                             )
                                         )
                                     },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                )
                             ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFF00897B))
+                                    )
 
-                                Text(
-                                    "Private Limited",
-                                    modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(
-                                            top = 15.dp,
-                                            bottom = 15.dp,
-                                            start = 16.dp
-                                        ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = data2.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Private Limited",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
 
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFF00897B).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = data2.toString(),
+                                                color = Color(0xFF00897B),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
                             }
 
-
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFFF29727))
+                            // Proprietorship Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
                                     .clickable {
                                         navController.navigate(
                                             startupsScreen(
                                                 search = search,
-                                                type = "reg", contain = "Proprietorship"
-
+                                                type = "reg", 
+                                                contain = "Proprietorship"
                                             )
                                         )
                                     },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                )
                             ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFFF29727))
+                                    )
 
-                                Text(
-                                    "Proprietorship",
-                                    modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(
-                                            top = 15.dp,
-                                            bottom = 15.dp,
-                                            start = 16.dp
-                                        ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = data3.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Proprietorship",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
 
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFFF29727).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = data3.toString(),
+                                                color = Color(0xFFF29727),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
                             }
-                            Row(
-                                modifier
-                                    .fillMaxWidth(0.95f)
-                                    .padding(top = 20.dp)
-                                    .wrapContentHeight()
-                                    .clip(RoundedCornerShape(25f))
-                                    .background(Color(0xFFF2BE22))
+
+                            // Partnership Card
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(70.dp)
                                     .clickable {
                                         navController.navigate(
                                             startupsScreen(
                                                 search = search,
-                                                type = "reg", contain = "Partnership"
-
+                                                type = "reg", 
+                                                contain = "Partnership"
                                             )
                                         )
                                     },
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 2.dp
+                                )
                             ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 12.dp,
+                                                    bottomStart = 12.dp
+                                                )
+                                            )
+                                            .background(Color(0xFFFBC02D))
+                                    )
 
-                                Text(
-                                    "Partnership",
-                                    modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(
-                                            top = 15.dp,
-                                            bottom = 15.dp,
-                                            start = 16.dp
-                                        ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = data5.toString(),
-                                    modifier.padding(
-                                        top = 15.dp,
-                                        bottom = 15.dp,
-                                        end = 16.dp
-                                    ),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Partnership",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 16.dp),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF424242),
+                                            fontSize = 16.sp
+                                        )
 
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = Color(0xFFFBC02D).copy(alpha = 0.15f),
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = data5.toString(),
+                                                color = Color(0xFFFBC02D),
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
                             }
-
 
                         }
 
@@ -1346,6 +1740,7 @@ searchIn = "partners"
 
     }
 }
+
 
 
 

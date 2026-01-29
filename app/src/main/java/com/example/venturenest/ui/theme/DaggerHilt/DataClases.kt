@@ -88,7 +88,9 @@ data class SuccessStories(
     val FounderLogoImg: String
 )
 data class photo(
-    val _id : String,
-    var imageUrl : String,
-    val photoName:String
+    val _id : String = "",
+    var imageUrl : String = "",
+    val photoName: String = "",
+    val date: String = ""
 )
+

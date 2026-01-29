@@ -4,7 +4,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -555,9 +557,37 @@ fun FullScreenImageDialog(
 
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                pageSpacing = 16.dp,
+                beyondViewportPageCount = 1
             ) { page ->
-                ZoomableImage(imageUrl = photos[page].imageUrl)
+                // Calculate page offset for animation
+                val pageOffset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                
+                // Animate scale and alpha based on page offset
+                val scale by animateFloatAsState(
+                    targetValue = 1f - (kotlin.math.abs(pageOffset) * 0.15f).coerceIn(0f, 0.15f),
+                    animationSpec = tween(durationMillis = 150),
+                    label = "scale"
+                )
+                val alpha by animateFloatAsState(
+                    targetValue = 1f - (kotlin.math.abs(pageOffset) * 0.3f).coerceIn(0f, 0.3f),
+                    animationSpec = tween(durationMillis = 150),
+                    label = "alpha"
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                            this.alpha = alpha
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    ZoomableImage(imageUrl = photos[page].imageUrl)
+                }
             }
 
             // Top Bar with close button and photo info
@@ -656,23 +686,74 @@ fun FullScreenImageDialog(
 @Composable
 fun ZoomableImage(imageUrl: String) {
     var scale by remember { mutableStateOf(1f) }
-    var offset by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+    
+    // Animated scale for smooth zoom transitions
+    val animatedScale by animateFloatAsState(
+        targetValue = scale,
+        animationSpec = tween(durationMillis = 150),
+        label = "zoom"
+    )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            // Custom pinch-to-zoom that only activates with 2+ fingers
             .pointerInput(Unit) {
-                detectTransformGestures { _, pan, zoom, _ ->
-                    scale = (scale * zoom).coerceIn(1f, 3f)
-                    val newScale = (scale * zoom).coerceIn(1f, 3f)
-                    
-                    // Reset offset if zoomed out
-                    if (newScale == 1f) {
-                        offset = androidx.compose.ui.geometry.Offset.Zero
-                    } else {
-                         offset += pan
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val pointers = event.changes.filter { it.pressed }
+                        
+                        // Only handle if there are 2 or more pointers (pinch gesture)
+                        if (pointers.size >= 2) {
+                            val pointer1 = pointers[0]
+                            val pointer2 = pointers[1]
+                            
+                            // Calculate distance between pointers
+                            val currentDistance = kotlin.math.sqrt(
+                                (pointer1.position.x - pointer2.position.x).let { it * it } +
+                                (pointer1.position.y - pointer2.position.y).let { it * it }
+                            )
+                            
+                            val previousDistance = kotlin.math.sqrt(
+                                (pointer1.previousPosition.x - pointer2.previousPosition.x).let { it * it } +
+                                (pointer1.previousPosition.y - pointer2.previousPosition.y).let { it * it }
+                            )
+                            
+                            if (previousDistance > 0f) {
+                                val zoomFactor = currentDistance / previousDistance
+                                scale = (scale * zoomFactor).coerceIn(1f, 4f)
+                                
+                                // Consume the event so pager doesn't get it
+                                pointers.forEach { it.consume() }
+                            }
+                            
+                            // Reset offset when zoomed out
+                            if (scale <= 1f) {
+                                offsetX = 0f
+                                offsetY = 0f
+                            }
+                        }
                     }
                 }
+            }
+            // Double-tap to zoom
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onDoubleTap = {
+                        if (scale > 1f) {
+                            // Reset zoom
+                            scale = 1f
+                            offsetX = 0f
+                            offsetY = 0f
+                        } else {
+                            // Zoom to 2.5x
+                            scale = 2.5f
+                        }
+                    }
+                )
             },
         contentAlignment = Alignment.Center
     ) {
@@ -683,10 +764,10 @@ fun ZoomableImage(imageUrl: String) {
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer(
-                    scaleX = scale,
-                    scaleY = scale,
-                    translationX = offset.x,
-                    translationY = offset.y
+                    scaleX = animatedScale,
+                    scaleY = animatedScale,
+                    translationX = offsetX,
+                    translationY = offsetY
                 )
         )
     }

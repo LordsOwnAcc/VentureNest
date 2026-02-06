@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -79,7 +80,12 @@ import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.GalleryViewModel
 import com.example.venturenest.ui.theme.DaggerHilt.photo
 import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
 import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
-
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import kotlinx.coroutines.launch
 
 
 // Color Palette
@@ -554,12 +560,16 @@ fun FullScreenImageDialog(
                 initialPage = initialPage,
                 pageCount = { photos.size }
             )
+            
+            // Track if current page is zoomed
+            var isZoomed by remember { mutableStateOf(false) }
 
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize(),
                 pageSpacing = 16.dp,
-                beyondViewportPageCount = 1
+                beyondViewportPageCount = 1,
+                userScrollEnabled = !isZoomed // Disable swipe when zoomed
             ) { page ->
                 // Calculate page offset for animation
                 val pageOffset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
@@ -586,7 +596,15 @@ fun FullScreenImageDialog(
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    ZoomableImage(imageUrl = photos[page].imageUrl)
+                    ZoomableImage(
+                        imageUrl = photos[page].imageUrl,
+                        onZoomChange = { zoomed ->
+                            // Only update if this is the current page
+                            if (page == pagerState.currentPage) {
+                                isZoomed = zoomed
+                            }
+                        }
+                    )
                 }
             }
 
@@ -684,91 +702,117 @@ fun FullScreenImageDialog(
 }
 
 @Composable
-fun ZoomableImage(imageUrl: String) {
+fun ZoomableImage(
+    imageUrl: String,
+    onZoomChange: (Boolean) -> Unit = {}
+) {
     var scale by remember { mutableStateOf(1f) }
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
     
-    // Animated scale for smooth zoom transitions
+    // Animated values for smooth transitions
     val animatedScale by animateFloatAsState(
         targetValue = scale,
-        animationSpec = tween(durationMillis = 150),
+        animationSpec = tween(durationMillis = 200),
         label = "zoom"
     )
+    
+    val animatedOffsetX by animateFloatAsState(
+        targetValue = offset.x,
+        animationSpec = tween(durationMillis = 200),
+        label = "offsetX"
+    )
+    
+    val animatedOffsetY by animateFloatAsState(
+        targetValue = offset.y,
+        animationSpec = tween(durationMillis = 200),
+        label = "offsetY"
+    )
+
+    // Notify parent about zoom state
+    LaunchedEffect(scale) {
+        onZoomChange(scale > 1.1f)
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            // Custom pinch-to-zoom that only activates with 2+ fingers
-            .pointerInput(Unit) {
-                awaitPointerEventScope {
-                    while (true) {
-                        val event = awaitPointerEvent()
-                        val pointers = event.changes.filter { it.pressed }
-                        
-                        // Only handle if there are 2 or more pointers (pinch gesture)
-                        if (pointers.size >= 2) {
-                            val pointer1 = pointers[0]
-                            val pointer2 = pointers[1]
-                            
-                            // Calculate distance between pointers
-                            val currentDistance = kotlin.math.sqrt(
-                                (pointer1.position.x - pointer2.position.x).let { it * it } +
-                                (pointer1.position.y - pointer2.position.y).let { it * it }
-                            )
-                            
-                            val previousDistance = kotlin.math.sqrt(
-                                (pointer1.previousPosition.x - pointer2.previousPosition.x).let { it * it } +
-                                (pointer1.previousPosition.y - pointer2.previousPosition.y).let { it * it }
-                            )
-                            
-                            if (previousDistance > 0f) {
-                                val zoomFactor = currentDistance / previousDistance
-                                scale = (scale * zoomFactor).coerceIn(1f, 4f)
-                                
-                                // Consume the event so pager doesn't get it
-                                pointers.forEach { it.consume() }
-                            }
-                            
-                            // Reset offset when zoomed out
-                            if (scale <= 1f) {
-                                offsetX = 0f
-                                offsetY = 0f
-                            }
-                        }
-                    }
-                }
-            }
-            // Double-tap to zoom
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onDoubleTap = {
-                        if (scale > 1f) {
-                            // Reset zoom
+                    onDoubleTap = { tapOffset ->
+                        if (scale > 1.1f) {
+                            // Zoom out with animation
                             scale = 1f
-                            offsetX = 0f
-                            offsetY = 0f
+                            offset = Offset.Zero
                         } else {
-                            // Zoom to 2.5x
-                            scale = 2.5f
+                            // Zoom in to 2.5x centered on tap position
+                            val newScale = 2.5f
+                            scale = newScale
+                            
+                            // Calculate offset to center zoom on tap point
+                            val centerX = size.width / 2f
+                            val centerY = size.height / 2f
+                            
+                            // The tap point should stay in place after zoom
+                            val newOffsetX = (centerX - tapOffset.x) * (newScale - 1) / newScale
+                            val newOffsetY = (centerY - tapOffset.y) * (newScale - 1) / newScale
+                            
+                            // Calculate bounds
+                            val maxX = size.width * (newScale - 1) / (2 * newScale)
+                            val maxY = size.height * (newScale - 1) / (2 * newScale)
+                            
+                            offset = Offset(
+                                x = newOffsetX.coerceIn(-maxX, maxX),
+                                y = newOffsetY.coerceIn(-maxY, maxY)
+                            )
                         }
                     }
                 )
+            }
+            .pointerInput(scale) {
+                // Only enable drag when zoomed in
+                if (scale > 1.1f) {
+                    detectDragGestures { change, dragAmount ->
+                        change.consume()
+                        
+                        // Calculate bounds for panning
+                        val maxX = size.width * (scale - 1) / (2 * scale)
+                        val maxY = size.height * (scale - 1) / (2 * scale)
+                        
+                        // Update offset with drag, respecting bounds
+                        val newOffset = Offset(
+                            x = (offset.x + dragAmount.x / scale).coerceIn(-maxX, maxX),
+                            y = (offset.y + dragAmount.y / scale).coerceIn(-maxY, maxY)
+                        )
+                        offset = newOffset
+                    }
+                }
             },
         contentAlignment = Alignment.Center
     ) {
-        AsyncImage(
+        SubcomposeAsyncImage(
             model = imageUrl,
             contentDescription = null,
             contentScale = ContentScale.Fit,
+            loading = {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+            },
             modifier = Modifier
                 .fillMaxSize()
-                .graphicsLayer(
-                    scaleX = animatedScale,
-                    scaleY = animatedScale,
-                    translationX = offsetX,
-                    translationY = offsetY
-                )
+                .graphicsLayer {
+                    scaleX = animatedScale
+                    scaleY = animatedScale
+                    translationX = animatedOffsetX * animatedScale
+                    translationY = animatedOffsetY * animatedScale
+                }
         )
     }
 }

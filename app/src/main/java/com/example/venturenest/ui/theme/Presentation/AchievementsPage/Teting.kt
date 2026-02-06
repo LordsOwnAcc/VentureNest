@@ -155,7 +155,7 @@ fun ExpandableBottoSheet(
                 state = pagerState,
                 modifier = modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(),
+                    .weight(1f),
                 userScrollEnabled = true,
                 pageSpacing = 0.dp, beyondViewportPageCount = 2
             ) { page ->
@@ -415,6 +415,33 @@ fun ExpandableBottoSheet(
                     }
                 }
 
+            }
+            
+            // Navigation Dot Indicators for Charts
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 4.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                repeat(4) { index ->
+                    val isSelected = pagerState.currentPage == index
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(if (isSelected) 10.dp else 8.dp)
+                            .background(
+                                color = if (isSelected) Color(0xFF424242) else Color.LightGray.copy(alpha = 0.5f),
+                                shape = CircleShape
+                            )
+                            .clickable {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            }
+                    )
+                }
             }
         }
 

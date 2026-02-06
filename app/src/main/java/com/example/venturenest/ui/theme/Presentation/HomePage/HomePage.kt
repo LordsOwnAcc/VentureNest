@@ -1293,26 +1293,6 @@ members = state.Data.councilmembers.take(4)
                 ) {
                     ElevatedCard(
                         modifier
-                            .padding(end = 10.dp)
-                            .size(40.dp)
-                            .clickable { navController.navigate(ContactPage) },
-                        shape = RectangleShape,
-                        colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
-                    ) {
-                        Box(
-                            Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Settings,
-                                contentDescription = null,
-                                modifier.size(20.dp),
-                                tint = Color.Black
-                            )
-                        }
-                    }
-                    ElevatedCard(
-                        modifier
                             .size(40.dp)
                             .clickable { navController.navigate(Profile) },
                         shape = RectangleShape,

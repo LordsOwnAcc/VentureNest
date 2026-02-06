@@ -70,6 +70,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AuthViewModel
+import com.example.venturenest.ui.theme.Navigation.ContactPage
 import com.example.venturenest.ui.theme.Navigation.StartScreen
 import com.example.venturenest.ui.theme.auth.AuthStateCompanion
 import kotlinx.coroutines.launch
@@ -232,9 +233,52 @@ fun ProfilePage(modifier: Modifier = Modifier
                     onValueChange = { phone = it }
                 )
 
-                Text(text = "Danger Zone",
+                // Settings Section
+                Text(text = "Settings",
                     modifier
                         .padding(top = 10.dp, bottom = 15.dp, start = 5.dp)
+                        .fillMaxWidth(1f)
+                    , textAlign = TextAlign.Start,
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                    , lineHeight = MaterialTheme.typography.bodyMedium.lineHeight,
+                    letterSpacing = MaterialTheme.typography.bodyMedium
+                        .letterSpacing, color = Color.Gray)
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(65.dp)
+                    ,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 2.dp
+                    )
+                ) {
+                    Row(modifier.clickable {
+                        navController.navigate(ContactPage)
+                    }.
+                    padding(start = 16.dp).fillMaxWidth().fillMaxHeight()
+                    , verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+                      Icon(imageVector = Icons.Outlined.Settings,
+                          contentDescription = null,
+                          modifier = modifier.scale(0.8f).padding(end=10.dp)
+                      , tint = Color(0xFF6A11CB))
+
+                        Text(
+                            text = "Settings",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(0xFF333333),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
+
+                Text(text = "Danger Zone",
+                    modifier
+                        .padding(top = 20.dp, bottom = 15.dp, start = 5.dp)
                         .fillMaxWidth(1f)
                     , textAlign = TextAlign.Start,
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize

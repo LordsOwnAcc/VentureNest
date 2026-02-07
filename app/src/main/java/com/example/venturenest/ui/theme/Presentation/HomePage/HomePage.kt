@@ -4,16 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.InfiniteRepeatableSpec
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -28,10 +23,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -56,58 +48,45 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -117,48 +96,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.venturenest.MeetTheBoardCard
 import com.example.venturenest.OurJourneyCard
 import com.example.venturenest.R
 import com.example.venturenest.StatCard
 import com.example.venturenest.stats
-import com.example.venturenest.ui.theme.DaggerHilt.States.AiStatesCompanion
-import com.example.venturenest.ui.theme.DaggerHilt.States.HomePageCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.SuccessStories
-import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AiViewModel
-import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.HomeViewModel
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.LoadingStateViewmodel
 import com.example.venturenest.ui.theme.Navigation.AboutECell
 import com.example.venturenest.ui.theme.Navigation.AboutVentureNest
-import com.example.venturenest.ui.theme.Navigation.ContactPage
 import com.example.venturenest.ui.theme.Navigation.CouncilScreen
 import com.example.venturenest.ui.theme.Navigation.Profile
-import com.example.venturenest.ui.theme.Navigation.SettingPage
 import com.example.venturenest.ui.theme.Navigation.partnerScreen
-import com.example.venturenest.ui.theme.Presentation.Setting.AboutEcell
 import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
 import com.example.venturenest.ui.theme.DaggerHilt.Events
 import com.example.venturenest.ui.theme.Presentation.EventPage.Dialog as EventDialog
 import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
-import com.example.venturenest.ui.theme.Presentation.helper.ShimmerEffect
 import com.example.venturenest.ui.theme.background
-import com.example.venturenest.ui.theme.bg
-import com.example.venturenest.ui.theme.foreground
-import com.google.ai.client.generativeai.type.content
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.nio.file.WatchEvent
-import kotlin.io.path.Path
-import kotlin.io.path.moveTo
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -169,6 +127,7 @@ fun HomePage(
     navController: NavController
     , homeViewModel: LoadingStateViewmodel
 ) {
+    val scope = rememberCoroutineScope()
     val animationState = remember { MutableTransitionState(false) }
     var showSuccess by remember { mutableStateOf(false) }
     HideSystemBars()
@@ -1487,6 +1446,50 @@ members = state.Data.councilmembers.take(4)
                             }
                         }
                     }
+                }
+
+                // Left Arrow
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            if (pagerState.currentPage > 0) {
+                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                            }
+                        } 
+                    },
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = 16.dp)
+                        .background(Color.White.copy(alpha = 0.5f), CircleShape)
+                        .size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Previous",
+                        tint = Color.Black
+                    )
+                }
+
+                // Right Arrow
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            if (pagerState.currentPage < 2) { // Max page index is 2 (count 3)
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 16.dp)
+                        .background(Color.White.copy(alpha = 0.5f), CircleShape)
+                        .size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowForward,
+                        contentDescription = "Next",
+                        tint = Color.Black
+                    )
                 }
             }
 

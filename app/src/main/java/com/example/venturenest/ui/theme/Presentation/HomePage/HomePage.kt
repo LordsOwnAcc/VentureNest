@@ -1,4 +1,4 @@
-package com.example.venturenest.ui.theme.Presentation.HomePage
+﻿package com.example.venturenest.ui.theme.Presentation.HomePage
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -37,6 +37,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -51,9 +52,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -81,7 +84,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -100,6 +102,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.TileMode
@@ -157,7 +160,7 @@ import java.nio.file.WatchEvent
 import kotlin.io.path.Path
 import kotlin.io.path.moveTo
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomePage(
@@ -272,6 +275,9 @@ BackHandler {
         Spacer(modifier
             .padding(top = 15.dp)
             .height(80.dp))
+        
+
+
 //                Text(
 //                    "Hello ${Firebase.auth.currentUser?.displayName} !", fontWeight = FontWeight.W600,
 //                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
@@ -536,6 +542,10 @@ BackHandler {
 
 
                 }
+
+
+
+                
 
 
 //
@@ -1318,6 +1328,189 @@ members = state.Data.councilmembers.take(4)
                     }
                 }
 
+        // Wall of Fame Carousel - Below Events section
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Wall of Fame",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFB30D2F),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            val pagerState = rememberPagerState(
+                initialPage = 1,
+                pageCount = { 3 }
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(380.dp)
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 60.dp),
+                    pageSpacing = 16.dp
+                ) { page ->
+                    val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)
+                    val scale = 1f - (kotlin.math.abs(pageOffset) * 0.15f)
+
+                    val imageRes = when (page) {
+                        0 -> R.drawable.escape
+                        1 -> R.drawable.techhealth
+                        else -> R.drawable.vidyutam
+                    }
+                    val founderName = when (page) {
+                        0 -> "Shivang Tiwari"
+                        1 -> "Ashutosh Saxena"
+                        else -> "Anshul Bhati"
+                    }
+                    val companyName = when (page) {
+                        0 -> "EscapeKart"
+                        1 -> "Techspan Apex"
+                        else -> "Vidyutam Verde"
+                    }
+                    val initial = when (page) {
+                        0 -> "E"
+                        1 -> "T"
+                        else -> "V"
+                    }
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(350.dp)
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                                alpha = 0.5f + (scale - 0.85f) * 3.33f
+                            },
+                        shape = RoundedCornerShape(24.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C3E))
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Image(
+                                painter = painterResource(id = imageRes),
+                                contentDescription = companyName,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop,
+                                alpha = 0.7f
+                            )
+                            
+                            // Gradient overlay
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        Brush.verticalGradient(
+                                            colors = listOf(
+                                                Color.Transparent,
+                                                Color(0xFF2C2C3E).copy(alpha = 0.9f)
+                                            ),
+                                            startY = 100f
+                                        )
+                                    )
+                            )
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(20.dp),
+                                verticalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(50.dp)
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(Color.White.copy(alpha = 0.2f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = initial,
+                                            color = Color.White,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+
+                                    Card(
+                                        shape = RoundedCornerShape(8.dp),
+                                        colors = CardDefaults.cardColors(containerColor = Color(0xFFB30D2F))
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "Funding",
+                                                fontSize = 10.sp,
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                            Text(
+                                                text = "3 Lakhs",
+                                                fontSize = 14.sp,
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Column {
+                                    Text(
+                                        text = founderName,
+                                        fontSize = 22.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "=$companyName",
+                                        fontSize = 16.sp,
+                                        color = Color.White.copy(alpha = 0.9f),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Page Indicators
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                repeat(3) { iteration ->
+                    val color = if (pagerState.currentPage == iteration)
+                        Color(0xFFB30D2F) else Color.LightGray
+                    Box(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .size(if (pagerState.currentPage == iteration) 10.dp else 8.dp)
+                    )
+                }
+            }
+        }
+
 
 //                Box(
 //                    modifier = modifier
@@ -1643,7 +1836,7 @@ members = state.Data.councilmembers.take(4)
         
     
     
-        // 🔹 OVERLAY (click to close)
+        // ðŸ”¹ OVERLAY (click to close)
         if (isNavOpen) {
             Box(
                 modifier = Modifier
@@ -1653,7 +1846,7 @@ members = state.Data.councilmembers.take(4)
             )
         }
 
-        // 🔹 SLIDING NAV COLUMN
+        // ðŸ”¹ SLIDING NAV COLUMN
         AnimatedVisibility(
             visible = isNavOpen,
             enter = slideInHorizontally(
@@ -1833,7 +2026,7 @@ onBack.invoke()
 
         ).fillMaxHeight(1f)){
 
-        // 🔹 Background Founder Image
+        // ðŸ”¹ Background Founder Image
         AsyncImage(
             model = story.FounderImg,
             contentDescription = story.StartupName,
@@ -1841,7 +2034,7 @@ onBack.invoke()
             modifier = Modifier.fillMaxSize()
         )
 
-        // 🔹 Dark Gradient Overlay
+        // ðŸ”¹ Dark Gradient Overlay
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -1856,7 +2049,7 @@ onBack.invoke()
                 )
         )
 
-        // 🔹 Bottom Content
+        // ðŸ”¹ Bottom Content
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -1907,7 +2100,7 @@ onBack.invoke()
             )
         }
 
-        // 🔹 Right Side Actions (Like Insta)
+        // ðŸ”¹ Right Side Actions (Like Insta)
 //        Column(
 //            modifier = Modifier
 //                .align(Alignment.BottomEnd)

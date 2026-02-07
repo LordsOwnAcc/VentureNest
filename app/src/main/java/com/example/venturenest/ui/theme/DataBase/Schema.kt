@@ -36,7 +36,8 @@ data class AppData(
     val sucessStories: List<SuccessStories>,
     val councilmembers: List<councilmembers>,
     val startUp: List<StartUp>,
-    val photo: List<photo>
+    val photo: List<photo>,
+    val lastUpdated: Long = 0L // Timestamp in milliseconds when data was last fetched
 )
 class HeroSectionConverter {
 

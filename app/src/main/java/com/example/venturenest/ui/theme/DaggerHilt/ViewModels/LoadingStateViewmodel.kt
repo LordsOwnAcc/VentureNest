@@ -44,11 +44,28 @@ class LoadingStateViewmodel @Inject constructor(
     init {
         viewModelScope.launch {
             val data = databaseRepo.getAppdata.firstOrNull()
+            
+            // Cache expiry time: 1 hour (3600000 milliseconds)
+            // You can adjust this value: 
+            // - 30 minutes = 1800000
+            // - 1 hour = 3600000
+            // - 6 hours = 21600000
+            // - 24 hours = 86400000
+            val CACHE_EXPIRY_MS = 3600000L // 1 hour
+            val currentTime = System.currentTimeMillis()
+            val isCacheExpired = data?.lastUpdated?.let { 
+                (currentTime - it) > CACHE_EXPIRY_MS 
+            } ?: true
 
-            if (data == null || data.heroSection.isNullOrEmpty()) {
+            if (data == null || data.heroSection.isNullOrEmpty() || isCacheExpired) {
+                // Fetch fresh data from backend if:
+                // 1. No cached data exists
+                // 2. Hero section is empty (corrupted cache)
+                // 3. Cache is older than expiry time
                 fetchData()
                 addData()
             } else {
+                // Use cached data if it's fresh
                 _state.value = _state.value.copy(
                     state = LoadingPageCompanion.Result,
                     Data = AppData(
@@ -60,7 +77,8 @@ class LoadingStateViewmodel @Inject constructor(
                         sucessStories = data.sucessStories,
                         councilmembers = data.councilmembers,
                         partner = data.partner,
-                        startUp = data.startUp
+                        startUp = data.startUp,
+                        lastUpdated = data.lastUpdated
                     )
                 )
             }
@@ -82,7 +100,8 @@ class LoadingStateViewmodel @Inject constructor(
                                 sucessStories = data!!.sucessStories,
                                 councilmembers = data!!.councilmembers,
                                 partner = data!!.partner,
-                                startUp = data!!.startUp
+                                startUp = data!!.startUp,
+                                lastUpdated = data!!.lastUpdated
 
                             )
                         )
@@ -153,7 +172,8 @@ class LoadingStateViewmodel @Inject constructor(
                         councilmembers = councilData,
                         partner = partnersData,
                         startUp = startupData,
-                        photo = photoData
+                        photo = photoData,
+                        lastUpdated = System.currentTimeMillis() // Save current timestamp
                     )
 
                     databaseRepo.insertAppData(newData)

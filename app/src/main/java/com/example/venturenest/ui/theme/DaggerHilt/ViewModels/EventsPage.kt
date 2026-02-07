@@ -33,6 +33,7 @@ fun fetchEvents(){
                     state =EventsStateCompanion.Result ,
                     result = result.body()!!
                 )
+                print("Success: ${result.body()!!}");
             }else{
                 _state.value =_state.value.copy(
                     state = EventsStateCompanion.Error,

@@ -25,7 +25,7 @@ import com.example.venturenest.ui.theme.DaggerHilt.photo
 
 
 @Database(entities = [Users::class
-                     , AppData::class], version = 1, exportSchema = false)
+                     , AppData::class], version = 2, exportSchema = false)
 @TypeConverters(EventSectionConverter::class
 , HeroSectionConverter::class,
     PatentSectionConverter::class,
@@ -47,7 +47,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "book_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // Clear old data when schema changes
+                    .build()
                 INSTANCE = instance
                 instance
             }

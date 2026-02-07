@@ -138,6 +138,8 @@ import com.example.venturenest.ui.theme.Navigation.SettingPage
 import com.example.venturenest.ui.theme.Navigation.partnerScreen
 import com.example.venturenest.ui.theme.Presentation.Setting.AboutEcell
 import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColorEdgeToEdge
+import com.example.venturenest.ui.theme.DaggerHilt.Events
+import com.example.venturenest.ui.theme.Presentation.EventPage.Dialog as EventDialog
 import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
 import com.example.venturenest.ui.theme.Presentation.helper.ShimmerEffect
 import com.example.venturenest.ui.theme.background
@@ -176,6 +178,18 @@ fun HomePage(
     var isNavOpen by remember { mutableStateOf(false) }
     val state by homeViewModel.state.collectAsState()
     var show = remember { mutableStateOf(false) }
+
+    // New variables for Event Dialog
+    var selectedEvent by remember { mutableStateOf(Events("", "", "", "", "", false)) }
+    var showEventDialog = remember { mutableStateOf(false) }
+    var selectedEventColor by remember { mutableStateOf(0xff000000) }
+    val colorlist = listOf(
+        0xFF22A699,
+        0xFFF29727,
+        0xFFF24C3D,
+        0xFFB349D2,
+        0xFFF2BE22
+    )
     val schroll = rememberScrollState()
     val infinite = rememberInfiniteTransition()
     val transition by infinite.animateFloat(
@@ -1028,6 +1042,82 @@ members = state.Data.councilmembers.take(4)
                     }
                 }
 
+                // Auto-scrolling Non-Starred Events Strip
+                val nonStarredEvents = state.Data.events.filter { !it.isStarred }
+                if (nonStarredEvents.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .padding(top = 20.dp, bottom = 20.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Upcoming Events",
+                            fontWeight = FontWeight.W600,
+                            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                            color = Color.Black,
+                            modifier = Modifier.padding(start = 16.dp, bottom = 10.dp)
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .basicMarquee(
+                                    iterations = Int.MAX_VALUE,
+                                    velocity = 40.dp
+                                )
+                        ) {
+                            nonStarredEvents.forEach { event ->
+                                ElevatedCard(
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp)
+                                        .width(220.dp)
+                                        .height(160.dp)
+                                        .clickable {
+                                            selectedEvent = event
+                                            selectedEventColor = colorlist[state.Data.events.indexOf(event) % 4]
+                                            showEventDialog.value = true
+                                        },
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+                                ) {
+                                    Column(modifier = Modifier.fillMaxSize()) {
+                                        AsyncImage(
+                                            model = event.imageUrl,
+                                            contentDescription = event.eventName,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(110.dp)
+                                        )
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(horizontal = 8.dp),
+                                            verticalArrangement = Arrangement.Center
+                                        ) {
+                                            Text(
+                                                text = event.eventName,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Color.Black
+                                            )
+                                            Text(
+                                                text = event.eventDate,
+                                                fontSize = 12.sp,
+                                                color = Color.Gray,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
 
 //                Box(
 //                    modifier = modifier
@@ -1345,6 +1435,8 @@ members = state.Data.councilmembers.take(4)
             show,
             modifier
         )
+
+        EventDialog(show = showEventDialog, event = selectedEvent, modifier = modifier, color = selectedEventColor)
 
 
     }

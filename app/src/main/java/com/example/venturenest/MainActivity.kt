@@ -63,7 +63,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import coil.compose.AsyncImage
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.example.bottombar.AnimatedBottomBar
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import com.example.bottombar.components.BottomBarItem
 import com.example.bottombar.model.ItemStyle
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AuthViewModel
@@ -171,11 +180,38 @@ class MainActivity : ComponentActivity() {
 
                             }
                         }
-                    }) {
-                    com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars()
-                    NavHost(
-                        navController = navController,
-                        startDestination = if (state.state == AuthStateCompanion.UserExist) Start else StartScreen,
+                    }) { innerPadding ->
+
+                    // Global Pull-to-Refresh
+                    var isRefreshing by remember { mutableStateOf(false) }
+                    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
+                    val coroutineScope = rememberCoroutineScope()
+
+                    SwipeRefresh(
+                        state = swipeRefreshState,
+                        onRefresh = {
+                            isRefreshing = true
+                            homeViewModel.fetchData()
+                            coroutineScope.launch {
+                                delay(1500)
+                                isRefreshing = false
+                            }
+                        },
+                        indicator = { state, trigger ->
+                            SwipeRefreshIndicator(
+                                state = state,
+                                refreshTriggerDistance = trigger,
+                                scale = true,
+                                backgroundColor = Color.White,
+                                contentColor = Color.Gray
+                            )
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars()
+                        NavHost(
+                            navController = navController,
+                            startDestination = if (state.state == AuthStateCompanion.UserExist) Start else StartScreen,
                         enterTransition = {
                             when (targetState.destination.route) {
                                 "com.example.venturenest.ui.theme.Navigation.HomePage" -> {
@@ -317,6 +353,7 @@ class MainActivity : ComponentActivity() {
                             ProfilePage(Modifier,navController)
                         }
 
+                    }
                     }
                 }
             }

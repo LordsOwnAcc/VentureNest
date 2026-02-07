@@ -136,6 +136,7 @@ dependencies {
     implementation("io.github.thechance101:chart:Beta-0.0.5")
 //    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.google.accompanist:accompanist-navigation-animation:0.32.0")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
 
     implementation("androidx.room:room-runtime:2.6.1") // Use latest version
     kapt("androidx.room:room-compiler:2.6.1")

@@ -64,8 +64,11 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
@@ -149,6 +152,7 @@ import com.google.ai.client.generativeai.type.content
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.nio.file.WatchEvent
 import kotlin.io.path.Path
 import kotlin.io.path.moveTo
@@ -192,11 +196,6 @@ fun HomePage(
     )
     val schroll = rememberScrollState()
     val infinite = rememberInfiniteTransition()
-    val transition by infinite.animateFloat(
-        initialValue = 0f, targetValue = 360f, animationSpec = InfiniteRepeatableSpec(
-            tween(5000, easing = LinearEasing)
-        ), label = ""
-    )
 
 
     Scaffold(
@@ -248,12 +247,12 @@ BackHandler {
     }
 }
 
-        Box(
-            modifier = modifier
-                .fillMaxSize(1f)
-                .background(Color.White)
-                .verticalScroll(schroll), contentAlignment = Alignment.TopCenter
-        ) {
+            Box(
+                modifier = modifier
+                    .fillMaxSize(1f)
+                    .background(Color.White)
+                    .verticalScroll(schroll), contentAlignment = Alignment.TopCenter
+            ) {
 
 
 //            Image(
@@ -1042,78 +1041,279 @@ members = state.Data.councilmembers.take(4)
                     }
                 }
 
-                // Auto-scrolling Non-Starred Events Strip
-                val nonStarredEvents = state.Data.events.filter { !it.isStarred }
-                if (nonStarredEvents.isNotEmpty()) {
+
+
+                // Starred Events Section
+                val starredEvents = state.Data.events.filter { it.isStarred }
+                if (starredEvents.isNotEmpty()) {
                     Column(
                         modifier = Modifier
                             .padding(top = 20.dp, bottom = 20.dp)
                             .fillMaxWidth()
                     ) {
+                        // Header without "Scroll all" button
                         Text(
-                            text = "Upcoming Events",
+                            text = "Featured Events",
                             fontWeight = FontWeight.W600,
                             fontSize = MaterialTheme.typography.titleMedium.fontSize,
                             color = Color.Black,
                             modifier = Modifier.padding(start = 16.dp, bottom = 10.dp)
                         )
 
-                        Row(
+                        // Auto-scrolling Featured Event Cards using HorizontalPager
+                        val pagerState = rememberPagerState(pageCount = { starredEvents.size })
+                        
+                        // Auto-scroll effect
+                        LaunchedEffect(pagerState) {
+                            while (true) {
+                                kotlinx.coroutines.delay(3000) // 3 seconds delay
+                                val nextPage = (pagerState.currentPage + 1) % starredEvents.size
+                                pagerState.animateScrollToPage(nextPage)
+                            }
+                        }
+
+                        androidx.compose.foundation.pager.HorizontalPager(
+                            state = pagerState,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .basicMarquee(
-                                    iterations = Int.MAX_VALUE,
-                                    velocity = 40.dp
-                                )
-                        ) {
-                            nonStarredEvents.forEach { event ->
-                                ElevatedCard(
-                                    modifier = Modifier
-                                        .padding(horizontal = 8.dp)
-                                        .width(220.dp)
-                                        .height(160.dp)
-                                        .clickable {
-                                            selectedEvent = event
-                                            selectedEventColor = colorlist[state.Data.events.indexOf(event) % 4]
-                                            showEventDialog.value = true
-                                        },
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
-                                ) {
-                                    Column(modifier = Modifier.fillMaxSize()) {
-                                        AsyncImage(
-                                            model = event.imageUrl,
-                                            contentDescription = event.eventName,
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(110.dp)
-                                        )
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(horizontal = 8.dp),
-                                            verticalArrangement = Arrangement.Center
-                                        ) {
-                                            Text(
-                                                text = event.eventName,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = Color.Black
+                                .height(200.dp)
+                                .padding(horizontal = 16.dp)
+                        ) { page ->
+                            val event = starredEvents[page]
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .clickable {
+                                        selectedEvent = event
+                                        selectedEventColor = colorlist[state.Data.events.indexOf(event) % 4]
+                                        showEventDialog.value = true
+                                    },
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+                            ) {
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    AsyncImage(
+                                        model = event.imageUrl,
+                                        contentDescription = event.eventName,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                    // Gradient overlay
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(
+                                                Brush.verticalGradient(
+                                                    colors = listOf(
+                                                        Color.Transparent,
+                                                        Color.Black.copy(alpha = 0.7f)
+                                                    )
+                                                )
                                             )
+                                    )
+                                    // Event details overlay
+                                    Column(
+                                        modifier = Modifier
+                                            .align(Alignment.BottomStart)
+                                            .padding(16.dp)
+                                    ) {
+                                        Text(
+                                            text = event.eventName,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 18.sp,
+                                            color = Color.White,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.padding(top = 4.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.DateRange,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
                                             Text(
-                                                text = event.eventDate,
+                                                text = event.eventDate.take(10),
                                                 fontSize = 12.sp,
-                                                color = Color.Gray,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
+                                                color = Color.White
                                             )
                                         }
                                     }
                                 }
                             }
+                        }
+
+                        // Page indicator dots
+                        if (starredEvents.size > 1) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                repeat(starredEvents.size) { iteration ->
+                                    val color = if (pagerState.currentPage == iteration) 
+                                        Color.Black 
+                                    else 
+                                        Color.LightGray
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(4.dp)
+                                            .clip(CircleShape)
+                                            .background(color)
+                                            .size(8.dp)
+                                    )
+                                }
+                            }
+                        }
+
+
+                        // Grid Layout for Event Cards (2 columns) - matching reference image
+                        if (starredEvents.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            // Show all starred events to ensure at least 4 are displayed
+                            val gridEvents = starredEvents.take(4)
+                            
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                // Create rows of 2 items each
+                                gridEvents.chunked(2).forEach { rowEvents ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 12.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        rowEvents.forEach { event ->
+                                            // Each card takes equal space
+                                            ElevatedCard(
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .clickable {
+                                                        selectedEvent = event
+                                                        selectedEventColor = colorlist[state.Data.events.indexOf(event) % 4]
+                                                        showEventDialog.value = true
+                                                    },
+                                                shape = RoundedCornerShape(12.dp),
+                                                colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
+                                                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+                                            ) {
+                                                Column(
+                                                    modifier = Modifier.fillMaxWidth()
+                                                ) {
+                                                    // Event Image
+                                                    AsyncImage(
+                                                        model = event.imageUrl,
+                                                        contentDescription = event.eventName,
+                                                        contentScale = ContentScale.Crop,
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .height(120.dp)
+                                                            .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                                                    )
+                                                    
+                                                    // Event Details
+                                                    Column(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(12.dp)
+                                                    ) {
+                                                        // Event Name
+                                                        Text(
+                                                            text = event.eventName,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontSize = 14.sp,
+                                                            color = Color.Black,
+                                                            maxLines = 1,
+                                                            overflow = TextOverflow.Ellipsis
+                                                        )
+                                                        
+                                                        Spacer(modifier = Modifier.height(6.dp))
+                                                        
+                                                        // Date
+                                                        Row(
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Icon(
+                                                                imageVector = Icons.Default.DateRange,
+                                                                contentDescription = null,
+                                                                tint = Color.Gray,
+                                                                modifier = Modifier.size(12.dp)
+                                                            )
+                                                            Spacer(modifier = Modifier.width(4.dp))
+                                                            Text(
+                                                                text = event.eventDate.take(10),
+                                                                fontSize = 11.sp,
+                                                                color = Color.Gray,
+                                                                maxLines = 1
+                                                            )
+                                                        }
+                                                        
+                                                        Spacer(modifier = Modifier.height(4.dp))
+                                                        
+                                                        // Location
+                                                        Row(
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Icon(
+                                                                imageVector = Icons.Default.LocationOn,
+                                                                contentDescription = null,
+                                                                tint = Color.Gray,
+                                                                modifier = Modifier.size(12.dp)
+                                                            )
+                                                            Spacer(modifier = Modifier.width(4.dp))
+                                                            Text(
+                                                                text = "CGC Mohali",
+                                                                fontSize = 11.sp,
+                                                                color = Color.Gray,
+                                                                maxLines = 1,
+                                                                overflow = TextOverflow.Ellipsis
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        // If row has only 1 item, add empty spacer for balance
+                                        if (rowEvents.size == 1) {
+                                            Spacer(modifier = Modifier.weight(1f))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // "See All" Button at the bottom
+                        OutlinedButton(
+                            onClick = {
+                                navController.navigate(
+                                    com.example.venturenest.ui.theme.Navigation.EventsPage
+                                ) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, Color.Gray)
+                        ) {
+                            Text(
+                                text = "See All Events",
+                                color = Color.Black,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp
+                            )
                         }
                     }
                 }
@@ -1436,10 +1636,13 @@ members = state.Data.councilmembers.take(4)
             modifier
         )
 
+
         EventDialog(show = showEventDialog, event = selectedEvent, modifier = modifier, color = selectedEventColor)
 
-
-    }
+            }  // Close Box
+        
+    
+    
         // 🔹 OVERLAY (click to close)
         if (isNavOpen) {
             Box(

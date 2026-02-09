@@ -26,6 +26,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,7 +67,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -77,6 +79,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -1304,7 +1307,7 @@ members = state.Data.councilmembers.take(4)
 
             val pagerState = rememberPagerState(
                 initialPage = 1,
-                pageCount = { 3 }
+                pageCount = { 4 }
             )
 
             Box(
@@ -1322,30 +1325,34 @@ members = state.Data.councilmembers.take(4)
                     val scale = 1f - (kotlin.math.abs(pageOffset) * 0.15f)
 
                     val imageRes = when (page) {
-                        0 -> R.drawable.escape
-                        1 -> R.drawable.techhealth
-                        else -> R.drawable.vidyutam
+                        0 -> R.drawable.escape_founder
+                        1 -> R.drawable.techhealth_founder
+                        2 -> R.drawable.edswagon_founder
+                        else -> R.drawable.vidyutam_founder
                     }
                     val founderName = when (page) {
                         0 -> "Shivang Tiwari"
                         1 -> "Ashutosh Saxena"
+                        2 -> "Ashish Chabra"
                         else -> "Anshul Bhati"
                     }
                     val companyName = when (page) {
-                        0 -> "EscapeKart"
-                        1 -> "Techspan Apex"
+                        0 -> "escapekar"
+                        1 -> "Techealth Apex Private Limited"
+                        2 -> "EDS Wagon Tech"
                         else -> "Vidyutam Verde"
                     }
-                    val initial = when (page) {
-                        0 -> "E"
-                        1 -> "T"
-                        else -> "V"
+                    val logoRes = when (page) {
+                        0 -> R.drawable.escapekarlogo
+                        1 -> R.drawable.techealth_logo
+                        2 -> R.drawable.edslogo
+                        else -> R.drawable.vidyutamlogo
                     }
 
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(350.dp)
+                            .height(400.dp) // Increased height slightly to accommodate the layout comfortably
                             .graphicsLayer {
                                 scaleX = scale
                                 scaleY = scale
@@ -1355,94 +1362,102 @@ members = state.Data.councilmembers.take(4)
                         elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C3E))
                     ) {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            Image(
-                                painter = painterResource(id = imageRes),
-                                contentDescription = companyName,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop,
-                                alpha = 0.7f
-                            )
-                            
-                            // Gradient overlay
-                            Box(
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                        ) {
+                            // Header: Logo and Funding
+                            Row(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(
-                                        Brush.verticalGradient(
-                                            colors = listOf(
-                                                Color.Transparent,
-                                                Color(0xFF2C2C3E).copy(alpha = 0.9f)
-                                            ),
-                                            startY = 100f
-                                        )
-                                    )
-                            )
-
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(20.dp),
-                                verticalArrangement = Arrangement.SpaceBetween
+                                    .fillMaxWidth()
+                                    .height(60.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                // Logo Box
+                                Card(
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFF3E3E55)),
+                                    elevation = CardDefaults.cardElevation(0.dp)
                                 ) {
                                     Box(
                                         modifier = Modifier
                                             .size(50.dp)
-                                            .clip(RoundedCornerShape(12.dp))
-                                            .background(Color.White.copy(alpha = 0.2f)),
+                                            .padding(8.dp),
                                         contentAlignment = Alignment.Center
                                     ) {
+                                        Image(
+                                            painter = painterResource(id = logoRes),
+                                            contentDescription = "Logo",
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Fit
+                                        )
+                                    }
+                                }
+
+                                // Funding Tag
+                                Card(
+                                    shape = RoundedCornerShape(topEnd = 12.dp, topStart = 4.dp, bottomStart = 12.dp, bottomEnd = 4.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFB30D2F))
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                        horizontalAlignment = Alignment.End
+                                    ) {
                                         Text(
-                                            text = initial,
+                                            text = "Funding",
+                                            fontSize = 11.sp,
+                                            color = Color.White.copy(alpha = 0.9f),
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        HorizontalDivider(thickness = 0.dp,
                                             color = Color.White,
-                                            fontSize = 24.sp,
+                                            modifier = Modifier.width(60.dp))
+
+                                        Text(
+                                            text = "3 Lakhs",
+                                            fontSize = 16.sp,
+                                            color = Color.White,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
-
-                                    Card(
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = CardDefaults.cardColors(containerColor = Color(0xFFB30D2F))
-                                    ) {
-                                        Column(
-                                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Text(
-                                                text = "Funding",
-                                                fontSize = 10.sp,
-                                                color = Color.White,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                            Text(
-                                                text = "3 Lakhs",
-                                                fontSize = 14.sp,
-                                                color = Color.White,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
-                                    }
                                 }
+                            }
 
-                                Column {
-                                    Text(
-                                        text = founderName,
-                                        fontSize = 22.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = "=$companyName",
-                                        fontSize = 16.sp,
-                                        color = Color.White.copy(alpha = 0.9f),
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Main Founder Image
+                            Image(
+                                painter = painterResource(id = imageRes),
+                                contentDescription = companyName,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(16.dp)),
+                                contentScale = ContentScale.Crop,
+                                alignment = Alignment.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Footer: Names
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = founderName,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "~$companyName",
+                                    fontSize = 16.sp,
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    fontWeight = FontWeight.Medium
+                                )
                             }
                         }
                     }
@@ -1474,7 +1489,7 @@ members = state.Data.councilmembers.take(4)
                 IconButton(
                     onClick = {
                         scope.launch {
-                            if (pagerState.currentPage < 2) { // Max page index is 2 (count 3)
+                            if (pagerState.currentPage < 3) {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             }
                         }
@@ -1500,15 +1515,159 @@ members = state.Data.councilmembers.take(4)
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                repeat(3) { iteration ->
+                repeat(4) { iteration ->
                     val color = if (pagerState.currentPage == iteration)
-                        Color(0xFFB30D2F) else Color.LightGray
+                        Color(0xFF2F2F2F) else Color.LightGray
                     Box(
                         modifier = Modifier
                             .padding(4.dp)
                             .clip(CircleShape)
                             .background(color)
                             .size(if (pagerState.currentPage == iteration) 10.dp else 8.dp)
+                    )
+                }
+            }
+        }
+
+        // Startup Success Section
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp)
+        ) {
+            Text(
+                text = "Startup Success",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFB30D2F),
+                modifier = Modifier
+                    .padding(bottom = 24.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+
+            var showAllStories by remember { mutableStateOf(false) }
+
+            val successStories = listOf(
+                Triple("Pulkesh Gautam", "Vidyutam Verde NCESOL Pvt. Ltd.", "The networking opportunities at VentureNest helped us secure our first three major clients. It's the perfect launchpad for digital ventures."),
+                Triple("Navneet Yaduvanshi", "Aasyra", "From lab access to market connect, VentureNest supported our organic product journey every step of the way. Truly a transformative experience."),
+                Triple("Mr. RAJAT SONI", "V2R AUTOINFINITE PRIVATE LIMITED", "At V2R, we’re not just disrupting the automotive sector; we’re revolutionizing it. Our mission is to empower both vehicle owners and automotive service businesses through advanced, technology-driven solutions that streamline operations, enhance efficiency, and drive sustainable growth."),
+                Triple("Mr Harrish Babber", "Escapekar", "Escapekar is a travel guidance platform that helps people become better travelers—from exploring and planning to taking a trip. Travelers across the globe use the Escapekar app to discover hidden places, find where to stay, what to do, and where to eat—all recommended by an algorithm that selects the best options for them."),
+                Triple("Mr. Narinder Singh", "Nhanks Waste Recyclers Pvt.Ltd", "Sustainable solutions need specialized support. VentureNest's focus on social impact startups gave us the push we needed."),
+                Triple("Mr Karan Kumar Aggrawal", "Indi Tech", "The technical mentorship here is unmatched. We scaled our tech stack and team efficiently under the guidance of industry experts."),
+                Triple("Mr. Jaskaranpreet Singh", "Juniva Organics", "Juniva Organics found its footing here. The incubation support helped us navigate regulatory challenges and reach the market faster."),
+                Triple("Aditi Sharma", "GreenEarth Solutions", "VentureNest provided the critical sustainability mentorship we needed to refine our business model and pitch to impact investors successfully."),
+                Triple("Rohan Mehta", "CryptoSecure", "The blockchain expertise available at VentureNest is world-class. We were able to architect a secure and scalable solution that investors loved."),
+                Triple("Sanya Kapoor", "AI Edutech", "We scaled our AI models with the infrastructure support provided here. The access to cloud credits and technical mentors was a game changer.")
+            )
+
+            val visibleStories = if (showAllStories) successStories else successStories.take(4)
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+            visibleStories.chunked(2).forEach { rowStories ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    rowStories.forEach { story ->
+                        Card(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(IntrinsicSize.Min), // Allow dynamic height
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF9FAFB)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(16.dp) // Reduced padding slightly for 2-column
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column {
+                                    Text(
+                                        text = "“",
+                                        fontSize = 48.sp, // scaled down from 60
+                                        color = Color(0xFFE5E7EB),
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.offset(x = (-4).dp, y = (-8).dp)
+                                    )
+                                    Text(
+                                        text = story.third,
+                                        fontSize = 13.sp, // scaled down for 2-column
+                                        color = Color(0xFF374151),
+                                        lineHeight = 20.sp,
+                                        modifier = Modifier.offset(y = (-16).dp)
+                                    )
+                                }
+
+                                Column {
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(bottom = 12.dp),
+                                        color = Color(0xFFE5E7EB)
+                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(36.dp) // scaled down
+                                                .clip(CircleShape)
+                                                .background(Color(0xFFE5E7EB)),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = story.first.first().toString(),
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 16.sp,
+                                                color = Color(0xFF6B7280)
+                                            )
+                                        }
+
+                                        Spacer(modifier = Modifier.width(8.dp))
+
+                                        Column {
+                                            Text(
+                                                text = story.first,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 12.sp,
+                                                color = Color(0xFF111827),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                            Text(
+                                                text = story.second,
+                                                fontSize = 10.sp,
+                                                color = Color(0xFF6B7280),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // If row has only 1 item, add spacer to push it to left
+                    if (rowStories.size == 1) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+            }
+                
+                // Show More / Show Less Button
+                OutlinedButton(
+                    onClick = { showAllStories = !showAllStories },
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, Color(0xFFB30D2F))
+                ) {
+                    Text(
+                        text = if (showAllStories) "Show Less" else "Show More (${successStories.size - 4} more)",
+                        color = Color(0xFFB30D2F),
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }

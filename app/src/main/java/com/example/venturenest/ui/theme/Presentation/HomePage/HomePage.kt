@@ -44,6 +44,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -2040,45 +2041,40 @@ fun ChatBubbleWithArrow(message: String, isUser: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(vertical = 4.dp, horizontal = 16.dp),
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
     ) {
         var displayedText by remember { mutableStateOf("") }
 
         LaunchedEffect(message) {
-            displayedText = "" // Reset
-            message.forEachIndexed { index, _ ->
-                displayedText = message.substring(0, index + 1)
-                delay(5) // Delay between each character
+            if (!isUser) {
+                displayedText = ""
+                message.forEachIndexed { index, _ ->
+                    displayedText = message.substring(0, index + 1)
+                    delay(5) 
+                }
+            } else {
+                displayedText = message
             }
         }
 
-
         Box(
             modifier = Modifier
-                .background(
-                    color = if (!isUser) Color.Transparent else Color.Gray.copy(
-                        alpha = 0.2f
-                    ),
-                    shape = RoundedCornerShape(16.dp)
+                .widthIn(max = 280.dp)
+                .clip(
+                    if (isUser) RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 5.dp)
+                    else RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 5.dp, bottomEnd = 20.dp)
                 )
-                .padding(12.dp)
+                .background(
+                    color = if (isUser) Color.Black else Color(0xFFF3F3F3) 
+                )
+                .padding(16.dp)
         ) {
             Text(
-                text = if (!isUser) displayedText else message,
-                color = Color.Black,
-                fontSize = 16.sp
-            )
-        }
-        Canvas(modifier = Modifier.size(10.dp)) {
-            drawPath(
-                path = Path().apply {
-                    moveTo(0f, 0f)
-                    lineTo(10f, 5f)
-                    lineTo(0f, 10f)
-                    close()
-                } as Path,
-                color = if (isUser) Color.Blue else Color.Gray
+                text = if (!isUser && message.length > displayedText.length) displayedText else message,
+                color = if (isUser) Color.White else Color.Black,
+                fontSize = 15.sp,
+                lineHeight = 22.sp
             )
         }
     }

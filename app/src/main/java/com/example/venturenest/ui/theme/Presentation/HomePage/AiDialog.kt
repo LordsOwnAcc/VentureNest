@@ -1,340 +1,538 @@
 package com.example.venturenest.ui.theme.Presentation.HomePage
 
-
-
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.RotateRight
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetProperties
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.venturenest.R
-import com.example.venturenest.ui.theme.DaggerHilt.Events
 import com.example.venturenest.ui.theme.DaggerHilt.States.AiStatesCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AiViewModel
-import com.example.venturenest.ui.theme.Presentation.Setting.SettingElement
+import androidx.compose.ui.text.style.TextAlign
+import kotlinx.coroutines.delay
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AiDialog(show: MutableState<Boolean>, modifier: Modifier) {
-    AnimatedVisibility(visible = show.value) {
+    if (show.value) {
         val aipageViewModel: AiViewModel = hiltViewModel()
         val aiState by aipageViewModel.state.collectAsState()
-        val scrollState = rememberScrollState()
-
-        // Force full expansion of the bottom sheet
+        
         val bottomSheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = true
         )
 
         ModalBottomSheet(
-            onDismissRequest = { show.value = false
+            onDismissRequest = { 
+                show.value = false
                 aipageViewModel._state.value = aipageViewModel.state.value.copy(
                     state = AiStatesCompanion.Idle
                 )
-                               },
-            shape = RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp),
-          containerColor = Color(0xffEAE8C0),
-//            containerColor = Color.Transparent,
+            },
+            shape = RoundedCornerShape(topEnd = 0.dp, topStart = 0.dp), // Full screen feel
+            containerColor = Color.White,
             sheetState = bottomSheetState,
+            dragHandle = null,
             modifier = Modifier.fillMaxHeight()
         ) {
-            ElevatedCard(
-                modifier = Modifier.fillMaxSize(),
-                shape = RectangleShape
-                , colors = CardDefaults.elevatedCardColors(
-                    containerColor = Color(0xffEAE8C0)
+            var showIntro by remember { mutableStateOf(true) }
 
-                )
+            // Reset to Intro when dialog opens
+            LaunchedEffect(show.value) {
+                if (show.value) {
+                    showIntro = true
+                }
+            }
 
-            ) {
-                var prompt by remember { mutableStateOf("") }
-
-                Column(
+            if (showIntro) {
+                // INTRO SCREEN
+                Box(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .fillMaxWidth()
-                        .imePadding(),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxSize()
+                        .background(Color.White)
                 ) {
-//                    Row (modifier.fillMaxWidth()
-//                        .height(60.dp)
-//                        .clip(RectangleShape)
-//                        .border(1.dp,Color.Gray)
-//                        , verticalAlignment = Alignment.CenterVertically
-//                        , horizontalArrangement = Arrangement.SpaceBetween
-//                    ){
-//                    Text("Chat",modifier.padding(start = 10.dp))
-//                    Icon(imageVector = Icons.Default.RotateRight,
-//                        contentDescription = null
-//                    ,modifier.padding(end = 10.dp))
-//
-//
-//                    }
-
                     Column(
                         modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        
+                        // Robot Animation
+                        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.aibot))
+                        val progress by animateLottieCompositionAsState(composition, iterations = 500)
+                        LottieAnimation(
+                            composition = composition,
+                            progress = { progress },
+                            modifier = Modifier.size(280.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Text Content
+                        Text(
+                            text = "Meet VentureBot!",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        Text(
+                            text = "Your AI Assistant",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFA30D33),
+                            textAlign = TextAlign.Center
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "All your questions will be answered\nby an AI assistant. Ask here, please!",
+                            fontSize = 16.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 24.sp
+                        )
+                        
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+
+                    // Bottom Button
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 50.dp)
+                    ) {
+                        // Ripple effect or shadow ring could go here
+                        Box(
+                            modifier = Modifier
+                                .size(70.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFA30D33))
+                                .clickable { showIntro = false },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack, // Using ArrowBack rotated
+                                contentDescription = "Start",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .rotate(135f) // Rotates ArrowBack to point Top-Right/Up (approx) or purely Up depending on icon. 
+                                    // Actually the image shows an arrow pointing Top-Right (North East).
+                                    // ArrowBack points Left. 180 flips to Right. 135 is Down-Right? 
+                                    // Let's use a simpler arrow or Rotate properly.
+                                    // ArrowBack points West (Left). 
+                                    // Rotate 180 -> East (Right).
+                                    // Rotate 135 (CW) -> North-West?
+                                    // Let's use a different icon or rotation.
+                                    // ArrowForward points East. -45 -> North East.
+                            )
+                        }
+                    }
+                }
+            } else {
+                // CHAT SCREEN
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding()
+                        .background(Color.White)
+                ) {
+                    // Header
+                    val user = com.google.firebase.ktx.Firebase.auth.currentUser
+                    Row(
+                        modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(0.85f)
-                            ,
+                            .padding(top = 16.dp, bottom = 10.dp, start = 16.dp, end = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    // If we want back to close the dialog:
+                                    // show.value = false 
+                                    // OR if we want back to go to Intro:
+                                    // showIntro = true
+                                    // Let's assume Back closes the dialog as per standard pattern, or maybe back to intro?
+                                    // The user experience "Back" usually means "Back". 
+                                    // Previous code closed the dialog. Let's keep that or maybe go back to intro?
+                                    // Let's try closing dialog for now, or go back to intro if users prefer.
+                                    // I will set it to close dialog to be safe.
+                                    show.value = false
+                                },
+                            tint = Color.Black
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        
+                        if (user?.photoUrl != null) {
+                            coil.compose.AsyncImage(
+                                model = user.photoUrl,
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.LightGray),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(R.drawable.img),
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.LightGray),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            val currentHour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+                            val greeting = when (currentHour) {
+                                in 0..11 -> "Good Morning"
+                                in 12..16 -> "Good Afternoon"
+                                else -> "Good Evening"
+                            }
+                            Text(
+                                text = greeting,
+                                fontSize = 14.sp,
+                                color = Color.Gray
+                            )
+                            Text(
+                                text = user?.displayName ?: "Venture Explorer",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                        }
+                    }
+
+                    Divider(color = Color(0xFFF0F0F0), thickness = 1.dp)
+
+                    // Chat Content
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(horizontal = 0.dp),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         when (aiState.state) {
                             is AiStatesCompanion.Error -> {
                                 Column(
-                                    modifier = Modifier.fillMaxHeight(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Top
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .verticalScroll(rememberScrollState()),
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    ChatBubbleWithArrow(
-                                        message = aiState.promt,
-                                        isUser = true
-                                    )
-
-                                   ChatBubbleWithArrow(aiState.error.toString(),isUser = false)
-
-                                    Box(modifier.fillMaxSize()
-                                    , contentAlignment = Alignment.BottomCenter) {
-
-                                        Button( onClick = {
-
-                                            aipageViewModel.generateResponse(prompt=aiState.promt)
-                                        }
-                                            , colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-                                        ) {
-                                            Text("Regenerate", color = Color.White)
-                                        }
-
+                                    AiChatBubble(message = aiState.promt, isUser = true)
+                                    AiChatBubble(message = aiState.error.toString(), isUser = false)
+                                    
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Button(
+                                        onClick = { aipageViewModel.generateResponse(prompt = aiState.promt) },
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA30D33))
+                                    ) {
+                                        Text("Regenerate", color = Color.White)
                                     }
-
-
                                 }
                             }
 
                             is AiStatesCompanion.Idle -> {
-                                Column(modifier.fillMaxSize()
-                                , verticalArrangement = Arrangement.Top,
-                                    horizontalAlignment = Alignment.CenterHorizontally) {
-
-
-                                    Column(modifier.fillMaxWidth(0.9f)
-                                        .fillMaxHeight(0.8f)
-                                        .verticalScroll(rememberScrollState()),
-                                        verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start){
-                                        ChatBubbleWithArrow(
-                                            message = "Hello! \uD83D\uDC4B I'm VentureBot \uD83E\uDD16, here to assist you .\n" +
-                                                    "I can help answer questions, provide suggestions, and support you in your journey with VentureNet.\n" +
-                                                    "\n" +
-                                                    "Please note:\n" +
-                                                    "\n" +
-                                                    "I do my best to provide accurate and helpful information, but I may sometimes get things wrong. Always double-check anything important.\n" +
-                                                    "\n" +
-                                                    "I might occasionally use language or provide content that could be unexpected or inappropriate. This is never intentional.\n" +
-                                                    "\n" +
-                                                    "VentureNet is not responsible for any incorrect information or inappropriate content generated by me.\n" +
-                                                    "\n" +
-                                                    "By continuing to use this service, you agree that VentureNet is not liable for any outcomes resulting from interactions with VentureBot.",
-                                            isUser = false
-                                        )
-                                    }
-                                    Column(modifier.fillMaxSize()
-                                    , verticalArrangement = Arrangement.Bottom,
-                                        horizontalAlignment = Alignment.Start) {
-
-
-                                        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.aibot))
-                                        val progress by animateLottieCompositionAsState(composition, iterations = 500)
-                                        LottieAnimation(
-                                            composition = composition,
-                                            progress = { progress },
-                                            modifier = Modifier.size(150.dp).padding(bottom = 10.dp)
-                                        )
-                                    }
-
-
-
-
-
-
-
-
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    // Removed the long message. Showing only welcome animation/state.
+                                    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.aibot))
+                                    val progress by animateLottieCompositionAsState(composition, iterations = 500)
+                                    LottieAnimation(
+                                        composition = composition,
+                                        progress = { progress },
+                                        modifier = Modifier.size(200.dp)
+                                    )
+                                    Text(
+                                        "How can I help you today?",
+                                        color = Color.Gray,
+                                        fontSize = 16.sp,
+                                        modifier = Modifier.padding(top = 16.dp)
+                                    )
                                 }
-
-
-
                             }
 
                             is AiStatesCompanion.Result -> {
-
                                 Column(
-                                    modifier = Modifier.fillMaxSize(1f)
+                                    modifier = Modifier
+                                        .fillMaxSize()
                                         .verticalScroll(rememberScrollState()),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Top
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    ChatBubbleWithArrow(
-                                        message = aiState.promt,
-                                        isUser = true
-                                    )
-                                    ChatBubbleWithArrow(
-                                        message = aiState.result,
-                                        isUser = false
-                                    )
-
+                                    AiChatBubble(message = aiState.promt, isUser = true)
+                                    AiChatBubble(message = aiState.result, isUser = false)
                                 }
                             }
 
                             is AiStatesCompanion.Loading -> {
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.SpaceBetween
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    ChatBubbleWithArrow(
-                                        message = aiState.promt,
-                                        isUser = true
-                                    )
-
-                                    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.ai))
-                                    val progress by animateLottieCompositionAsState(composition, iterations = 500)
-                                    LottieAnimation(
-                                        composition = composition,
-                                        progress = { progress },
-                                        modifier = Modifier.size(150.dp).padding(bottom = 10.dp)
-                                    )
+                                    AiChatBubble(message = aiState.promt, isUser = true)
+                                    
+                                    Box(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp)) {
+                                         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.ai))
+                                         val progress by animateLottieCompositionAsState(composition, iterations = 500)
+                                         LottieAnimation(
+                                             composition = composition,
+                                             progress = { progress },
+                                             modifier = Modifier.size(100.dp)
+                                         )
+                                    }
                                 }
                             }
                         }
                     }
 
-                    // Input Field at the bottom
+                    // Input Area
+                    Divider(color = Color(0xFFF0F0F0), thickness = 1.dp)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight()
-                            .padding(start = 0.dp, bottom = 0.dp, top = 10.dp, end = 0.dp)
-                            .clip(RoundedCornerShape(topEnd = 30f, topStart = 30f))
-                            .background(Color.White)
-                          ,
+                            .padding(12.dp)
+                            .background(Color.White),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        TextField(
-                            value = prompt,
-                            onValueChange = { prompt = it },
-                            modifier = Modifier.weight(1f),
-                            colors = TextFieldDefaults.textFieldColors(
-                                containerColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent
+                        var prompt by remember { mutableStateOf("") }
 
+//                        Icon(
+//                            imageVector = Icons.Default.Add,
+//                            contentDescription = "Add",
+//                            tint = Color.Black,
+//                            modifier = Modifier
+//                                .size(32.dp)
+//                                .padding(4.dp)
+//                                .clickable { }
+//                        )
+                        
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                            ),
-                            maxLines = 3
-                            , placeholder = {
-                                Text( "Chat with ventureBot")
-                            }
-                            , keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search
-                            , keyboardType = KeyboardType.Text)
-                            , keyboardActions = KeyboardActions(onSearch = {
-                                aipageViewModel.generateResponse(aiState.promt)
-                            })
-                            , enabled = aiState.state != AiStatesCompanion.Loading
-                        )
-
-                        Icon(
-                            imageVector = Icons.Default.Send ,
-                            contentDescription = "Send",
+                        Row(
                             modifier = Modifier
-                                .padding(20.dp)
-                                .size(24.dp)
-                                .scale(1.2f)
-                                .clickable { aipageViewModel.generateResponse(prompt)
+                                .weight(1f)
+                                .height(50.dp)
+                                .clip(RoundedCornerShape(25.dp))
+                                .background(Color(0xFFF5F5F5))
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            TextField(
+                                value = prompt,
+                                onValueChange = { prompt = it },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .offset(y = (-2).dp), // Minor alignment tweak
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    disabledContainerColor = Color.Transparent,
+                                    errorContainerColor = Color.Transparent,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                    cursorColor = Color.Black,
+                                    focusedTextColor = Color.Black,
+                                    unfocusedTextColor = Color.Black
+                                ),
+                                placeholder = {
+                                    Text("Ask VentureBot", color = Color.Gray, fontSize = 14.sp)
+                                },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send, keyboardType = KeyboardType.Text),
+                                keyboardActions = KeyboardActions(onSend = {
+                                    if (prompt.isNotBlank()) {
+                                        aipageViewModel.generateResponse(prompt)
+                                        prompt = ""
+                                    }
+                                }),
+                                enabled = aiState.state != AiStatesCompanion.Loading
+                            )
 
-                                prompt = ""}
-                            , tint = if (aiState.state != AiStatesCompanion.Loading) Color.Blue else Color.Gray
-                        )
+                            Icon(
+                                imageVector = Icons.Default.Mic,
+                                contentDescription = "Mic",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(20.dp).clickable { }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFA30D33))
+                                .clickable {
+                                    if (prompt.isNotBlank()) {
+                                        aipageViewModel.generateResponse(prompt)
+                                        prompt = ""
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Send,
+                                contentDescription = "Send",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp).offset(x = 2.dp).rotate(-45f) // Adjust send icon angle if needed
+                            )
+                        }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun AiChatBubble(message: String, isUser: Boolean) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp, horizontal = 16.dp),
+        horizontalAlignment = if (isUser) Alignment.End else Alignment.Start
+    ) {
+        // Label Row
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
+            modifier = Modifier.padding(bottom = 6.dp)
+        ) {
+            if (!isUser) {
+                // Bot Header
+                Icon(
+                    painter = painterResource(R.drawable.aing), // Using generic icon or logo
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = Color(0xFFA30D33)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "VentureBot",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            } else {
+                // User Header
+                val user = com.google.firebase.ktx.Firebase.auth.currentUser
+                Text(
+                    text = user?.displayName ?: "You",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                if (user?.photoUrl != null) {
+                    coil.compose.AsyncImage(
+                        model = user.photoUrl,
+                        contentDescription = "Profile",
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clip(CircleShape)
+                            .background(Color.LightGray),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(R.drawable.img),
+                        contentDescription = "Profile",
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clip(CircleShape)
+                            .background(Color.LightGray),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+        }
+
+        // Message Card
+        Card(
+            shape = if (isUser) RoundedCornerShape(20.dp, 4.dp, 20.dp, 20.dp) else RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            border = BorderStroke(1.dp, if (!isUser) Color(0xFFA30D33) else Color(0xFFE0E0E0)),
+            elevation = CardDefaults.cardElevation(2.dp),
+            modifier = Modifier.widthIn(max = 280.dp)
+        ) {
+            var displayedText by remember { mutableStateOf("") }
+            
+            // Typewriter effect only for bot
+            LaunchedEffect(message) {
+                if (!isUser) {
+                    displayedText = ""
+                    message.forEachIndexed { index, _ ->
+                        displayedText = message.substring(0, index + 1)
+                        delay(5)
+                    }
+                } else {
+                    displayedText = message
+                }
+            }
+            
+            Text(
+                text = if (!isUser && message.length > displayedText.length) displayedText else message,
+                modifier = Modifier.padding(14.dp),
+                color = Color.Black,
+                fontSize = 15.sp,
+                lineHeight = 22.sp
+            )
         }
     }
 }

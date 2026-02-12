@@ -14,7 +14,9 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -38,6 +40,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -63,9 +69,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import coil.compose.AsyncImage
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+
 import com.example.bottombar.AnimatedBottomBar
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -106,7 +110,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalAnimationApi::class)
+    @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -183,30 +187,23 @@ class MainActivity : ComponentActivity() {
                     }) { innerPadding ->
 
                     // Global Pull-to-Refresh
-                    var isRefreshing by remember { mutableStateOf(false) }
-                    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
+                    // Global Pull-to-Refresh with Material 3
+                    @OptIn(ExperimentalMaterial3Api::class)
+                    val pullRefreshState = rememberPullToRefreshState()
                     val coroutineScope = rememberCoroutineScope()
 
-                    SwipeRefresh(
-                        state = swipeRefreshState,
-                        onRefresh = {
-                            isRefreshing = true
+                    if (pullRefreshState.isRefreshing) {
+                        LaunchedEffect(true) {
                             homeViewModel.fetchData()
-                            coroutineScope.launch {
-                                delay(1500)
-                                isRefreshing = false
-                            }
-                        },
-                        indicator = { state, trigger ->
-                            SwipeRefreshIndicator(
-                                state = state,
-                                refreshTriggerDistance = trigger,
-                                scale = true,
-                                backgroundColor = Color.White,
-                                contentColor = Color.Gray
-                            )
-                        },
-                        modifier = Modifier.fillMaxSize()
+                            delay(1500)
+                            pullRefreshState.endRefresh()
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .nestedScroll(pullRefreshState.nestedScrollConnection)
                     ) {
                         com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars()
                         NavHost(
@@ -354,6 +351,12 @@ class MainActivity : ComponentActivity() {
                         }
 
                     }
+                        PullToRefreshContainer(
+                            state = pullRefreshState,
+                            modifier = Modifier.align(Alignment.TopCenter),
+                            containerColor = Color.White,
+                            contentColor = Color.Gray
+                        )
                     }
                 }
             }
@@ -414,10 +417,11 @@ CouncilMemberItem(member)
             }
             Button(onClick = onclick
                 , shape = RoundedCornerShape(25f)
-                , colors = ButtonDefaults.buttonColors(containerColor = Color.Gray.copy(alpha = 0.2f))
-            , modifier = modifier.padding(top = 16.dp).fillMaxWidth(0.9f)) {
+                , //colors = ButtonDefaults.buttonColors(containerColor = Color.Gray.copy(alpha = 0.2f))
+             modifier = modifier.padding(top = 16.dp).fillMaxWidth(0.9f).border(width = 1.dp,
+                color = Color(0xFFB30D2F), shape = RoundedCornerShape(7.5.dp))) {
                 Text("view all"
-                , color = Color.DarkGray.copy(alpha = 0.9f))
+                , color = Color(0xFFB30D2F))
             }
         }
     }

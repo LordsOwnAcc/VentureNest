@@ -926,6 +926,7 @@ members = state.Data.councilmembers.take(4)
                             Text(
                                 "Partners", fontWeight = FontWeight.W600,
                                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                                //color = Color(0xFFB30D2F),
                                 color = Color.Black,
                                 modifier = modifier.fillMaxWidth(0.5f)
                             )
@@ -937,7 +938,7 @@ members = state.Data.councilmembers.take(4)
                                     )
                                 )
                             }) {
-                                Text("view all", color = Color.Gray)
+                                Text("view all",  color = Color(0xFFB30D2F))
                             }
                         }
                         val scrollState = rememberScrollState()
@@ -1030,6 +1031,7 @@ members = state.Data.councilmembers.take(4)
                             fontWeight = FontWeight.W600,
                             fontSize = MaterialTheme.typography.titleMedium.fontSize,
                             color = Color.Black,
+                           // color = Color(0xFFB30D2F),
                             modifier = Modifier.padding(start = 16.dp, bottom = 10.dp)
                         )
 
@@ -1279,11 +1281,12 @@ members = state.Data.councilmembers.take(4)
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 12.dp),
                             shape = RoundedCornerShape(8.dp),
-                            border = BorderStroke(1.dp, Color.Gray)
+                            border = BorderStroke(1.dp, Color(0xFFB30D2F))
                         ) {
                             Text(
                                 text = "See All Events",
-                                color = Color.Black,
+                                //color = Color.Black,
+                                color = Color(0xFFB30D2F),
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 14.sp
                             )
@@ -1302,7 +1305,8 @@ members = state.Data.councilmembers.take(4)
                 text = "Wall of Fame",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFB30D2F),
+                color= Color.Black,
+                //color = Color(0xFFB30D2F),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -1540,7 +1544,8 @@ members = state.Data.councilmembers.take(4)
                 text = "Startup Success",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFB30D2F),
+                color = Color.Black,
+               // color = Color(0xFFB30D2F),
                 modifier = Modifier
                     .padding(bottom = 24.dp)
                     .align(Alignment.CenterHorizontally)

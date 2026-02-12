@@ -25,7 +25,7 @@ class AiViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     private val model = GenerativeModel(
-        modelName = "gemini-2.0-flash",
+        modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.API_KEY
 
     )

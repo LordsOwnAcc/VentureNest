@@ -1,7 +1,9 @@
 package com.example.venturenest.ui.theme.Presentation.HomePage
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +11,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -253,86 +259,85 @@ fun AiDialog(show: MutableState<Boolean>, modifier: Modifier) {
                     Divider(color = Color(0xFFF0F0F0), thickness = 1.dp)
 
                     // Chat Content
-                    Column(
+                    val listState = rememberLazyListState()
+                    LaunchedEffect(aiState.chatHistory.size, aiState.state) {
+                        if (aiState.chatHistory.isNotEmpty()) {
+                            listState.animateScrollToItem(
+                                if (aiState.state == AiStatesCompanion.Loading) aiState.chatHistory.size else aiState.chatHistory.size - 1
+                            )
+                        }
+                    }
+
+                    Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .padding(horizontal = 0.dp),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        when (aiState.state) {
-                            is AiStatesCompanion.Error -> {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .verticalScroll(rememberScrollState()),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    AiChatBubble(message = aiState.promt, isUser = true)
-                                    AiChatBubble(message = aiState.error.toString(), isUser = false)
-                                    
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                    Button(
-                                        onClick = { aipageViewModel.generateResponse(prompt = aiState.promt) },
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA30D33))
-                                    ) {
-                                        Text("Regenerate", color = Color.White)
+                        if (aiState.chatHistory.isEmpty() && aiState.state == AiStatesCompanion.Idle) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.aibot))
+                                val progress by animateLottieCompositionAsState(composition, iterations = 500)
+                                LottieAnimation(
+                                    composition = composition,
+                                    progress = { progress },
+                                    modifier = Modifier.size(200.dp)
+                                )
+                                Text(
+                                    "How can I help you today?",
+                                    color = Color.Gray,
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(top = 16.dp)
+                                )
+                            }
+                        } else {
+                            LazyColumn(
+                                state = listState,
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(bottom = 16.dp)
+                            ) {
+                                itemsIndexed(
+                                    items = aiState.chatHistory,
+                                    key = { index, message -> "${message.isUser}_${index}_${message.message.hashCode()}" }
+                                ) { index, message ->
+                                    AiChatBubble(
+                                        message = message.message,
+                                        isUser = message.isUser,
+                                        isLast = index == aiState.chatHistory.size - 1
+                                    )
+                                }
+
+                                if (aiState.state == AiStatesCompanion.Loading) {
+                                    item {
+                                        TypingIndicatorBubble()
                                     }
                                 }
-                            }
 
-                            is AiStatesCompanion.Idle -> {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    // Removed the long message. Showing only welcome animation/state.
-                                    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.aibot))
-                                    val progress by animateLottieCompositionAsState(composition, iterations = 500)
-                                    LottieAnimation(
-                                        composition = composition,
-                                        progress = { progress },
-                                        modifier = Modifier.size(200.dp)
-                                    )
-                                    Text(
-                                        "How can I help you today?",
-                                        color = Color.Gray,
-                                        fontSize = 16.sp,
-                                        modifier = Modifier.padding(top = 16.dp)
-                                    )
-                                }
-                            }
-
-                            is AiStatesCompanion.Result -> {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .verticalScroll(rememberScrollState()),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    AiChatBubble(message = aiState.promt, isUser = true)
-                                    AiChatBubble(message = aiState.result, isUser = false)
-                                }
-                            }
-
-                            is AiStatesCompanion.Loading -> {
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    AiChatBubble(message = aiState.promt, isUser = true)
-                                    
-                                    Box(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp)) {
-                                         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.ai))
-                                         val progress by animateLottieCompositionAsState(composition, iterations = 500)
-                                         LottieAnimation(
-                                             composition = composition,
-                                             progress = { progress },
-                                             modifier = Modifier.size(100.dp)
-                                         )
+                                if (aiState.state == AiStatesCompanion.Error) {
+                                    item {
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(16.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "Error: ${aiState.error}",
+                                                color = Color.Red,
+                                                fontSize = 14.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                            Button(
+                                                onClick = { aipageViewModel.generateResponse(aiState.promt) },
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA30D33))
+                                            ) {
+                                                Text("Retry", color = Color.White)
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -441,7 +446,7 @@ fun AiDialog(show: MutableState<Boolean>, modifier: Modifier) {
 }
 
 @Composable
-fun AiChatBubble(message: String, isUser: Boolean) {
+fun AiChatBubble(message: String, isUser: Boolean, isLast: Boolean = false) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -513,9 +518,9 @@ fun AiChatBubble(message: String, isUser: Boolean) {
         ) {
             var displayedText by remember { mutableStateOf("") }
             
-            // Typewriter effect only for bot
+            // Typewriter effect only for the LATEST bot message
             LaunchedEffect(message) {
-                if (!isUser) {
+                if (!isUser && isLast && displayedText.length < message.length) {
                     displayedText = ""
                     message.forEachIndexed { index, _ ->
                         displayedText = message.substring(0, index + 1)
@@ -534,5 +539,134 @@ fun AiChatBubble(message: String, isUser: Boolean) {
                 lineHeight = 22.sp
             )
         }
+    }
+}
+
+@Composable
+fun TypingIndicatorBubble() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp, horizontal = 16.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        // Bot Header
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.padding(bottom = 6.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.aing),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = Color(0xFFA30D33)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "VentureBot",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+        }
+
+        // Message Card with Typing Indicator
+        Card(
+            shape = RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            border = BorderStroke(1.dp, Color(0xFFA30D33)),
+            elevation = CardDefaults.cardElevation(2.dp),
+            modifier = Modifier.widthIn(max = 280.dp)
+        ) {
+            TypingIndicatorAnimated()
+        }
+    }
+}
+
+@Composable
+fun TypingIndicatorAnimated() {
+    val infiniteTransition = rememberInfiniteTransition()
+
+    val dot1Offset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = -6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    val dot2Offset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = -6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 500, delayMillis = 150, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    val dot3Offset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = -6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 500, delayMillis = 300, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Row(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+//        Text(
+//            text = "(",
+//            color = Color.Black,
+//            fontSize = 18.sp,
+//            fontWeight = FontWeight.Bold
+//        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        // Dot 1: Black
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .offset(y = dot1Offset.dp)
+                .clip(CircleShape)
+                .background(Color.Black)
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        // Dot 2: White
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .offset(y = dot2Offset.dp)
+                .clip(CircleShape)
+                .background(Color.White)
+                .border(1.dp, Color.LightGray, CircleShape)
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        // Dot 3: Red
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .offset(y = dot3Offset.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFA30D33))
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+//        Text(
+//            text = ")",
+//            color = Color.Black,
+//            fontSize = 18.sp,
+//            fontWeight = FontWeight.Bold
+//        )
     }
 }

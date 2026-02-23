@@ -23,8 +23,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -424,19 +426,33 @@ fun AiDialog(show: MutableState<Boolean>, modifier: Modifier) {
                                 .clip(CircleShape)
                                 .background(Color(0xFFA30D33))
                                 .clickable {
-                                    if (prompt.isNotBlank()) {
+                                    if (aiState.state == AiStatesCompanion.Loading) {
+                                        aipageViewModel.stopResponse()
+                                    } else if (prompt.isNotBlank()) {
                                         aipageViewModel.generateResponse(prompt)
                                         prompt = ""
                                     }
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Send,
-                                contentDescription = "Send",
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp).offset(x = 2.dp).rotate(-45f) // Adjust send icon angle if needed
-                            )
+                            if (aiState.state == AiStatesCompanion.Loading) {
+                                Icon(
+                                    imageVector = Icons.Default.Stop,
+                                    contentDescription = "Stop",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Send,
+                                    contentDescription = "Send",
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .offset(x = 2.dp)
+                                        .rotate(-45f)
+                                )
+                            }
                         }
                     }
                 }
@@ -516,10 +532,10 @@ fun AiChatBubble(message: String, isUser: Boolean, isLast: Boolean = false) {
             elevation = CardDefaults.cardElevation(2.dp),
             modifier = Modifier.widthIn(max = 280.dp)
         ) {
-            var displayedText by remember { mutableStateOf("") }
+            var displayedText by rememberSaveable { mutableStateOf("") }
             
             // Typewriter effect only for the LATEST bot message
-            LaunchedEffect(message) {
+            LaunchedEffect(message, isLast) {
                 if (!isUser && isLast && displayedText.length < message.length) {
                     displayedText = ""
                     message.forEachIndexed { index, _ ->

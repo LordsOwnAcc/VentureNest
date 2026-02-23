@@ -13,6 +13,8 @@ import com.google.ai.client.generativeai.type.GenerationConfig
 import com.google.ai.client.generativeai.type.content
 
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -38,6 +40,14 @@ class AiViewModel @Inject constructor(
     )
 
     private var chatSession = model.startChat()
+    private var generationJob: Job? = null
+
+    fun stopResponse() {
+        generationJob?.cancel()
+        _state.value = _state.value.copy(
+            state = AiStatesCompanion.Idle
+        )
+    }
 
      fun generateResponse(prompt: String) {
          val currentHistory = _state.value.chatHistory.toMutableList()
@@ -49,25 +59,43 @@ class AiViewModel @Inject constructor(
              state = AiStatesCompanion.Loading
          )
 
-         viewModelScope.launch {
-             try {
-                 val response = chatSession.sendMessage(prompt)
-                 val botResponse = response.text ?: "No response received."
+         generationJob = viewModelScope.launch {
+             var retryCount = 0
+             val maxRetries = 2
+             var success = false
 
-                 val updatedHistory = _state.value.chatHistory.toMutableList()
-                 updatedHistory.add(ChatMessage(message = botResponse, isUser = false))
+             while (retryCount <= maxRetries && !success) {
+                 try {
+                     val response = chatSession.sendMessage(prompt)
+                     val botResponse = response.text ?: "No response received."
 
-                 _state.value = _state.value.copy(
-                     state = AiStatesCompanion.Result,
-                     result = botResponse,
-                     chatHistory = updatedHistory
-                 )
+                     val updatedHistory = _state.value.chatHistory.toMutableList()
+                     updatedHistory.add(ChatMessage(message = botResponse, isUser = false))
 
-             } catch (e: Exception) {
-                 _state.value = _state.value.copy(
-                     state = AiStatesCompanion.Error,
-                     error = e.localizedMessage
-                 )
+                     _state.value = _state.value.copy(
+                         state = AiStatesCompanion.Result,
+                         result = botResponse,
+                         chatHistory = updatedHistory
+                     )
+                     success = true
+
+                 } catch (e: Exception) {
+                     val errorMessage = e.localizedMessage ?: "Unknown error"
+                     val isTransient = errorMessage.contains("overloaded", ignoreCase = true) || 
+                                     errorMessage.contains("usage", ignoreCase = true) ||
+                                     errorMessage.contains("unavailable", ignoreCase = true)
+
+                     if (isTransient && retryCount < maxRetries) {
+                         retryCount++
+                         delay(1000L * retryCount) // Incremental delay: 1s, 2s
+                     } else {
+                         _state.value = _state.value.copy(
+                             state = AiStatesCompanion.Error,
+                             error = errorMessage
+                         )
+                         break
+                     }
+                 }
              }
          }
      }

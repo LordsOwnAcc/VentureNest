@@ -2,10 +2,7 @@ package com.example.venturenest.ui.theme.DaggerHilt.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.venturenest.ui.theme.DaggerHilt.Events
 import com.example.venturenest.ui.theme.DaggerHilt.Repoitoory.RecipeRepository
-import com.example.venturenest.ui.theme.DaggerHilt.States.GalleryState
-import com.example.venturenest.ui.theme.DaggerHilt.States.GalleryStateCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.States.HomePageCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.States.HomePageResult
 import com.example.venturenest.ui.theme.DaggerHilt.States.HomeState
@@ -118,12 +115,4 @@ class HomeViewModel @Inject constructor(
 
 
     }
-
-
-
-
-
-
-
-
 }

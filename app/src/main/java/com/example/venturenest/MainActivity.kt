@@ -1,4 +1,4 @@
- package com.example.venturenest
+﻿ package com.example.venturenest
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -12,6 +12,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -384,7 +385,7 @@ fun MeetTheBoardCard(
                 .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // 🔹 CENTERED TITLE
+            // ðŸ”¹ CENTERED TITLE
             Text(
                 text = "Meet the Board",
                 modifier = Modifier.fillMaxWidth(),
@@ -419,9 +420,9 @@ CouncilMemberItem(member)
                 , shape = RoundedCornerShape(25f)
                 , //colors = ButtonDefaults.buttonColors(containerColor = Color.Gray.copy(alpha = 0.2f))
              modifier = modifier.padding(top = 16.dp).fillMaxWidth(0.9f).border(width = 1.dp,
-                color = Color(0xFFB30D2F), shape = RoundedCornerShape(7.5.dp))) {
+                color = Color(0xFFA30D33), shape = RoundedCornerShape(7.5.dp))) {
                 Text("view all"
-                , color = Color(0xFFB30D2F))
+                , color = Color(0xFFA30D33))
             }
         }
     }
@@ -460,7 +461,8 @@ fun CouncilMemberItem(member: councilmembers) {
         Text(
             text = member.company,
             fontSize = 12.sp,
-            color = Color(0xFF1976D2),
+            color = com.example.venturenest.ui.theme.bg,
+            fontWeight = FontWeight.Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -475,7 +477,7 @@ fun OurJourneyCard(
 
         Column(modifier.fillMaxWidth(0.9f).padding(top = 16.dp)) {
 
-            // 🔹 Top Image
+            // ðŸ”¹ Top Image
             AsyncImage(
                 model = imageRes,
                 contentDescription = "Our Journey",
@@ -488,7 +490,7 @@ fun OurJourneyCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 🔹 Content
+            // ðŸ”¹ Content
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
@@ -511,7 +513,7 @@ fun OurJourneyCard(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "What started as a small group of three students in a basement has grown into a vibrant ecosystem of over 200 active members, collaborating across disciplines to solve tomorrow’s problems today.",
+                    text = "What started as a small group of three students in a basement has grown into a vibrant ecosystem of over 200 active members, collaborating across disciplines to solve tomorrowâ€™s problems today.",
                     fontSize = 14.sp,
                     color = Color.Gray,
                     lineHeight = 20.sp
@@ -531,13 +533,15 @@ fun StatCard(
 ) {
     Card(
         modifier = modifier
-            .width(170.dp)
-            .height(120.dp).padding(start = 16.dp, end = 16.dp),
-        shape = RoundedCornerShape(16.dp),
+            .width(180.dp)
+            .height(110.dp)
+            .padding(horizontal = 8.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF7F7F7)
+            containerColor = Color(0xFFFBFBFB)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, Color(0xFFF0F0F0))
     ) {
         Column(
             modifier = Modifier
@@ -545,23 +549,21 @@ fun StatCard(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center
         ) {
-
-            // 🔴 Red value
             Text(
                 text = item.value,
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFE53935)
+                fontSize = 24.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = com.example.venturenest.ui.theme.bg
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            // Grey label
             Text(
-                text = item.label.uppercase(),
+                text = item.label,
                 fontSize = 12.sp,
-                color = Color.Gray,
-                letterSpacing = 1.sp
+                fontWeight = FontWeight.Medium,
+                color = Color.Black.copy(alpha = 0.6f),
+                lineHeight = 14.sp
             )
         }
     }

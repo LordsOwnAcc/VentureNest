@@ -1,5 +1,6 @@
 package com.example.venturenest.ui.theme.Presentation.HomePage
 
+import android.inputmethodservice.Keyboard
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -175,30 +176,27 @@ fun CoulageElement(
                 .fillMaxHeight(0.1f), contentAlignment = Alignment.BottomCenter
         ) {
             Row(
-                modifier
-//                            .padding(bottom = 25.dp)
-//                            .padding(top = 170.dp)
-                    .fillMaxWidth(0.8f)
-                    .height(0.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+                    .height(24.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                items.forEachIndexed { index, s ->
-//                            Row(
-//                                Modifier
-//                                    .padding(start = 5.dp, end = 5.dp)
-//                                    .clip(CircleShape)
-//                                    .width(10.dp)
-//                                    .height(10.dp)
-//                                    .background(
-//                                        if (pagerState.currentPage == index) Color.Red else Color(
-//                                            0xffffefea
-//                                        )
-//                                    )
-//
-//                            ) {
-//
-//                            }
+                items.forEachIndexed { index, _ ->
+                    Box(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (pagerState.currentPage == index) 
+                                    com.example.venturenest.ui.theme.bg 
+                                else 
+                                    Color.LightGray.copy(alpha = 0.5f)
+                            )
+                            .width(if (pagerState.currentPage == index) 12.dp else 8.dp)
+                            .height(8.dp)
+                    )
                 }
             }
             modifier.pointerInput(Unit) {

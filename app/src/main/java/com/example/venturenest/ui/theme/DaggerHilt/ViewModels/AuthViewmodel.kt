@@ -1,7 +1,6 @@
 package com.example.venturenest.ui.theme.DaggerHilt.ViewModels
 
 
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import com.example.venturenest.ui.theme.DaggerHilt.Repoitoory.AuthRepo
 import com.example.venturenest.ui.theme.auth.AuthProvider
@@ -14,8 +13,6 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.serialization.internal.throwMissingFieldException
-import java.lang.IllegalStateException
 import javax.inject.Inject
 
 

@@ -9,7 +9,6 @@ import com.example.venturenest.ui.theme.DaggerHilt.States.AiStatesCompanion
 import com.example.venturenest.ui.theme.DaggerHilt.States.ChatMessage
 
 import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.GenerationConfig
 import com.google.ai.client.generativeai.type.content
 
 import dagger.hilt.android.lifecycle.HiltViewModel

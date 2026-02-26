@@ -24,6 +24,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -80,6 +81,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -90,6 +92,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -169,29 +172,29 @@ fun HomePage(
             .padding(bottom = 64.dp)
             .fillMaxSize(),
         floatingActionButton = {
-            if (!showSuccess){
-
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                ExtendedFloatingActionButton(onClick = {
-                    show.value = true
-                }, containerColor = background) {
+            if (!showSuccess) {
+                ExtendedFloatingActionButton(
+                    onClick = { show.value = true },
+                    containerColor = Color.White,
+                    contentColor = Color.Black,
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = FloatingActionButtonDefaults.elevation(4.dp),
+                    modifier = Modifier.border(1.dp, Color(0xFFF0F0F0), RoundedCornerShape(24.dp))
+                ) {
                     Image(
                         painter = painterResource(R.drawable.aing),
                         contentDescription = null,
-                        modifier
-                            .size(25.dp)
-                            .offset(x = -5.dp)
-
+                        modifier = Modifier.size(20.dp)
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        "Chat with VentureBot",
-                        modifier.padding(start = 5.dp),
-                        fontWeight = FontWeight.SemiBold
-                        , color = Color.Black
+                        "Ask VentureBot",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 13.sp,
+                        color = Color.Black.copy(alpha = 0.7f)
                     )
                 }
-            }}
+            }
         }
     ) {
 
@@ -228,81 +231,48 @@ BackHandler {
 //                    .height(200.dp), contentScale = ContentScale.FillBounds
 //            )
             Column(
-                modifier
+                modifier = modifier
                     .fillMaxSize()
                     .windowInsetsPadding(window),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-        Spacer(modifier
-            .padding(top = 15.dp)
-            .height(80.dp))
-        
-
-
-//                Text(
-//                    "Hello ${Firebase.auth.currentUser?.displayName} !", fontWeight = FontWeight.W600,
-//                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-//                    color = Color.Black,
-//                    modifier = modifier.fillMaxWidth(0.93f)
-//                )
-//                Text(
-//                    "Ready to Crush it Today ?", fontWeight = FontWeight.W600,
-//                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-//                    color = Color.Black,
-//                    modifier = modifier.fillMaxWidth(0.93f)
-//                )
-
-
-//            }
-
-//            Column(
-//                modifier
-//                    .windowInsetsPadding(window)
-//                    .fillMaxSize(1f),
-//                verticalArrangement = Arrangement.Top,
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//                Row(
-//                    modifier
-//                        .padding(top = 0.dp, bottom = 0.dp)
-//                        .fillMaxWidth(0.98f)
-//                        .fillMaxHeight(0.1f),
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.Start
-//                ) {
-//
-//                    Text(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 0.dp),
-//                        text = "CGC VentureNest",
-//                        fontSize = MaterialTheme.typography.headlineLarge.fontSize,
-//                        fontWeight = FontWeight.SemiBold,
-//                        textAlign = TextAlign.Center, color = Color.White
-//                    )
-//
-//
-//                }
+                // Simplified Header with clear title
+                Spacer(modifier = modifier.height(100.dp))
+                
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth(0.9f)
+                        .padding(bottom = 20.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        "Welcome to",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Gray
+                    )
+                    Text(
+                        "CGC VentureNest",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.Black,
+                        lineHeight = 36.sp
+                    )
+                }
 
 
-                Box(modifier
-                    .padding(top = 10.dp)
-                    .fillMaxWidth()
-                    .height(250.dp)) {
-                    Column(
-                        modifier
-                            .padding(15.dp)
-                            .fillMaxWidth(1f)
-                            .wrapContentHeight()
-                            .clip(RoundedCornerShape(30f))
-                    ) {
-                        CoulageElement(modifier.height(250.dp))
-
+                ElevatedCard(
+                    modifier = modifier
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                        .fillMaxWidth()
+                        .height(240.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CoulageElement(modifier.fillMaxSize())
                     }
-
-
                 }
 //                ElevatedCard(
 //                    modifier = modifier
@@ -358,152 +328,118 @@ BackHandler {
 //
 //                }
 
-                Row(modifier = modifier
-                    .padding(top = 5.dp)
-                    .fillMaxWidth(0.9f)) {
-                    ElevatedCard(
+                Row(
+                    modifier = modifier
+                        .padding(top = 16.dp, bottom = 8.dp)
+                        .fillMaxWidth(0.9f),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // E-Cell Card
+                    Card(
                         modifier = modifier
-                            .weight(0.5f)
-                            .fillMaxWidth(0.4f)
-                            .height(100.dp)
-                            .padding(end = 5.dp)
-                            // .border(1.dp, Color.Black,RoundedCornerShape(25f))
+                            .weight(1f)
+                            .height(110.dp)
                             .clickable {
-
-
                                 val intent = Intent(
                                     Intent.ACTION_VIEW,
                                     Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLScvFkGdQcnDYvt0OsJi-27FlAXjslt-48RC5wP6JRxAI4oSMg/viewform")
                                 )
                                 context.startActivity(intent)
-
                             },
-                        shape = RoundedCornerShape(25f),
-                        colors = CardDefaults.elevatedCardColors(
-                            containerColor = Color.White
-
-                        )
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
+                        border = BorderStroke(1.dp, Color(0xFFEEEEEE))
                     ) {
-
-
                         Column(
-                            modifier = modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .background(Color(0x0FA6A5A5)),
-                            verticalArrangement = Arrangement.SpaceEvenly
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(14.dp),
+                            verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                text = "Join Us",
-                                fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                                fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = modifier
-                                    .fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp),
-                                textAlign = TextAlign.Start,
-                                color = Color.Gray
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Join Us",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = com.example.venturenest.ui.theme.bg
+                                )
+                                Icon(
+                                    imageVector = Icons.Default.ArrowForward,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp),
+                                    tint = com.example.venturenest.ui.theme.bg
+                                )
+                            }
                             Text(
                                 text = "E-Cell Club",
-                                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                                fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = modifier
-                                    .fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp),
-                                textAlign = TextAlign.Start
-                                , color = Color.Black
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black
                             )
                             Text(
-                                text = "Click here to join us",
-                                fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                                fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = modifier
-                                    .fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp, top = 0.dp),
-                                textAlign = TextAlign.Start,
+                                text = "Be part of the community",
+                                fontSize = 10.sp,
                                 color = Color.Gray
                             )
-
-
                         }
-
                     }
 
-                    ElevatedCard(
+                    // Venture Club Card
+                    Card(
                         modifier = modifier
-                            .weight(0.5f)
-                            .fillMaxWidth(0.4f)
-                            .height(100.dp)
-                            .padding(start = 5.dp)
-                            // .border(1.dp, Color.Black,RoundedCornerShape(25f))
+                            .weight(1f)
+                            .height(110.dp)
                             .clickable {
-
-
                                 val intent = Intent(
                                     Intent.ACTION_VIEW,
                                     Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLScH3XNhBUvAOoNPsjxd7LzxoNBjTVfasJa5_Iqwq3aFsRWmcA/viewform")
                                 )
                                 context.startActivity(intent)
-
                             },
-                        shape = RoundedCornerShape(25f),
-                        colors = CardDefaults.elevatedCardColors(
-                            containerColor = Color.White
-
-                        )
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.Black)
                     ) {
-
-
                         Column(
-                            modifier = modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(), verticalArrangement = Arrangement.SpaceEvenly
-
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(14.dp),
+                            verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                text = "Join Us",
-                                fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                                fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = modifier
-                                    .fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp, top = 0.dp),
-                                textAlign = TextAlign.Start,
-                                color = Color.Gray
-                            )
-
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Join Us",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White.copy(alpha = 0.7f)
+                                )
+                                Icon(
+                                    imageVector = Icons.Default.ArrowForward,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp),
+                                    tint = Color.White
+                                )
+                            }
                             Text(
                                 text = "Venture Club",
-                                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                                fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = modifier
-                                    .fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp),
-                                textAlign = TextAlign.Start
-                                , color = Color.Black
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.White
                             )
                             Text(
-                                text = "Click here to join us",
-                                fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                                fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = modifier
-                                    .fillMaxWidth(0.8f)
-                                    .padding(start = 10.dp, top = 0.dp),
-                                textAlign = TextAlign.Start,
-                                color = Color.Gray
+                                text = "Scale your ideas",
+                                fontSize = 10.sp,
+                                color = Color.White.copy(alpha = 0.5f)
                             )
-
-
                         }
-
                     }
-
-
                 }
 
 
@@ -802,73 +738,7 @@ BackHandler {
 ////                            }
 ////                        }
 ////                    }
-//
-//                   when(state.state){
-//                       is HomePageCompanion.Loading->{
-//                           Box(
-//                               modifier = modifier
-//                                   .padding(top = 10.dp, bottom = 10.dp)
-//                                   .fillMaxWidth()
-//                                   .height(400.dp)
-//                           ) {
-//                              // Image(painter = painterResource(id = R.drawable.whatsapp), contentDescription = "",modifier.fillMaxSize(), contentScale = ContentScale.FillBounds)
-//
-//                               Column(
-//                                   modifier
-//                                       .padding(bottom = 20.dp)
-//                                       .fillMaxWidth()
-//                                       .fillMaxHeight(),
-//                                   verticalArrangement = Arrangement.SpaceEvenly,
-//                                   horizontalAlignment = Alignment.CenterHorizontally
-//                               ) {
-//
-//                                   Row(
-//                                       modifier
-//                                           .padding(top = 0.dp)
-//                                           .fillMaxWidth(),
-//                                       verticalAlignment = Alignment.CenterVertically,
-//                                       horizontalArrangement = Arrangement.SpaceBetween
-//                                   ) {
-//
-//
-//                                       Column(
-//                                           modifier = Modifier
-//                                               .fillMaxWidth(0.9f)
-//
-//                                               .padding(top = 20.dp, bottom = 15.dp, start = 16.dp)
-//                                               .height(20.dp)
-//                                               .background(ShimmerEffect())
-//                                       ){}
-//
-//                                   }
-//                                  Row (
-//                                      modifier
-//                                          .fillMaxWidth(1f)
-//                                          .height(200.dp)
-//                                          .horizontalScroll(
-//                                              rememberScrollState()
-//                                          )){
-//                                      repeat(6) {
-//
-//
-//                                          Column(
-//                                              modifier
-//                                                  .padding(start = 10.dp, end = 10.dp)
-//                                                  .fillMaxHeight()
-//                                                  .width(150.dp)
-//                                                  .background(ShimmerEffect())
-//                                          ) {
-//
-//                                          }
-//                                      }
-//                                  }
-//                               }
-//                           }
-//
-//
-//                       }
-//                       is HomePageCompanion.Result->{
-//
+
                 OurJourneyCard(
                     imageRes = "https://plus.unsplash.com/premium_photo-1706061121842-7ba956c57670?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 )
@@ -891,7 +761,7 @@ members = state.Data.councilmembers.take(4)
                , onclick = {
                         navController.navigate(
                                     CouncilScreen(
-                                        search = "", 0xFFF29727, ""
+                                        search = "", com.example.venturenest.ui.theme.bg.toArgb().toLong(), ""
                                     )
                                 )
                     } )
@@ -916,29 +786,28 @@ members = state.Data.councilmembers.take(4)
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(
-                            modifier
-                                .fillMaxWidth(0.88f)
-                                .height(40.dp),
+                            modifier = modifier
+                                .fillMaxWidth(0.9f)
+                                .height(48.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
 
                             Text(
-                                "Partners", fontWeight = FontWeight.W600,
-                                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                                //color = Color(0xFFB30D2F),
-                                color = Color.Black,
-                                modifier = modifier.fillMaxWidth(0.5f)
+                                "Our Partners",
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 22.sp,
+                                color = Color.Black
                             )
                             TextButton(onClick = {
                                 navController.navigate(
                                     partnerScreen(
                                         search = "",
-                                        0xFFF29727, ""
+                                        com.example.venturenest.ui.theme.bg.toArgb().toLong(), ""
                                     )
                                 )
                             }) {
-                                Text("view all",  color = Color(0xFFB30D2F))
+                                Text("view all", color = com.example.venturenest.ui.theme.bg)
                             }
                         }
                         val scrollState = rememberScrollState()
@@ -1031,7 +900,7 @@ members = state.Data.councilmembers.take(4)
                             fontWeight = FontWeight.W600,
                             fontSize = MaterialTheme.typography.titleMedium.fontSize,
                             color = Color.Black,
-                           // color = Color(0xFFB30D2F),
+                           // color = Color(0xFFA30D33),
                             modifier = Modifier.padding(start = 16.dp, bottom = 10.dp)
                         )
 
@@ -1123,25 +992,22 @@ members = state.Data.councilmembers.take(4)
                             }
                         }
 
-                        // Page indicator dots
                         if (starredEvents.size > 1) {
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.Center
+                                    .padding(top = 12.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 repeat(starredEvents.size) { iteration ->
-                                    val color = if (pagerState.currentPage == iteration) 
-                                        Color.Black 
-                                    else 
-                                        Color.LightGray
+                                    val isSelected = pagerState.currentPage == iteration
                                     Box(
                                         modifier = Modifier
                                             .padding(4.dp)
                                             .clip(CircleShape)
-                                            .background(color)
-                                            .size(8.dp)
+                                            .background(if (isSelected) com.example.venturenest.ui.theme.bg else Color.LightGray.copy(alpha = 0.5f))
+                                            .size(if (isSelected) 10.dp else 6.dp)
                                     )
                                 }
                             }
@@ -1268,7 +1134,6 @@ members = state.Data.councilmembers.take(4)
                             }
                         }
 
-                        // "See All" Button at the bottom
                         OutlinedButton(
                             onClick = {
                                 navController.navigate(
@@ -1280,14 +1145,13 @@ members = state.Data.councilmembers.take(4)
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 12.dp),
-                            shape = RoundedCornerShape(8.dp),
-                            border = BorderStroke(1.dp, Color(0xFFB30D2F))
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.5.dp, com.example.venturenest.ui.theme.bg)
                         ) {
                             Text(
-                                text = "See All Events",
-                                //color = Color.Black,
-                                color = Color(0xFFB30D2F),
-                                fontWeight = FontWeight.Medium,
+                                text = "View All Events",
+                                color = com.example.venturenest.ui.theme.bg,
+                                fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
                         }
@@ -1303,11 +1167,10 @@ members = state.Data.councilmembers.take(4)
         ) {
             Text(
                 text = "Wall of Fame",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color= Color.Black,
-                //color = Color(0xFFB30D2F),
-                modifier = Modifier.padding(bottom = 16.dp)
+                fontSize = 28.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 20.dp)
             )
 
             val pagerState = rememberPagerState(
@@ -1363,9 +1226,9 @@ members = state.Data.councilmembers.take(4)
                                 scaleY = scale
                                 alpha = 0.5f + (scale - 0.85f) * 3.33f
                             },
-                        shape = RoundedCornerShape(24.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C3E))
+                        shape = RoundedCornerShape(28.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.Black)
                     ) {
                         Column(
                             modifier = Modifier
@@ -1404,10 +1267,10 @@ members = state.Data.councilmembers.take(4)
                                 // Funding Tag
                                 Card(
                                     shape = RoundedCornerShape(topEnd = 12.dp, topStart = 4.dp, bottomStart = 12.dp, bottomEnd = 4.dp),
-                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFB30D2F))
+                                    colors = CardDefaults.cardColors(containerColor = com.example.venturenest.ui.theme.bg)
                                 ) {
                                     Column(
-                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                                         horizontalAlignment = Alignment.End
                                     ) {
                                         Text(
@@ -1439,12 +1302,13 @@ members = state.Data.councilmembers.take(4)
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(16.dp)),
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(20.dp)),
                                 contentScale = ContentScale.Crop,
                                 alignment = Alignment.Center
                             )
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
                             // Footer: Names
                             Column(
@@ -1452,16 +1316,15 @@ members = state.Data.councilmembers.take(4)
                             ) {
                                 Text(
                                     text = founderName,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.ExtraBold,
                                     color = Color.White
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "~$companyName",
-                                    fontSize = 16.sp,
-                                    color = Color.White.copy(alpha = 0.8f),
-                                    fontWeight = FontWeight.Medium
+                                    text = companyName,
+                                    fontSize = 14.sp,
+                                    color = com.example.venturenest.ui.theme.bg,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
@@ -1543,9 +1406,8 @@ members = state.Data.councilmembers.take(4)
             Text(
                 text = "Startup Success",
                 fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
                 color = Color.Black,
-               // color = Color(0xFFB30D2F),
                 modifier = Modifier
                     .padding(bottom = 24.dp)
                     .align(Alignment.CenterHorizontally)
@@ -1583,99 +1445,89 @@ members = state.Data.councilmembers.take(4)
                         Card(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(IntrinsicSize.Min), // Allow dynamic height
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF9FAFB)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                .height(200.dp),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFBFBFB)),
+                            border = BorderStroke(1.dp, Color(0xFFF0F0F0))
                         ) {
                             Column(
                                 modifier = Modifier
-                                    .padding(16.dp) // Reduced padding slightly for 2-column
-                                    .fillMaxWidth(),
+                                    .padding(16.dp)
+                                    .fillMaxSize(),
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Column {
-                                    Text(
-                                        text = "“",
-                                        fontSize = 48.sp, // scaled down from 60
-                                        color = Color(0xFFE5E7EB),
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.offset(x = (-4).dp, y = (-8).dp)
-                                    )
+                                Box(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = story.third,
-                                        fontSize = 13.sp, // scaled down for 2-column
-                                        color = Color(0xFF374151),
-                                        lineHeight = 20.sp,
-                                        modifier = Modifier.offset(y = (-16).dp)
+                                        fontSize = 12.sp,
+                                        color = Color.DarkGray,
+                                        lineHeight = 18.sp,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
 
-                                Column {
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(bottom = 12.dp),
-                                        color = Color(0xFFE5E7EB)
-                                    )
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(36.dp) // scaled down
-                                                .clip(CircleShape)
-                                                .background(Color(0xFFE5E7EB)),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = story.first.first().toString(),
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 16.sp,
-                                                color = Color(0xFF6B7280)
-                                            )
-                                        }
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .clip(CircleShape)
+                                            .background(com.example.venturenest.ui.theme.bg),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = story.first.first().toString(),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
+                                            color = Color.White
+                                        )
+                                    }
 
-                                        Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
 
-                                        Column {
-                                            Text(
-                                                text = story.first,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 12.sp,
-                                                color = Color(0xFF111827),
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                            Text(
-                                                text = story.second,
-                                                fontSize = 10.sp,
-                                                color = Color(0xFF6B7280),
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        }
+                                    Column {
+                                        Text(
+                                            text = story.first,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 11.sp,
+                                            color = Color.Black,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Text(
+                                            text = story.second,
+                                            fontSize = 9.sp,
+                                            color = Color.Gray,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
                                     }
                                 }
                             }
                         }
                     }
-                    // If row has only 1 item, add spacer to push it to left
                     if (rowStories.size == 1) {
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }
-                
-                // Show More / Show Less Button
-                OutlinedButton(
-                    onClick = { showAllStories = !showAllStories },
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, Color(0xFFB30D2F))
-                ) {
-                    Text(
-                        text = if (showAllStories) "Show Less" else "Show More (${successStories.size - 4} more)",
-                        color = Color(0xFFB30D2F),
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+
+            OutlinedButton(
+                onClick = { showAllStories = !showAllStories },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.5.dp, com.example.venturenest.ui.theme.bg)
+            ) {
+                Text(
+                    text = if (showAllStories) "Show Less" else "Explore More Success Stories",
+                    color = com.example.venturenest.ui.theme.bg,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             }
         }
 
@@ -1899,70 +1751,55 @@ members = state.Data.councilmembers.take(4)
 
 
         }
-        Column (modifier = modifier.fillMaxSize()
-            ,
-            verticalArrangement = Arrangement.Top
-        , horizontalAlignment = Alignment.CenterHorizontally){
+        // Re-styled Top Navigation Bar
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(Color.White.copy(alpha = 0.95f))
+                .windowInsetsPadding(window)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
             Row(
-                modifier
+                modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
-                    .padding(bottom = 20.dp, start = 15.dp, end = 15.dp)
-                    .background(Color.White)
-                    .padding(bottom = 10.dp)
-                    .windowInsetsPadding(window)
-
-
-                    ,
+                    .height(64.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                // Logo/Drawer Trigger
                 ElevatedCard(
-                    modifier.size(55.dp),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clickable { isNavOpen = !isNavOpen },
                     shape = CircleShape,
-                    colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+                    colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.img),
-                        contentDescription = null,
-                        modifier
-                            .size(100.dp)
-                            .clickable {
-
-                                isNavOpen = !isNavOpen
-
-                            }, contentScale = ContentScale.Crop
-                    )
-                }
-
-                Row(
-                    modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ElevatedCard(
-                        modifier
-                            .size(40.dp)
-                            .clickable { navController.navigate(Profile) },
-                        shape = RectangleShape,
-                        colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
-                    ) {
-                        Box(
-                            Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Person,
-                                contentDescription = null,
-                                modifier.size(20.dp),
-                                tint = Color.Black
-                            )
-                        }
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Image(
+                            painter = painterResource(R.drawable.img),
+                            contentDescription = "Menu",
+                            modifier = Modifier.size(48.dp),
+                            contentScale = ContentScale.Crop
+                        )
                     }
                 }
 
+                // Profile Action
+                IconButton(
+                    onClick = { navController.navigate(Profile) },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFF5F5F5))
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = "Profile",
+                        tint = Color.Black,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
             AnimatedVisibility(showSuccess

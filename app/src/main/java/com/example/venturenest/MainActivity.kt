@@ -70,6 +70,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import coil.compose.AsyncImage
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.composed
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.unit.IntSize
 
 import com.example.bottombar.AnimatedBottomBar
 import androidx.compose.runtime.mutableStateOf
@@ -429,42 +440,48 @@ CouncilMemberItem(member)
 }
 
 @Composable
-fun CouncilMemberItem(member: councilmembers) {
-
-
-
+fun CouncilMemberItem(
+    member: councilmembers,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
+            .padding(4.dp)
+            .clickable { onClick() }
     ) {
-
         AsyncImage(
             model = member.imgpath,
             contentDescription = member.name,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(90.dp)
+                .size(70.dp)
                 .clip(CircleShape)
-                .background(Color.LightGray)
+                .background(Color(0xFFF5F5F7)) // Corrected hex color
+                .border(1.dp, Color(0xFFF0F0F0), CircleShape)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = member.name,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
         )
 
         Text(
             text = member.company,
-            fontSize = 12.sp,
-            color = com.example.venturenest.ui.theme.bg,
+            fontSize = 10.sp,
+            color = Color.Gray,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -533,15 +550,16 @@ fun StatCard(
 ) {
     Card(
         modifier = modifier
-            .width(180.dp)
-            .height(110.dp)
-            .padding(horizontal = 8.dp),
+            .width(170.dp)
+            .height(100.dp)
+            .padding(horizontal = 4.dp)
+            .shimmerEffect(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFFBFBFB)
+            containerColor = Color.White
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = BorderStroke(1.dp, Color(0xFFF0F0F0))
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, Color(0xFFF8F8F8))
     ) {
         Column(
             modifier = Modifier
@@ -581,5 +599,32 @@ val stats = listOf(
 )
 
 
+fun Modifier.shimmerEffect(): Modifier = composed {
+    var size by remember {
+        mutableStateOf(IntSize.Zero)
+    }
+    val transition = rememberInfiniteTransition(label = "shimmer")
+    val startOffsetX by transition.animateFloat(
+        initialValue = -2 * size.width.toFloat(),
+        targetValue = 2 * size.width.toFloat(),
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000)
+        ),
+        label = "shimmerOffsetX"
+    )
 
+    background(
+        brush = Brush.linearGradient(
+            colors = listOf(
+                Color(0xFFFFFFFF),
+                Color(0xFFF5F5F7),
+                Color(0xFFFFFFFF),
+            ),
+            start = Offset(startOffsetX, 0f),
+            end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat())
+        )
+    ).onGloballyPositioned {
+        size = it.size
+    }
+}
 

@@ -60,8 +60,15 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.venturenest.ui.theme.DaggerHilt.ViewModels.AuthViewModel
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -81,12 +88,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -121,7 +131,8 @@ import com.example.venturenest.ui.theme.Presentation.helper.ChangeStatusBarColor
 import com.example.venturenest.ui.theme.DaggerHilt.Events
 import com.example.venturenest.ui.theme.Presentation.EventPage.Dialog as EventDialog
 import com.example.venturenest.ui.theme.Presentation.helper.HideSystemBars
-import com.example.venturenest.ui.theme.background
+import com.example.venturenest.CouncilMemberItem
+import com.example.venturenest.ui.theme.bg
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -139,8 +150,8 @@ fun HomePage(
     var showSuccess by remember { mutableStateOf(false) }
     HideSystemBars()
     ChangeStatusBarColorEdgeToEdge(Color.Transparent)
-    val context  = LocalContext.current
-    val image= remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val image = remember { mutableStateOf("") }
     val name = remember { mutableStateOf("") }
     var isVisible = remember {
         mutableStateOf(false)
@@ -164,7 +175,45 @@ fun HomePage(
         0xFFF2BE22
     )
     val schroll = rememberScrollState()
-    val infinite = rememberInfiniteTransition()
+    val infinite = rememberInfiniteTransition(label = "infinite")
+    val pulseScale by infinite.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.08f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseScale"
+    )
+
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val currentUser = authViewModel.repository.firebaseAuth.currentUser
+    val userName = currentUser?.displayName?.split(" ")?.firstOrNull() ?: "Founder"
+    val userPhoto = currentUser?.photoUrl?.toString()
+    var searchQuery by remember { mutableStateOf("") }
+
+    // Filtered Data
+    val filteredMembers = remember(state.Data.councilmembers, searchQuery) {
+        state.Data.councilmembers.filter {
+            it.name.contains(searchQuery, ignoreCase = true) ||
+                    it.company.contains(searchQuery, ignoreCase = true)
+        }
+    }
+    val filteredPartners = remember(state.Data.partner, searchQuery) {
+        state.Data.partner.filter {
+            it.Name.contains(searchQuery, ignoreCase = true) ||
+                    it.Category.contains(searchQuery, ignoreCase = true)
+        }
+    }
+    val filteredEvents = remember(state.Data.events, searchQuery) {
+        state.Data.events.filter {
+            it.eventName.contains(searchQuery, ignoreCase = true) ||
+                    it.eventTitle.contains(searchQuery, ignoreCase = true)
+        }
+    }
+    val starredEvents = remember(filteredEvents) {
+        filteredEvents.filter { it.isStarred }
+    }
 
 
     Scaffold(
@@ -179,7 +228,12 @@ fun HomePage(
                     contentColor = Color.Black,
                     shape = RoundedCornerShape(24.dp),
                     elevation = FloatingActionButtonDefaults.elevation(4.dp),
-                    modifier = Modifier.border(1.dp, Color(0xFFF0F0F0), RoundedCornerShape(24.dp))
+                    modifier = Modifier
+                        .graphicsLayer {
+                            scaleX = pulseScale
+                            scaleY = pulseScale
+                        }
+                        .border(1.dp, Color(0xFFF0F0F0), RoundedCornerShape(24.dp))
                 ) {
                     Image(
                         painter = painterResource(R.drawable.aing),
@@ -196,70 +250,239 @@ fun HomePage(
                 }
             }
         }
-    ) {
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            BackHandler {
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - backPressedTime < 2000) {
+                    toast.cancel()
+                    activity?.finish()
+                } else {
+                    backPressedTime = currentTime
+                    toast.show()
+                }
+            }
 
-
-        Box(modifier = Modifier.fillMaxSize()) {
-
-
-
-
-
-BackHandler {
-    val currentTime = System.currentTimeMillis()
-    if (currentTime - backPressedTime < 2000) {
-        toast.cancel()
-        activity?.finish()
-    } else {
-        backPressedTime = currentTime
-        toast.show()
-    }
-}
-
-            Box(
-                modifier = modifier
-                    .fillMaxSize(1f)
-                    .background(Color.White)
-                    .verticalScroll(schroll), contentAlignment = Alignment.TopCenter
-            ) {
-
-
-//            Image(
-//                painter = painterResource(id = R.drawable.whatsapp), contentDescription = "",
-//                modifier
-//                    .fillMaxWidth()
-//                    .height(200.dp), contentScale = ContentScale.FillBounds
-//            )
             Column(
                 modifier = modifier
                     .fillMaxSize()
-                    .windowInsetsPadding(window),
+                    .verticalScroll(schroll),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Simplified Header with clear title
-                Spacer(modifier = modifier.height(100.dp))
-                
-                Column(
+                // --- PREMIUM HEADER SECTION ---
+                Row(
                     modifier = modifier
-                        .fillMaxWidth(0.9f)
-                        .padding(bottom = 20.dp),
-                    horizontalAlignment = Alignment.Start
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        "Welcome to",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Gray
-                    )
-                    Text(
-                        "CGC VentureNest",
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.Black,
-                        lineHeight = 36.sp
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        // Side Menu Trigger
+                        IconButton(
+                            onClick = { isNavOpen = true },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = androidx.compose.material.icons.filled.GridView,
+                                contentDescription = "Menu",
+                                tint = Color.Black.copy(alpha = 0.7f),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // Left-side Branding Cluster
+                        Box(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .shadow(2.dp, CircleShape)
+                                .clip(CircleShape)
+                                .background(Color.White)
+                                .padding(4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.cgc),
+                                contentDescription = "CGC Icon",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // VentureNest Full Logo
+                        Image(
+                            painter = painterResource(id = R.drawable.cgclogo),
+                            contentDescription = "VentureNest Logo",
+                            modifier = Modifier
+                                .height(32.dp),
+                            contentScale = ContentScale.Fit
+                        )
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Column {
+                            Text(
+                                "Hello, $userName!",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                            Text(
+                                "Ready to scale today?",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+
+                    // Notification Bell & Profile Actions
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = { /* Notifications */ },
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFF8F8FA))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = "Notifications",
+                                tint = Color.Black,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        // Profile Circle
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFF8F8FA))
+                                .border(
+                                    1.dp,
+                                    com.example.venturenest.ui.theme.bg.copy(alpha = 0.2f),
+                                    CircleShape
+                                )
+                                .clickable { navController.navigate(Profile) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (userPhoto != null) {
+                                AsyncImage(
+                                    model = userPhoto,
+                                    contentDescription = "Profile",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Outlined.Person,
+                                    contentDescription = "Profile",
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                    }
                 }
+
+                // --- PREMIUM SEARCH BAR ---
+                androidx.compose.material3.OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier
+                        .fillMaxWidth(0.92f)
+                        .padding(bottom = 16.dp)
+                        .shadow(
+                            12.dp,
+                            RoundedCornerShape(16.dp),
+                            spotColor = Color.LightGray.copy(alpha = 0.2f)
+                        ),
+                    placeholder = {
+                        Text(
+                            "Search mentors, startups, or events...",
+                            fontSize = 14.sp,
+                            color = Color.Gray.copy(alpha = 0.6f)
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = com.example.venturenest.ui.theme.bg,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { searchQuery = "" }) {
+                                Icon(
+                                    imageVector = androidx.compose.material.icons.Icons.Default.ArrowBack, // Or close icon
+                                    contentDescription = "Clear",
+                                    modifier = Modifier.size(18.dp).graphicsLayer {
+                                        rotationZ = 135f
+                                    } // Quick X shape hack or use Icons.Default.Close
+                                )
+                            }
+                        }
+                    },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        focusedBorderColor = com.example.venturenest.ui.theme.bg,
+                        unfocusedBorderColor = Color.Transparent,
+                        cursorColor = com.example.venturenest.ui.theme.bg
+                    ),
+                    singleLine = true,
+                    textStyle = androidx.compose.ui.text.TextStyle(
+                        fontSize = 15.sp,
+                        color = Color.Black
+                    )
+                )
+
+                // Search Results State feedback
+                if (searchQuery.isNotEmpty() && filteredMembers.isEmpty() && filteredPartners.isEmpty() && filteredEvents.isEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 40.dp, bottom = 40.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.nothingfound),
+                            contentDescription = "No Results",
+                            modifier = Modifier.size(150.dp).alpha(0.8f),
+                            contentScale = ContentScale.Fit
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            "We couldn't find \"$searchQuery\"",
+                            color = Color.Black.copy(alpha = 0.8f),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            "Try mentors, startup types or event titles",
+                            color = Color.Gray,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+
 
 
                 ElevatedCard(
@@ -441,10 +664,6 @@ BackHandler {
                         }
                     }
                 }
-
-
-
-                
 
 
 //
@@ -743,11 +962,12 @@ BackHandler {
                     imageRes = "https://plus.unsplash.com/premium_photo-1706061121842-7ba956c57670?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 )
 
-                Row (modifier
-                    .fillMaxWidth(1f)
-                    .padding(top = 15.dp, bottom = 15.dp)
-                    .horizontalScroll(rememberScrollState())
-                    ){
+                Row(
+                    modifier
+                        .fillMaxWidth(1f)
+                        .padding(top = 15.dp, bottom = 15.dp)
+                        .horizontalScroll(rememberScrollState())
+                ) {
                     Spacer(modifier.width(10.dp))
                     stats.forEach {
                         StatCard(
@@ -756,15 +976,8 @@ BackHandler {
                     }
 
                 }
-                MeetTheBoardCard(
-members = state.Data.councilmembers.take(4)
-               , onclick = {
-                        navController.navigate(
-                                    CouncilScreen(
-                                        search = "", com.example.venturenest.ui.theme.bg.toArgb().toLong(), ""
-                                    )
-                                )
-                    } )
+
+                Spacer(modifier = Modifier.height(24.dp))
                 Box(
                     modifier = modifier
                         .padding(top = 10.dp, bottom = 0.dp)
@@ -802,8 +1015,9 @@ members = state.Data.councilmembers.take(4)
                             TextButton(onClick = {
                                 navController.navigate(
                                     partnerScreen(
-                                        search = "",
-                                        com.example.venturenest.ui.theme.bg.toArgb().toLong(), ""
+                                        search = searchQuery,
+                                        com.example.venturenest.ui.theme.bg.toArgb().toLong(),
+                                        ""
                                     )
                                 )
                             }) {
@@ -828,8 +1042,8 @@ members = state.Data.councilmembers.take(4)
                                 .wrapContentHeight()
 
                                 .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
-                                .background(androidx.compose.ui.graphics.Color.Transparent)
-                            , contentAlignment = Alignment.Center
+                                .background(androidx.compose.ui.graphics.Color.Transparent),
+                            contentAlignment = Alignment.Center
                         ) {
                             Row(
                                 modifier = Modifier
@@ -841,20 +1055,27 @@ members = state.Data.councilmembers.take(4)
 //                    500, MarqueeAnimationMode.Immediately, velocity = 10.dp,
 //                    repeatDelayMillis = 0, spacing = MarqueeSpacing(0.dp)
 //                )
-                                , horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
-
+                                ,
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
 
 
                             ) {
                                 Spacer(modifier = modifier.width(16.dp))
                                 val context = LocalContext.current
-                                state.Data.partner.forEach { iconUrl ->
-                                    ElevatedCard( modifier = Modifier
-                                        .padding(start = 10.dp, top = 5.dp, bottom = 5.dp
-                                            , end = 5.dp)
+                                filteredPartners.forEach { iconUrl ->
+                                    ElevatedCard(
+                                        modifier = Modifier
+                                            .padding(
+                                                start = 10.dp,
+                                                top = 5.dp,
+                                                bottom = 5.dp,
+                                                end = 5.dp
+                                            )
                                         // .border(0.1.dp, Color.Black, shape = RoundedCornerShape(25f))
                                         ,
-                                        colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                                    ) {
 
 
                                         AsyncImage(
@@ -885,9 +1106,7 @@ members = state.Data.councilmembers.take(4)
                 }
 
 
-
                 // Starred Events Section
-                val starredEvents = state.Data.events.filter { it.isStarred }
                 if (starredEvents.isNotEmpty()) {
                     Column(
                         modifier = Modifier
@@ -900,13 +1119,13 @@ members = state.Data.councilmembers.take(4)
                             fontWeight = FontWeight.W600,
                             fontSize = MaterialTheme.typography.titleMedium.fontSize,
                             color = Color.Black,
-                           // color = Color(0xFFA30D33),
+                            // color = Color(0xFFA30D33),
                             modifier = Modifier.padding(start = 16.dp, bottom = 10.dp)
                         )
 
                         // Auto-scrolling Featured Event Cards using HorizontalPager
                         val pagerState = rememberPagerState(pageCount = { starredEvents.size })
-                        
+
                         // Auto-scroll effect
                         LaunchedEffect(pagerState) {
                             while (true) {
@@ -930,7 +1149,8 @@ members = state.Data.councilmembers.take(4)
                                     .height(200.dp)
                                     .clickable {
                                         selectedEvent = event
-                                        selectedEventColor = colorlist[state.Data.events.indexOf(event) % 4]
+                                        selectedEventColor =
+                                            colorlist[state.Data.events.indexOf(event) % 4]
                                         showEventDialog.value = true
                                     },
                                 shape = RoundedCornerShape(16.dp),
@@ -1006,7 +1226,11 @@ members = state.Data.councilmembers.take(4)
                                         modifier = Modifier
                                             .padding(4.dp)
                                             .clip(CircleShape)
-                                            .background(if (isSelected) com.example.venturenest.ui.theme.bg else Color.LightGray.copy(alpha = 0.5f))
+                                            .background(
+                                                if (isSelected) com.example.venturenest.ui.theme.bg else Color.LightGray.copy(
+                                                    alpha = 0.5f
+                                                )
+                                            )
                                             .size(if (isSelected) 10.dp else 6.dp)
                                     )
                                 }
@@ -1017,10 +1241,10 @@ members = state.Data.councilmembers.take(4)
                         // Grid Layout for Event Cards (2 columns) - matching reference image
                         if (starredEvents.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             // Show all starred events to ensure at least 4 are displayed
                             val gridEvents = starredEvents.take(4)
-                            
+
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -1041,12 +1265,19 @@ members = state.Data.councilmembers.take(4)
                                                     .weight(1f)
                                                     .clickable {
                                                         selectedEvent = event
-                                                        selectedEventColor = colorlist[state.Data.events.indexOf(event) % 4]
+                                                        selectedEventColor =
+                                                            colorlist[state.Data.events.indexOf(
+                                                                event
+                                                            ) % 4]
                                                         showEventDialog.value = true
                                                     },
                                                 shape = RoundedCornerShape(12.dp),
-                                                colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
-                                                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+                                                colors = CardDefaults.elevatedCardColors(
+                                                    containerColor = Color.White
+                                                ),
+                                                elevation = CardDefaults.elevatedCardElevation(
+                                                    defaultElevation = 4.dp
+                                                )
                                             ) {
                                                 Column(
                                                     modifier = Modifier.fillMaxWidth()
@@ -1059,9 +1290,14 @@ members = state.Data.councilmembers.take(4)
                                                         modifier = Modifier
                                                             .fillMaxWidth()
                                                             .height(120.dp)
-                                                            .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                                                            .clip(
+                                                                RoundedCornerShape(
+                                                                    topStart = 12.dp,
+                                                                    topEnd = 12.dp
+                                                                )
+                                                            )
                                                     )
-                                                    
+
                                                     // Event Details
                                                     Column(
                                                         modifier = Modifier
@@ -1077,9 +1313,9 @@ members = state.Data.councilmembers.take(4)
                                                             maxLines = 1,
                                                             overflow = TextOverflow.Ellipsis
                                                         )
-                                                        
+
                                                         Spacer(modifier = Modifier.height(6.dp))
-                                                        
+
                                                         // Date
                                                         Row(
                                                             verticalAlignment = Alignment.CenterVertically
@@ -1098,9 +1334,9 @@ members = state.Data.councilmembers.take(4)
                                                                 maxLines = 1
                                                             )
                                                         }
-                                                        
+
                                                         Spacer(modifier = Modifier.height(4.dp))
-                                                        
+
                                                         // Location
                                                         Row(
                                                             verticalAlignment = Alignment.CenterVertically
@@ -1124,7 +1360,7 @@ members = state.Data.councilmembers.take(4)
                                                 }
                                             }
                                         }
-                                        
+
                                         // If row has only 1 item, add empty spacer for balance
                                         if (rowEvents.size == 1) {
                                             Spacer(modifier = Modifier.weight(1f))
@@ -1158,378 +1394,442 @@ members = state.Data.councilmembers.take(4)
                     }
                 }
 
-        // Wall of Fame Carousel - Below Events section
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Wall of Fame",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.Black,
-                modifier = Modifier.padding(bottom = 20.dp)
-            )
+                // Wall of Fame Carousel - Below Events section
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Wall of Fame",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.Black,
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    )
 
-            val pagerState = rememberPagerState(
-                initialPage = 1,
-                pageCount = { 4 }
-            )
+                    val pagerState = rememberPagerState(
+                        initialPage = 1,
+                        pageCount = { 4 }
+                    )
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(380.dp)
-            ) {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 60.dp),
-                    pageSpacing = 16.dp
-                ) { page ->
-                    val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)
-                    val scale = 1f - (kotlin.math.abs(pageOffset) * 0.15f)
-
-                    val imageRes = when (page) {
-                        0 -> R.drawable.escape_founder
-                        1 -> R.drawable.techhealth_founder
-                        2 -> R.drawable.edswagon_founder
-                        else -> R.drawable.vidyutam_founder
-                    }
-                    val founderName = when (page) {
-                        0 -> "Shivang Tiwari"
-                        1 -> "Ashutosh Saxena"
-                        2 -> "Ashish Chabra"
-                        else -> "Anshul Bhati"
-                    }
-                    val companyName = when (page) {
-                        0 -> "escapekar"
-                        1 -> "Techealth Apex Private Limited"
-                        2 -> "EDS Wagon Tech"
-                        else -> "Vidyutam Verde"
-                    }
-                    val logoRes = when (page) {
-                        0 -> R.drawable.escapekarlogo
-                        1 -> R.drawable.techealth_logo
-                        2 -> R.drawable.edslogo
-                        else -> R.drawable.vidyutamlogo
-                    }
-
-                    Card(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(400.dp) // Increased height slightly to accommodate the layout comfortably
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                                alpha = 0.5f + (scale - 0.85f) * 3.33f
-                            },
-                        shape = RoundedCornerShape(28.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.Black)
+                            .height(380.dp)
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                        ) {
-                            // Header: Logo and Funding
-                            Row(
+                        HorizontalPager(
+                            state = pagerState,
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(horizontal = 60.dp),
+                            pageSpacing = 16.dp
+                        ) { page ->
+                            val pageOffset =
+                                ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)
+                            val scale = 1f - (kotlin.math.abs(pageOffset) * 0.15f)
+
+                            val imageRes = when (page) {
+                                0 -> R.drawable.escape_founder
+                                1 -> R.drawable.techhealth_founder
+                                2 -> R.drawable.edswagon_founder
+                                else -> R.drawable.vidyutam_founder
+                            }
+                            val founderName = when (page) {
+                                0 -> "Shivang Tiwari"
+                                1 -> "Ashutosh Saxena"
+                                2 -> "Ashish Chabra"
+                                else -> "Anshul Bhati"
+                            }
+                            val companyName = when (page) {
+                                0 -> "escapekar"
+                                1 -> "Techealth Apex Private Limited"
+                                2 -> "EDS Wagon Tech"
+                                else -> "Vidyutam Verde"
+                            }
+                            val logoRes = when (page) {
+                                0 -> R.drawable.escapekarlogo
+                                1 -> R.drawable.techealth_logo
+                                2 -> R.drawable.edslogo
+                                else -> R.drawable.vidyutamlogo
+                            }
+
+                            Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(60.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.Top
+                                    .height(400.dp) // Increased height slightly to accommodate the layout comfortably
+                                    .graphicsLayer {
+                                        scaleX = scale
+                                        scaleY = scale
+                                        alpha = 0.5f + (scale - 0.85f) * 3.33f
+                                    },
+                                shape = RoundedCornerShape(28.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.Black)
                             ) {
-                                // Logo Box
-                                Card(
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = CardDefaults.cardColors(containerColor = Color(0xFF3E3E55)),
-                                    elevation = CardDefaults.cardElevation(0.dp)
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp)
                                 ) {
-                                    Box(
+                                    // Header: Logo and Funding
+                                    Row(
                                         modifier = Modifier
-                                            .size(50.dp)
-                                            .padding(8.dp),
-                                        contentAlignment = Alignment.Center
+                                            .fillMaxWidth()
+                                            .height(60.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.Top
                                     ) {
-                                        Image(
-                                            painter = painterResource(id = logoRes),
-                                            contentDescription = "Logo",
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentScale = ContentScale.Fit
-                                        )
+                                        // Logo Box
+                                        Card(
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = CardDefaults.cardColors(
+                                                containerColor = Color(
+                                                    0xFF3E3E55
+                                                )
+                                            ),
+                                            elevation = CardDefaults.cardElevation(0.dp)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(50.dp)
+                                                    .padding(8.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = logoRes),
+                                                    contentDescription = "Logo",
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    contentScale = ContentScale.Fit
+                                                )
+                                            }
+                                        }
+
+                                        // Funding Tag
+                                        Card(
+                                            shape = RoundedCornerShape(
+                                                topEnd = 12.dp,
+                                                topStart = 4.dp,
+                                                bottomStart = 12.dp,
+                                                bottomEnd = 4.dp
+                                            ),
+                                            colors = CardDefaults.cardColors(containerColor = com.example.venturenest.ui.theme.bg)
+                                        ) {
+                                            Column(
+                                                modifier = Modifier.padding(
+                                                    horizontal = 16.dp,
+                                                    vertical = 6.dp
+                                                ),
+                                                horizontalAlignment = Alignment.End
+                                            ) {
+                                                Text(
+                                                    text = "Funding",
+                                                    fontSize = 11.sp,
+                                                    color = Color.White.copy(alpha = 0.9f),
+                                                    fontWeight = FontWeight.Medium
+                                                )
+                                                HorizontalDivider(
+                                                    thickness = 0.dp,
+                                                    color = Color.White,
+                                                    modifier = Modifier.width(60.dp)
+                                                )
+
+                                                Text(
+                                                    text = "3 Lakhs",
+                                                    fontSize = 16.sp,
+                                                    color = Color.White,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
                                     }
-                                }
 
-                                // Funding Tag
-                                Card(
-                                    shape = RoundedCornerShape(topEnd = 12.dp, topStart = 4.dp, bottomStart = 12.dp, bottomEnd = 4.dp),
-                                    colors = CardDefaults.cardColors(containerColor = com.example.venturenest.ui.theme.bg)
-                                ) {
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    // Main Founder Image
+                                    Image(
+                                        painter = painterResource(id = imageRes),
+                                        contentDescription = companyName,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(20.dp))
+                                            .border(
+                                                1.dp,
+                                                Color.White.copy(alpha = 0.1f),
+                                                RoundedCornerShape(20.dp)
+                                            ),
+                                        contentScale = ContentScale.Crop,
+                                        alignment = Alignment.Center
+                                    )
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    // Footer: Names
                                     Column(
-                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                                        horizontalAlignment = Alignment.End
+                                        modifier = Modifier.fillMaxWidth()
                                     ) {
                                         Text(
-                                            text = "Funding",
-                                            fontSize = 11.sp,
-                                            color = Color.White.copy(alpha = 0.9f),
-                                            fontWeight = FontWeight.Medium
+                                            text = founderName,
+                                            fontSize = 22.sp,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = Color.White
                                         )
-                                        HorizontalDivider(thickness = 0.dp,
-                                            color = Color.White,
-                                            modifier = Modifier.width(60.dp))
-
                                         Text(
-                                            text = "3 Lakhs",
-                                            fontSize = 16.sp,
-                                            color = Color.White,
+                                            text = companyName,
+                                            fontSize = 14.sp,
+                                            color = com.example.venturenest.ui.theme.bg,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
                                 }
                             }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // Main Founder Image
-                            Image(
-                                painter = painterResource(id = imageRes),
-                                contentDescription = companyName,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(20.dp)),
-                                contentScale = ContentScale.Crop,
-                                alignment = Alignment.Center
-                            )
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            // Footer: Names
-                            Column(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = founderName,
-                                    fontSize = 22.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = Color.White
-                                )
-                                Text(
-                                    text = companyName,
-                                    fontSize = 14.sp,
-                                    color = com.example.venturenest.ui.theme.bg,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
                         }
-                    }
-                }
 
-                // Left Arrow
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            if (pagerState.currentPage > 0) {
-                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                            }
-                        } 
-                    },
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .padding(start = 16.dp)
-                        .background(Color.White.copy(alpha = 0.5f), CircleShape)
-                        .size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Previous",
-                        tint = Color.Black
-                    )
-                }
-
-                // Right Arrow
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            if (pagerState.currentPage < 3) {
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(end = 16.dp)
-                        .background(Color.White.copy(alpha = 0.5f), CircleShape)
-                        .size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowForward,
-                        contentDescription = "Next",
-                        tint = Color.Black
-                    )
-                }
-            }
-
-            // Page Indicators
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                repeat(4) { iteration ->
-                    val color = if (pagerState.currentPage == iteration)
-                        Color(0xFF2F2F2F) else Color.LightGray
-                    Box(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .size(if (pagerState.currentPage == iteration) 10.dp else 8.dp)
-                    )
-                }
-            }
-        }
-
-        // Startup Success Section
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp)
-        ) {
-            Text(
-                text = "Startup Success",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.Black,
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-
-            var showAllStories by remember { mutableStateOf(false) }
-
-            val successStories = listOf(
-                Triple("Pulkesh Gautam", "Vidyutam Verde NCESOL Pvt. Ltd.", "The networking opportunities at VentureNest helped us secure our first three major clients. It's the perfect launchpad for digital ventures."),
-                Triple("Navneet Yaduvanshi", "Aasyra", "From lab access to market connect, VentureNest supported our organic product journey every step of the way. Truly a transformative experience."),
-                Triple("Mr. RAJAT SONI", "V2R AUTOINFINITE PRIVATE LIMITED", "At V2R, we’re not just disrupting the automotive sector; we’re revolutionizing it. Our mission is to empower both vehicle owners and automotive service businesses through advanced, technology-driven solutions that streamline operations, enhance efficiency, and drive sustainable growth."),
-                Triple("Mr Harrish Babber", "Escapekar", "Escapekar is a travel guidance platform that helps people become better travelers—from exploring and planning to taking a trip. Travelers across the globe use the Escapekar app to discover hidden places, find where to stay, what to do, and where to eat—all recommended by an algorithm that selects the best options for them."),
-                Triple("Mr. Narinder Singh", "Nhanks Waste Recyclers Pvt.Ltd", "Sustainable solutions need specialized support. VentureNest's focus on social impact startups gave us the push we needed."),
-                Triple("Mr Karan Kumar Aggrawal", "Indi Tech", "The technical mentorship here is unmatched. We scaled our tech stack and team efficiently under the guidance of industry experts."),
-                Triple("Mr. Jaskaranpreet Singh", "Juniva Organics", "Juniva Organics found its footing here. The incubation support helped us navigate regulatory challenges and reach the market faster."),
-                Triple("Aditi Sharma", "GreenEarth Solutions", "VentureNest provided the critical sustainability mentorship we needed to refine our business model and pitch to impact investors successfully."),
-                Triple("Rohan Mehta", "CryptoSecure", "The blockchain expertise available at VentureNest is world-class. We were able to architect a secure and scalable solution that investors loved."),
-                Triple("Sanya Kapoor", "AI Edutech", "We scaled our AI models with the infrastructure support provided here. The access to cloud credits and technical mentors was a game changer.")
-            )
-
-            val visibleStories = if (showAllStories) successStories else successStories.take(4)
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-            visibleStories.chunked(2).forEach { rowStories ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    rowStories.forEach { story ->
-                        Card(
+                        // Left Arrow
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    if (pagerState.currentPage > 0) {
+                                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                    }
+                                }
+                            },
                             modifier = Modifier
-                                .weight(1f)
-                                .height(200.dp),
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFBFBFB)),
-                            border = BorderStroke(1.dp, Color(0xFFF0F0F0))
+                                .align(Alignment.CenterStart)
+                                .padding(start = 16.dp)
+                                .background(Color.White.copy(alpha = 0.5f), CircleShape)
+                                .size(40.dp)
                         ) {
-                            Column(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .fillMaxSize(),
-                                verticalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Box(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = story.third,
-                                        fontSize = 12.sp,
-                                        color = Color.DarkGray,
-                                        lineHeight = 18.sp,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Previous",
+                                tint = Color.Black
+                            )
+                        }
+
+                        // Right Arrow
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    if (pagerState.currentPage < 3) {
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                    }
                                 }
+                            },
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 16.dp)
+                                .background(Color.White.copy(alpha = 0.5f), CircleShape)
+                                .size(40.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowForward,
+                                contentDescription = "Next",
+                                tint = Color.Black
+                            )
+                        }
+                    }
 
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.padding(top = 8.dp)
-                                ) {
-                                    Box(
+                    // Page Indicators
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        repeat(4) { iteration ->
+                            val color = if (pagerState.currentPage == iteration)
+                                Color(0xFF2F2F2F) else Color.LightGray
+                            Box(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .size(if (pagerState.currentPage == iteration) 10.dp else 8.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Startup Success Section
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp)
+                ) {
+                    Text(
+                        text = "Startup Success",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .padding(bottom = 24.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+
+                    var showAllStories by remember { mutableStateOf(false) }
+
+                    val successStories = listOf(
+                        Triple(
+                            "Pulkesh Gautam",
+                            "Vidyutam Verde NCESOL Pvt. Ltd.",
+                            "The networking opportunities at VentureNest helped us secure our first three major clients. It's the perfect launchpad for digital ventures."
+                        ),
+                        Triple(
+                            "Navneet Yaduvanshi",
+                            "Aasyra",
+                            "From lab access to market connect, VentureNest supported our organic product journey every step of the way. Truly a transformative experience."
+                        ),
+                        Triple(
+                            "Mr. RAJAT SONI",
+                            "V2R AUTOINFINITE PRIVATE LIMITED",
+                            "At V2R, we’re not just disrupting the automotive sector; we’re revolutionizing it. Our mission is to empower both vehicle owners and automotive service businesses through advanced, technology-driven solutions that streamline operations, enhance efficiency, and drive sustainable growth."
+                        ),
+                        Triple(
+                            "Mr Harrish Babber",
+                            "Escapekar",
+                            "Escapekar is a travel guidance platform that helps people become better travelers—from exploring and planning to taking a trip. Travelers across the globe use the Escapekar app to discover hidden places, find where to stay, what to do, and where to eat—all recommended by an algorithm that selects the best options for them."
+                        ),
+                        Triple(
+                            "Mr. Narinder Singh",
+                            "Nhanks Waste Recyclers Pvt.Ltd",
+                            "Sustainable solutions need specialized support. VentureNest's focus on social impact startups gave us the push we needed."
+                        ),
+                        Triple(
+                            "Mr Karan Kumar Aggrawal",
+                            "Indi Tech",
+                            "The technical mentorship here is unmatched. We scaled our tech stack and team efficiently under the guidance of industry experts."
+                        ),
+                        Triple(
+                            "Mr. Jaskaranpreet Singh",
+                            "Juniva Organics",
+                            "Juniva Organics found its footing here. The incubation support helped us navigate regulatory challenges and reach the market faster."
+                        ),
+                        Triple(
+                            "Aditi Sharma",
+                            "GreenEarth Solutions",
+                            "VentureNest provided the critical sustainability mentorship we needed to refine our business model and pitch to impact investors successfully."
+                        ),
+                        Triple(
+                            "Rohan Mehta",
+                            "CryptoSecure",
+                            "The blockchain expertise available at VentureNest is world-class. We were able to architect a secure and scalable solution that investors loved."
+                        ),
+                        Triple(
+                            "Sanya Kapoor",
+                            "AI Edutech",
+                            "We scaled our AI models with the infrastructure support provided here. The access to cloud credits and technical mentors was a game changer."
+                        )
+                    )
+
+                    val visibleStories =
+                        if (showAllStories) successStories else successStories.take(4)
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        visibleStories.chunked(2).forEach { rowStories ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                rowStories.forEach { story ->
+                                    Card(
                                         modifier = Modifier
-                                            .size(32.dp)
-                                            .clip(CircleShape)
-                                            .background(com.example.venturenest.ui.theme.bg),
-                                        contentAlignment = Alignment.Center
+                                            .weight(1f)
+                                            .height(200.dp),
+                                        shape = RoundedCornerShape(20.dp),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = Color(
+                                                0xFFFBFBFB
+                                            )
+                                        ),
+                                        border = BorderStroke(1.dp, Color(0xFFF0F0F0))
                                     ) {
-                                        Text(
-                                            text = story.first.first().toString(),
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 14.sp,
-                                            color = Color.White
-                                        )
-                                    }
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(16.dp)
+                                                .fillMaxSize(),
+                                            verticalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Box(modifier = Modifier.weight(1f)) {
+                                                Text(
+                                                    text = story.third,
+                                                    fontSize = 12.sp,
+                                                    color = Color.DarkGray,
+                                                    lineHeight = 18.sp,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
 
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.padding(top = 8.dp)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(32.dp)
+                                                        .clip(CircleShape)
+                                                        .background(com.example.venturenest.ui.theme.bg),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(
+                                                        text = story.first.first().toString(),
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = 14.sp,
+                                                        color = Color.White
+                                                    )
+                                                }
 
-                                    Column {
-                                        Text(
-                                            text = story.first,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 11.sp,
-                                            color = Color.Black,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                        Text(
-                                            text = story.second,
-                                            fontSize = 9.sp,
-                                            color = Color.Gray,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
+                                                Spacer(modifier = Modifier.width(8.dp))
+
+                                                Column {
+                                                    Text(
+                                                        text = story.first,
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = 11.sp,
+                                                        color = Color.Black,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis
+                                                    )
+                                                    Text(
+                                                        text = story.second,
+                                                        fontSize = 9.sp,
+                                                        color = Color.Gray,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis
+                                                    )
+                                                }
+                                            }
+                                        }
                                     }
+                                }
+                                if (rowStories.size == 1) {
+                                    Spacer(modifier = Modifier.weight(1f))
                                 }
                             }
                         }
-                    }
-                    if (rowStories.size == 1) {
-                        Spacer(modifier = Modifier.weight(1f))
+
+                        OutlinedButton(
+                            onClick = { showAllStories = !showAllStories },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.5.dp, com.example.venturenest.ui.theme.bg)
+                        ) {
+                            Text(
+                                text = if (showAllStories) "Show Less" else "Explore More Success Stories",
+                                color = com.example.venturenest.ui.theme.bg,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
-            }
-
-            OutlinedButton(
-                onClick = { showAllStories = !showAllStories },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.5.dp, com.example.venturenest.ui.theme.bg)
-            ) {
-                Text(
-                    text = if (showAllStories) "Show Less" else "Explore More Success Stories",
-                    color = com.example.venturenest.ui.theme.bg,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            }
-        }
 
 
 //                Box(
@@ -1550,59 +1850,81 @@ members = state.Data.councilmembers.take(4)
 //                        verticalArrangement = Arrangement.SpaceEvenly,
 //                        horizontalAlignment = Alignment.CenterHorizontally
 //                    ) {
-//                        Row(
-//                            modifier
-//                                .fillMaxWidth(0.88f)
-//                                .height(40.dp),
-//                            verticalAlignment = Alignment.CenterVertically,
-//                            horizontalArrangement = Arrangement.SpaceBetween
-//                        ) {
-//
-//                            Text(
-//
-//
-//                                "Council Members", fontWeight = FontWeight.SemiBold
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//                                ,
-//                                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-//                                color = Color.Black,
-//                                modifier = modifier.fillMaxWidth(0.5f)
-//                            )
-//
-//                            TextButton(onClick = {
-//                                navController.navigate(
-//                                    CouncilScreen(
-//                                        search = "", 0xFFF29727, ""
-//                                    )
-//                                )
-//                            }) {
-//                                Text("view all", color = Color.Gray)
-//                            }
-//                        }
-//
-//                        val scrollState = rememberScrollState()
-////                        Row(
-////                            modifier
-////                                .padding(top = 0.dp)
-////                                .fillMaxWidth(0.94f),
-////                            verticalAlignment = Alignment.CenterVertically,
-////                            horizontalArrangement = Arrangement.SpaceBetween
-////                        ) {
-////
-////                            Box(
-////                                modifier = Modifier
-////                                    .fillMaxWidth()
-////                                    .padding(top = 5.dp, bottom = 0.dp)
-////                                    .wrapContentHeight()
+                // Board of Directors Section
+                Card(
+                    modifier = modifier
+                        .fillMaxWidth(0.94f)
+                        .padding(top = 10.dp, bottom = 20.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    border = BorderStroke(1.dp, Color(0xFFF5F5F7))
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(40.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                "Board of Directors",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = Color.Black
+                            )
+
+                            TextButton(onClick = {
+                                navController.navigate(
+                                    CouncilScreen(
+                                        search = searchQuery,
+                                        bg.toArgb().toLong(),
+                                        "all"
+                                    )
+                                )
+                            }) {
+                                Text("View All", color = bg, fontWeight = FontWeight.Bold)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        val membersToDisplay = filteredMembers.take(4)
+                        if (membersToDisplay.isEmpty()) {
+                            Text(
+                                "No members found matching \"$searchQuery\"",
+                                fontSize = 13.sp,
+                                color = Color.Gray,
+                                modifier = Modifier.padding(vertical = 20.dp)
+                            )
+                        } else {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                membersToDisplay.forEach { member ->
+                                    CouncilMemberItem(
+                                        member = member,
+                                        modifier = Modifier.weight(1f),
+                                        onClick = {
+                                            name.value = member.name
+                                            image.value = member.imgpath
+                                            isVisible.value = true
+                                        }
+                                    )
+                                }
+                                // Balance the row if fewer than 4 items
+                                repeat(4 - membersToDisplay.size) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
+                }
 ////
 ////                                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
 ////                                    .background(androidx.compose.ui.graphics.Color.Transparent)
@@ -1675,9 +1997,10 @@ members = state.Data.councilmembers.take(4)
             }
 
             // Only show the Dialog when the animation state is visible or was visible
-            if ( isVisible.value==true) {
+            if (isVisible.value == true) {
                 Dialog(
-                    onDismissRequest = { isVisible.value=false
+                    onDismissRequest = {
+                        isVisible.value = false
 
                     },
                     properties = DialogProperties(
@@ -1695,8 +2018,7 @@ members = state.Data.councilmembers.take(4)
                         Box(
                             modifier = Modifier
                                 .wrapContentHeight()
-                                .wrapContentWidth()
-                                ,
+                                .wrapContentWidth(),
                             contentAlignment = Alignment.Center
                         ) {
                             // Dialog content with scale animation
@@ -1725,18 +2047,21 @@ members = state.Data.councilmembers.take(4)
                                     ) {
                                         AsyncImage(
                                             model = image.value,
-                                            contentDescription = null,modifier
+                                            contentDescription = null,
+                                            modifier
                                                 .height(300.dp)
-                                                .fillMaxWidth()
-, contentScale = ContentScale.FillWidth
+                                                .fillMaxWidth(),
+                                            contentScale = ContentScale.FillWidth
                                         )
-                                        if (name.value!=null){
-                                            Text(name.value
-                                                ,color= Color.Black
-                                                , fontWeight = FontWeight.Bold,
-                                                fontSize = androidx.compose.material.MaterialTheme.typography.h6.fontSize
-                                                , modifier = modifier.fillMaxWidth()
-                                                , textAlign = TextAlign.Center)
+                                        if (name.value != null) {
+                                            Text(
+                                                name.value,
+                                                color = Color.Black,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = androidx.compose.material.MaterialTheme.typography.h6.fontSize,
+                                                modifier = modifier.fillMaxWidth(),
+                                                textAlign = TextAlign.Center
+                                            )
                                         }
 
                                     }
@@ -1747,100 +2072,47 @@ members = state.Data.councilmembers.take(4)
                 }
             }
 
-            Spacer(modifier.height(40.dp))
+            // Redundant Fixed Overlays removed to fix overlap issues
 
-
-        }
-        // Re-styled Top Navigation Bar
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(Color.White.copy(alpha = 0.95f))
-                .windowInsetsPadding(window)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Logo/Drawer Trigger
-                ElevatedCard(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clickable { isNavOpen = !isNavOpen },
-                    shape = CircleShape,
-                    colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
-                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
-                ) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Image(
-                            painter = painterResource(R.drawable.img),
-                            contentDescription = "Menu",
-                            modifier = Modifier.size(48.dp),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                }
-
-                // Profile Action
-                IconButton(
-                    onClick = { navController.navigate(Profile) },
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFF5F5F5))
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = "Profile",
-                        tint = Color.Black,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-        }
-            AnimatedVisibility(showSuccess
-            , enter = slideInVertically(
+            AnimatedVisibility(
+                showSuccess, enter = slideInVertically(
                     initialOffsetY = { it },   // from bottom
                     animationSpec = tween(
                         durationMillis = 350,
                         easing = FastOutSlowInEasing
                     )
 
-                )
-            ,  exit = slideOutVertically(
+                ), exit = slideOutVertically(
                     targetOffsetY = { it },    // to bottom
                     animationSpec = tween(
                         durationMillis = 300,
                         easing = FastOutSlowInEasing
-                    ))) {
+                    )
+                )
+            ) {
 
 
-
-                    SuccessStoriesReels(  state.Data.sucessStories
-                    ,{showSuccess=false})
-
-
-
+                SuccessStoriesReels(state.Data.sucessStories, { showSuccess = false })
 
 
             }
 
-        AiDialog(
-            show,
-            modifier
-        )
+            AiDialog(
+                show,
+                modifier
+            )
 
 
-        EventDialog(show = showEventDialog, event = selectedEvent, modifier = modifier, color = selectedEventColor)
+            EventDialog(
+                show = showEventDialog,
+                event = selectedEvent,
+                modifier = modifier,
+                color = selectedEventColor
+            )
 
-            }  // Close Box
-        
-    
-    
+        }  // Close Column
+
+
         // ðŸ”¹ OVERLAY (click to close)
         if (isNavOpen) {
             Box(
@@ -1851,7 +2123,7 @@ members = state.Data.councilmembers.take(4)
             )
         }
 
-        // ðŸ”¹ SLIDING NAV COLUMN
+        // 🔹 SLIDING NAV COLUMN
         AnimatedVisibility(
             visible = isNavOpen,
             enter = slideInHorizontally(
@@ -1862,22 +2134,21 @@ members = state.Data.councilmembers.take(4)
             )
         ) {
             SideNavigation(
-                onClose = { isNavOpen = false }
-                , onE = {
+                onClose = { isNavOpen = false },
+                onE = {
                     navController.navigate(AboutECell)
-                }
-                , onM = {
-                    isNavOpen=false
-                    showSuccess=true},
+                },
+                onM = {
+                    isNavOpen = false
+                    showSuccess = true
+                },
                 onV = {
                     navController.navigate(AboutVentureNest)
                 }
             )
         }
-    }
+    } // Close Box with innerPadding
 }
-
-
 @Composable
 fun ChatBubbleWithArrow(message: String, isUser: Boolean) {
     Row(
@@ -1893,7 +2164,7 @@ fun ChatBubbleWithArrow(message: String, isUser: Boolean) {
                 displayedText = ""
                 message.forEachIndexed { index, _ ->
                     displayedText = message.substring(0, index + 1)
-                    delay(5) 
+                    delay(5)
                 }
             } else {
                 displayedText = message
@@ -1904,11 +2175,21 @@ fun ChatBubbleWithArrow(message: String, isUser: Boolean) {
             modifier = Modifier
                 .widthIn(max = 280.dp)
                 .clip(
-                    if (isUser) RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 5.dp)
-                    else RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 5.dp, bottomEnd = 20.dp)
+                    if (isUser) RoundedCornerShape(
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
+                        bottomStart = 20.dp,
+                        bottomEnd = 5.dp
+                    )
+                    else RoundedCornerShape(
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
+                        bottomStart = 5.dp,
+                        bottomEnd = 20.dp
+                    )
                 )
                 .background(
-                    color = if (isUser) Color.Black else Color(0xFFF3F3F3) 
+                    color = if (isUser) Color.Black else Color(0xFFF3F3F3)
                 )
                 .padding(16.dp)
         ) {
@@ -1925,66 +2206,59 @@ fun ChatBubbleWithArrow(message: String, isUser: Boolean) {
 
 @Composable
 fun SideNavigation(
-    onClose: () -> Unit
-    ,onV:()-> Unit,
-    onE:()-> Unit,
-    onM:()-> Unit
+    onClose: () -> Unit,
+    onV: () -> Unit,
+    onE: () -> Unit,
+    onM: () -> Unit
 ) {
     Column(
         modifier = Modifier
-
             .fillMaxHeight()
             .width(260.dp)
             .background(Color.Transparent)
             .padding(top = 50.dp, bottom = 16.dp, start = 0.dp, end = 16.dp)
     ) {
-
-//        Text(
-//            text = "VentureNest",
-//            fontSize = 20.sp,
-//            fontWeight = FontWeight.Bold
-//            , modifier = Modifier.padding(start = 16.dp)
-//        )
-
         Spacer(modifier = Modifier.height(50.dp))
 
-        NavItem("About E-Cell",onE=onE)
-        NavItem("About VentureNest",
-        onE=onV)
-        NavItem("Success Stories",onE=onM)
-
+        NavItem("About E-Cell", onE = onE)
+        NavItem("About VentureNest", onE = onV)
+        NavItem("Success Stories", onE = onM)
 
         Spacer(modifier = Modifier.weight(1f))
-
-
     }
 }
 
 @Composable
-fun NavItem(title: String,onE : () -> Unit) {
-    Card (modifier = Modifier
-        .padding(top = 15.dp)
-        .fillMaxWidth(1f)
-        .clickable{
-            onE.invoke()
-        }
-        , shape =RoundedCornerShape(topStart = 0.dp, bottomEnd = 15.dp,
-            topEnd = 5.dp, bottomStart = 0.dp)
-    , colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))){
-        Row(modifier = Modifier.padding(start = 10.dp)
-        ) {
-    Text(
-        text = title,
+fun NavItem(title: String, onE: () -> Unit) {
+    Card(
         modifier = Modifier
-            .fillMaxWidth()
+            .padding(top = 15.dp)
+            .fillMaxWidth(1f)
             .clickable {
                 onE.invoke()
-            }
-            .padding(vertical = 12.dp),
-        fontSize = 16.sp
-        , color = Color.DarkGray
-        , fontWeight = FontWeight.SemiBold
-    )}
+            },
+        shape = RoundedCornerShape(
+            topStart = 0.dp, bottomEnd = 15.dp,
+            topEnd = 5.dp, bottomStart = 0.dp
+        ),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))
+    ) {
+        Row(
+            modifier = Modifier.padding(start = 10.dp)
+        ) {
+            Text(
+                text = title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onE.invoke()
+                    }
+                    .padding(vertical = 12.dp),
+                fontSize = 16.sp,
+                color = Color.DarkGray,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 
@@ -1992,142 +2266,115 @@ fun NavItem(title: String,onE : () -> Unit) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SuccessStoriesReels(
-    stories: List<SuccessStories>
-    ,onBack: () -> Unit
+    stories: List<SuccessStories>,
+    onBack: () -> Unit
 ) {
     val pagerstate = rememberPagerState(
-   0,0f,{stories.size}
+        0, 0f, { stories.size }
     )
     VerticalPager(
-     state = pagerstate  ,
+        state = pagerstate,
         modifier = Modifier.fillMaxSize()
     ) { page ->
-        SuccessStoryReelItem(story = stories[page]
-        , onBack = onBack)
+        SuccessStoryReelItem(
+            story = stories[page],
+            onBack = onBack
+        )
     }
 }
+
 @Composable
 fun SuccessStoryReelItem(
-    story: SuccessStories
-    ,onBack:()-> Unit
+    story: SuccessStories,
+    onBack: () -> Unit
 ) {
     BackHandler {
-onBack.invoke()
+        onBack.invoke()
     }
     Box(
         modifier = Modifier
             .fillMaxWidth()
-
-            .fillMaxHeight()
-
-        , contentAlignment = Alignment.Center
+            .fillMaxHeight(),
+        contentAlignment = Alignment.Center
     ) {
-        Box (modifier = Modifier.fillMaxWidth(
-
-        ).fillMaxHeight(1f)){
-
-        // ðŸ”¹ Background Founder Image
-        AsyncImage(
-            model = story.FounderImg,
-            contentDescription = story.StartupName,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        // ðŸ”¹ Dark Gradient Overlay
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.7f)
-                        ),
-                        startY = 300f
-                    )
-                )
-        )
-
-        // ðŸ”¹ Bottom Content
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(16.dp)
                 .fillMaxWidth()
+                .fillMaxHeight(1f)
         ) {
-            var textShow by remember { mutableStateOf(false) }
+            // Background Founder Image
+            AsyncImage(
+                model = story.FounderImg,
+                contentDescription = story.StartupName,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                AsyncImage(
-                    model = story.FounderLogoImg,
-                    contentDescription = "Logo",
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape)
-                    , contentScale = ContentScale.Crop
-                )
+            // Dark Gradient Overlay
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.7f)
+                            ),
+                            startY = 300f
+                        )
+                    )
+            )
 
-                Spacer(modifier = Modifier.width(8.dp))
+            // Bottom Content
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                var textShow by remember { mutableStateOf(false) }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    AsyncImage(
+                        model = story.FounderLogoImg,
+                        contentDescription = "Logo",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = story.StartupName,
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = story.StartupName,
+                    text = story.StartupAbout,
                     color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 14.sp,
+                    maxLines = if (textShow) 10 else 3,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clickable {
+                        textShow = !textShow
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Founded by ${story.FounderImgName}",
+                    color = Color.LightGray,
+                    fontSize = 12.sp
                 )
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = story.StartupAbout,
-                color = Color.White,
-                fontSize = 14.sp,
-                maxLines =if (textShow) 10 else 3,
-                overflow = TextOverflow.Ellipsis
-                , modifier = Modifier.clickable{
-                    textShow= !textShow
-                }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Founded by ${story.FounderImgName}",
-                color = Color.LightGray,
-                fontSize = 12.sp
-            )
-        }
-
-        // ðŸ”¹ Right Side Actions (Like Insta)
-//        Column(
-//            modifier = Modifier
-//                .align(Alignment.BottomEnd)
-//                .padding(16.dp),
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//
-//            IconButton(onClick = { /* like */ }) {
-//                Icon(
-//                    imageVector = if (story.isStarred)
-//                        Icons.Filled.Favorite
-//                    else Icons.Outlined.FavoriteBorder,
-//                    contentDescription = "Like",
-//                    tint = Color.White
-//                )
-//            }
-//
-//            Spacer(modifier = Modifier.height(12.dp))
-//
-//            IconButton(onClick = { /* share */ }) {
-//                Icon(
-//                    imageVector = Icons.Default.Share,
-//                    contentDescription = "Share",
-//                    tint = Color.White
-//                )
-//            }
-//        }
         }
     }
 }

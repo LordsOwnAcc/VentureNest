@@ -30,7 +30,11 @@ An Android app for a startup incubation space. It gives founders, mentors, and v
 
 | Home | Startups | Analytics | Chatbot |
 |---|---|---|---|
-| ![Home](screenshots/home.png) | ![Startups](screenshots/startups.png) | ![Analytics](screenshots/analytics.png) | ![Chat](screenshots/chat.png) |
+| ![Home](<img width="540" height="1200" alt="WhatsApp Image 2026-10-16 at 11 28 37 AM (1)" src="https://github.com/user-attachments/assets/a7d19ffe-bea0-4bab-b84c-bc05f4bfdb22" />
+) | ![Startups](<img width="540" height="1200" alt="WhatsApp Image 2026-10-16 at 11 28 37 AM (2)" src="https://github.com/user-attachments/assets/535fb019-e55d-49c6-b3d9-c1ac4dfbce50" />
+) | ![Analytics](<img width="540" height="1200" alt="WhatsApp Image 2026-10-16 at 11 28 37 AM" src="https://github.com/user-attachments/assets/cbe253df-9fda-4ee2-bc8c-7c3c16c41431" />
+) | ![Chat](<img width="540" height="1200" alt="WhatsApp Image 2026-10-16 at 11 28 36 AM (1)" src="https://github.com/user-attachments/assets/a32e843d-ce41-428d-8d96-e86d9ca4d4f3" />
+) |
 
 ## Architecture
 

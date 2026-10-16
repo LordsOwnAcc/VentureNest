@@ -27,7 +27,7 @@ class AuthModule (){
     @Singleton
     fun gso():GoogleSignInOptions{
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("64723296050-6rkjlag8q6cgaac11a63f3p5uvpcgu2q.apps.googleusercontent.com")
+            .requestIdToken(BuildConfig.WEB_CLIENT_ID)
             .requestEmail()
             .requestProfile()
             .build()
